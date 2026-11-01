@@ -209,7 +209,7 @@ void Texture_DrawSprites(StatePtr state, long spriteCount, InfinitySpritePtr spr
 						topV, leftU, rightU, bottomV;
 	
 	//Fill vertice & triangles buffer
-	for(i = 0; i < spriteCount; ++i, (Ptr) sprite += byteOffset) {
+	for(i = 0; i < spriteCount; ++i, sprite = (InfinitySpritePtr) ((Ptr) sprite + byteOffset)) {
 		//Check Z - visibility
 		if((sprite->position.z < state->d) || (sprite->position.z > kMaxViewDistance))
 		continue;

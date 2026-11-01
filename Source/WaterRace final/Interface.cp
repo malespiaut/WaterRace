@@ -59,7 +59,7 @@ void Interface_GetLeahSpec(FSSpec* fileSpec)
 	UseResFile(mainResFileID);
 	fileSpec->vRefNum = coreFolder.vRefNum;
 	fileSpec->parID = coreFolder.parID;
-	GetIndString(fileSpec->name, folderFileNameResID, leahFileName);
+	GetIndString(fileSpec->cName, folderFileNameResID, leahFileName); // Pomme: cName (C string)
 	UseResFile(oldResFile);
 }
 
@@ -93,7 +93,7 @@ void Interface_SetCharacterParametersFromResource(short resID)
 						zoom,
 						hither,
 						yon;
-	unsigned char*		theChar;
+	char*			theChar; // char: Pomme Str31 is a char array
 						
 	//Gather camera settings
 	UseResFile(interfaceResFileID);
@@ -102,7 +102,7 @@ void Interface_SetCharacterParametersFromResource(short resID)
 	return;
 	DetachResource(camera);
 	HLock(camera);
-	theChar = (unsigned char*) *camera;
+	theChar = (char*) *camera;
 	
 	//Extract light
 	StringToFloat(theChar, &param1);
@@ -198,7 +198,7 @@ OSErr Interface_LoadAnimationWrapper(FSSpec* file, OSType textureSetID, short po
 	//Load animation
 	theError = InfinityPlayer_LoadAnimation(mainGDHandle, theEngine, file, textureSetID,
 		mainWinOffset.h + posH, mainWinOffset.v + posV, width, height, contextFlags, 
-		textureFlags, bufferGWorld->portPixMap, posH, posV, useBitmap);
+		textureFlags, GetGWorldPixMap(bufferGWorld), posH, posV, useBitmap); // Pomme has no portPixMap field (as Textures.h)
 	if(theError)
 	return theError;
 	

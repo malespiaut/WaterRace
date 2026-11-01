@@ -70,7 +70,7 @@ OSErr ScanForFolderAlias(FSSpec* folder)
 		if(PBGetCatInfo(&cipbr, false))
 		break;
 		
-		if(EqualString(destFolder.cName, folder->name, false, false)) {
+		if(EqualString(destFolder.cName, folder->cName, false, false)) {
 			theError = ResolveAliasFile(&destFolder, true, &targetIsFolder, &wasAliased);
 			if(theError)
 			return theError;

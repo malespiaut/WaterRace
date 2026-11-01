@@ -178,9 +178,9 @@ static OSErr Game_SetUpScreen()
 #endif
 	
 	//Move interface window
-	mainWinOffset.h = ((**mainGDHandle).gdRect.right - (**mainGDHandle).gdRect.left - kInterface_Width) / 2;
-	mainWinOffset.v = ((**mainGDHandle).gdRect.bottom - (**mainGDHandle).gdRect.top - kInterface_Height) / 2;
-	MoveWindow(mainWin, mainWinOffset.h + (**mainGDHandle).gdRect.left, mainWinOffset.v + (**mainGDHandle).gdRect.top, false);
+	mainWinOffset.h = (GetMainGDRect().right - GetMainGDRect().left - kInterface_Width) / 2;
+	mainWinOffset.v = (GetMainGDRect().bottom - GetMainGDRect().top - kInterface_Height) / 2;
+	MoveWindow(mainWin, mainWinOffset.h + GetMainGDRect().left, mainWinOffset.v + GetMainGDRect().top, false);
 	SetPort(mainWin);
 	PaintRect(&(backgroundWin->portRect));
 	
@@ -195,10 +195,10 @@ static OSErr Game_SetUpScreen()
 	screenResolution.h = realWidth;
 	screenResolution.v = realHeight;
 #else
-	screenOffset.h = ((**mainGDHandle).gdRect.right - (**mainGDHandle).gdRect.left - thePrefs.renderWidth) / 2 + (**mainGDHandle).gdRect.left;
-	screenOffset.v = ((**mainGDHandle).gdRect.bottom - (**mainGDHandle).gdRect.top - thePrefs.renderHeight) / 2 + (**mainGDHandle).gdRect.top;
-	screenResolution.h = (**mainGDHandle).gdRect.right - (**mainGDHandle).gdRect.left;
-	screenResolution.v = (**mainGDHandle).gdRect.bottom - (**mainGDHandle).gdRect.top;
+	screenOffset.h = (GetMainGDRect().right - GetMainGDRect().left - thePrefs.renderWidth) / 2 + GetMainGDRect().left;
+	screenOffset.v = (GetMainGDRect().bottom - GetMainGDRect().top - thePrefs.renderHeight) / 2 + GetMainGDRect().top;
+	screenResolution.h = GetMainGDRect().right - GetMainGDRect().left;
+	screenResolution.v = GetMainGDRect().bottom - GetMainGDRect().top;
 #endif
 
 	return noErr;
@@ -248,9 +248,9 @@ static OSErr Game_RestoreScreen()
 	PaintRect(&(backgroundWin->portRect));
 	
 	//Move interface window
-	mainWinOffset.h = ((**mainGDHandle).gdRect.right - (**mainGDHandle).gdRect.left - kInterface_Width) / 2;
-	mainWinOffset.v = ((**mainGDHandle).gdRect.bottom - (**mainGDHandle).gdRect.top - kInterface_Height) / 2;
-	MoveWindow(mainWin, mainWinOffset.h + (**mainGDHandle).gdRect.left, mainWinOffset.v + (**mainGDHandle).gdRect.top, false);
+	mainWinOffset.h = (GetMainGDRect().right - GetMainGDRect().left - kInterface_Width) / 2;
+	mainWinOffset.v = (GetMainGDRect().bottom - GetMainGDRect().top - kInterface_Height) / 2;
+	MoveWindow(mainWin, mainWinOffset.h + GetMainGDRect().left, mainWinOffset.v + GetMainGDRect().top, false);
 	SetPort(mainWin);
 	PaintRect(&(backgroundWin->portRect));
 	
@@ -890,28 +890,31 @@ static Boolean Check_Replay()
 #if __RECORD_RACE__
 		if(IsKeyDown(theKeys, keyReturn) && !replaySaved) {
 			FSSpec			file;
+			Str31			name; // Pascal name built as before; Pomme's FSSpec holds a C string in cName
 			DateTimeRec		time;
 			Str31			temp;
 			
 			GetTime(&time);
-			BlockMove(kString_Misc_ReplayFileName, file.name, sizeof(Str31));
+			BlockMove(kString_Misc_ReplayFileName, name, sizeof(Str31));
 			NumToString(time.hour, temp);
-			BlockMove(&temp[1], &file.name[file.name[0] + 1], temp[0]);
-			file.name[0] += temp[0];
+			BlockMove(&temp[1], &name[name[0] + 1], temp[0]);
+			name[0] += temp[0];
 			NumToString(time.minute, temp);
-			BlockMove(&temp[1], &file.name[file.name[0] + 1], temp[0]);
-			file.name[0] += temp[0];
+			BlockMove(&temp[1], &name[name[0] + 1], temp[0]);
+			name[0] += temp[0];
 			NumToString(time.day, temp);
-			BlockMove(&temp[1], &file.name[file.name[0] + 1], temp[0]);
-			file.name[0] += temp[0];
+			BlockMove(&temp[1], &name[name[0] + 1], temp[0]);
+			name[0] += temp[0];
 			NumToString(time.month, temp);
-			BlockMove(&temp[1], &file.name[file.name[0] + 1], temp[0]);
-			file.name[0] += temp[0];
+			BlockMove(&temp[1], &name[name[0] + 1], temp[0]);
+			name[0] += temp[0];
 			NumToString(time.year, temp);
-			BlockMove(&temp[1], &file.name[file.name[0] + 1], temp[0]);
-			file.name[0] += temp[0];
+			BlockMove(&temp[1], &name[name[0] + 1], temp[0]);
+			name[0] += temp[0];
 			
-			file.parID = fsRtDirID;
+			BlockMove(&name[1], file.cName, name[0]); // shortcut: FSSpec.cName is a C string in Pomme
+				file.cName[name[0]] = 0;
+				file.parID = fsRtDirID;
 			file.vRefNum = GetStartUpVolume();
 			
 			if(Replay_Save(&file) != noErr)

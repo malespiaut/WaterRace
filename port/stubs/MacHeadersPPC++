@@ -6,6 +6,11 @@
 #include "stub_toolbox.h"
 #include "stub_system.h"
 #include "stub_external.h"
+#include "stub_infinity.h"
+#include "stub_game_a.h"
+#include "stub_game_b.h"
+#include "stub_common.h"
+#include "Conditionals.h" // the original prefix also set the __X__ feature switches
 
 // Pomme exposes GetIndString as GetIndStringC (same arguments, Str255 out).
 #define GetIndString(s, list, index) GetIndStringC((s), (list), (index))

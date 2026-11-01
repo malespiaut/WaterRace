@@ -107,7 +107,7 @@ Boolean Display_Agreement(short textID, long waitingTime, Str255 okButton, Str25
 	stylHandle = (StScrpHandle) Get1Resource('styl', textID);
 	if(stylHandle == nil)
 	return false;
-	GetResInfo((Handle) stylHandle, &itemType, (unsigned long*) &textLength, tempString);
+	GetResInfo((Handle) stylHandle, &itemType, (ResType*) &textLength, tempString);
 	StringToNum(tempString, &textLength);
 	HLock((Handle) stylHandle);
 	TEStyleInsert(*textHandle, GetHandleSize(textHandle), stylHandle, theTEHandle);

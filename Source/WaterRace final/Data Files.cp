@@ -60,7 +60,7 @@ OSErr Resolve_DataFolders()
 	Boolean					targetIsFolder,
 							wasAliased;
 	//Find data folder
-	GetIndString(dataFolder.name, folderFileNameResID, 1);
+	GetIndString(dataFolder.cName, folderFileNameResID, 1); // Pomme: FSSpec.cName is a C string, not a Pascal name
 	HGetVol(nil, &dataFolder.vRefNum, &dataFolder.parID);
 	theError = ResolveAliasFile(&dataFolder, true, &targetIsFolder, &wasAliased);
 	if(theError)
@@ -70,7 +70,7 @@ OSErr Resolve_DataFolders()
 	
 	//Get data folder parID
 	fpb->ioVRefNum = dataFolder.vRefNum;
-	fpb->ioNamePtr = dataFolder.name;
+	fpb->ioNamePtr = dataFolder.cName;
 	fpb->ioDirID = dataFolder.parID;
 	fpb->ioFDirIndex = 0;
 	theError = PBGetCatInfo(&cipbr, false);
@@ -80,21 +80,21 @@ OSErr Resolve_DataFolders()
 	
 	//Get ships folder
 	shipsFolder = dataFolder;
-	GetIndString(shipsFolder.name, folderFileNameResID, folderShips);
+	GetIndString(shipsFolder.cName, folderFileNameResID, folderShips);
 	theError = ScanForFolderAlias(&shipsFolder);
 	if(theError)
 	return theError;
 	
 	//Get locations folder
 	locationsFolder = dataFolder;
-	GetIndString(locationsFolder.name, folderFileNameResID, folderLocations);
+	GetIndString(locationsFolder.cName, folderFileNameResID, folderLocations);
 	theError = ScanForFolderAlias(&locationsFolder);
 	if(theError)
 	return theError;
 	
 	//Get characters folder
 	charactersFolder = dataFolder;
-	GetIndString(charactersFolder.name, folderFileNameResID, folderCharacters);
+	GetIndString(charactersFolder.cName, folderFileNameResID, folderCharacters);
 	theError = ScanForFolderAlias(&charactersFolder);
 	if(theError)
 	return theError;
@@ -102,7 +102,7 @@ OSErr Resolve_DataFolders()
 #if __USE_AUDIO_FILES__
 	//Get musics folder
 	musicsFolder = dataFolder;
-	GetIndString(musicsFolder.name, folderFileNameResID, folderMusics);
+	GetIndString(musicsFolder.cName, folderFileNameResID, folderMusics);
 	theError = ScanForFolderAlias(&musicsFolder);
 	if(theError)
 	return theError;
@@ -111,7 +111,7 @@ OSErr Resolve_DataFolders()
 #if !__DEMO_MODE__
 	//Get add ons folder
 	addOnsFolder = dataFolder;
-	GetIndString(addOnsFolder.name, folderFileNameResID, folderAddOns);
+	GetIndString(addOnsFolder.cName, folderFileNameResID, folderAddOns);
 	theError = ScanForFolderAlias(&addOnsFolder);
 	if(theError)
 	return theError;
@@ -119,14 +119,14 @@ OSErr Resolve_DataFolders()
 	
 	//Get pilots folder
 	pilotsFolder = dataFolder;
-	GetIndString(pilotsFolder.name, folderFileNameResID, folderPilots);
+	GetIndString(pilotsFolder.cName, folderFileNameResID, folderPilots);
 	theError = ScanForFolderAlias(&pilotsFolder);
 	if(theError)
 	return theError;
 	
 	//Get core folder
 	coreFolder = dataFolder;
-	GetIndString(coreFolder.name, folderFileNameResID, folderCore);
+	GetIndString(coreFolder.cName, folderFileNameResID, folderCore);
 	theError = ScanForFolderAlias(&coreFolder);
 	if(theError)
 	return theError;
@@ -500,7 +500,7 @@ static OSErr Preload_Folder(FSSpec* folder, DataSetPtr dataSet, Boolean official
 	theFile.vRefNum = folder->vRefNum;
 	theFile.parID = folder->parID;
 	fpb->ioVRefNum = folder->vRefNum;
-	fpb->ioNamePtr = theFile.name;
+	fpb->ioNamePtr = theFile.cName;
 	for(idx = 1; true; ++idx) {
 		fpb->ioDirID = folder->parID;
 		fpb->ioFDirIndex = idx;
@@ -517,7 +517,7 @@ static OSErr Preload_Folder(FSSpec* folder, DataSetPtr dataSet, Boolean official
 		
 #if __ENABLE_DATAFILE_SKIPPING__
 		//If this MetaFile begins with "_", skip it
-		if(theFile.name[1] == kSkipChar)
+		if(theFile.cName[0] == kSkipChar)
 		continue;
 #endif
 		
@@ -530,7 +530,7 @@ static OSErr Preload_Folder(FSSpec* folder, DataSetPtr dataSet, Boolean official
 		if(officialOnly) {
 			//This metafile MUST BE an WR official data file
 			if(MetaFile_CountDataSubTags(reference, kSubTag_Version) <= 0) {
-				ParamText(nil, nil, nil, theFile.name);
+				ParamText(nil, nil, nil, theFile.cName);
 				Wrapper_Error_Display(172, kError_AddOnFileInCoreFolder, nil, false);
 				MetaFile_Read_CloseFile(reference);
 				continue;
@@ -539,7 +539,7 @@ static OSErr Preload_Folder(FSSpec* folder, DataSetPtr dataSet, Boolean official
 		else {
 			//This metafile MUST NOT BE an WR official data file
 			if(MetaFile_CountDataSubTags(reference, kSubTag_Version) > 0) {
-				ParamText(nil, nil, nil, theFile.name);
+				ParamText(nil, nil, nil, theFile.cName);
 				Wrapper_Error_Display(172, kError_CoreFileInAddOnFolder, nil, false);
 				MetaFile_Read_CloseFile(reference);
 				continue;
@@ -553,7 +553,7 @@ static OSErr Preload_Folder(FSSpec* folder, DataSetPtr dataSet, Boolean official
 			if(dataSet->terrainCount < kMaxNbTerrains) {
 				theError = Preload_Terrain(&theFile, reference, &dataSet->terrainList[dataSet->terrainCount]);
 				if(theError) {
-					ParamText(nil, nil, nil, theFile.name);
+					ParamText(nil, nil, nil, theFile.cName);
 					Wrapper_Error_Display(166, theError, nil, false);
 				}
 				else
@@ -565,7 +565,7 @@ static OSErr Preload_Folder(FSSpec* folder, DataSetPtr dataSet, Boolean official
 			if(dataSet->shipCount < kMaxNbShips) {
 				theError = Preload_Ship(&theFile, reference, &dataSet->shipList[dataSet->shipCount]);
 				if(theError) {
-					ParamText(nil, nil, nil, theFile.name);
+					ParamText(nil, nil, nil, theFile.cName);
 					Wrapper_Error_Display(167, theError, nil, false);
 				}
 				else
@@ -578,7 +578,7 @@ static OSErr Preload_Folder(FSSpec* folder, DataSetPtr dataSet, Boolean official
 				if(dataSet->characterCount < kMaxNbCharacters) {
 					theError = Preload_Character(&theFile, reference, &dataSet->characterList[dataSet->characterCount]);
 					if(theError) {
-						ParamText(nil, nil, nil, theFile.name);
+						ParamText(nil, nil, nil, theFile.cName);
 						Wrapper_Error_Display(168, theError, nil, false);
 					}
 					else
@@ -587,12 +587,12 @@ static OSErr Preload_Folder(FSSpec* folder, DataSetPtr dataSet, Boolean official
 			}
 			else {
 				//It's a character in the Add ons folder - DO NOT LOAD
-				ParamText(nil, nil, nil, theFile.name);
+				ParamText(nil, nil, nil, theFile.cName);
 				Wrapper_Error_Display(168, kError_AddOnCharacter, nil, false);
 			}
 		}
 		else {
-			ParamText(nil, nil, nil, theFile.name);
+			ParamText(nil, nil, nil, theFile.cName);
 			Wrapper_Error_Display(169, kError_UnknownFileType, nil, false);
 		}
 		
@@ -617,7 +617,7 @@ static OSErr Preload_Core()
 	//Preload Practice Zone
 	{
 		//Get file
-		GetIndString(demoFile.name, folderFileNameResID, filePractice);
+		GetIndString(demoFile.cName, folderFileNameResID, filePractice);
 	
 		//Open MetaFile
 		theError = MetaFile_Read_OpenFile(&demoFile, &reference);
@@ -627,7 +627,7 @@ static OSErr Preload_Core()
 #if __PREVENT_FILE_HACKING__
 		//This metafile MUST BE an WR official data file
 		if(MetaFile_CountDataSubTags(reference, kSubTag_Version) <= 0) {
-			ParamText(nil, nil, nil, demoFile.name);
+			ParamText(nil, nil, nil, demoFile.cName);
 			Wrapper_Error_Display(172, kError_CoreFileCorrupted, nil, false);
 			MetaFile_Read_CloseFile(reference);
 			return kError_CoreFileCorrupted;
@@ -637,7 +637,7 @@ static OSErr Preload_Core()
 		//It's a terrain
 		theError = Preload_Terrain(&demoFile, reference, &practiceTerrainData);
 		if(theError) {
-			ParamText(nil, nil, nil, demoFile.name);
+			ParamText(nil, nil, nil, demoFile.cName);
 			Wrapper_Error_Display(166, theError, nil, false);
 		}
 		
@@ -649,7 +649,7 @@ static OSErr Preload_Core()
 	//Preload Leah
 	{
 		//Get file
-		GetIndString(demoFile.name, folderFileNameResID, leahFileName);
+		GetIndString(demoFile.cName, folderFileNameResID, leahFileName);
 	
 		//Open MetaFile
 		theError = MetaFile_Read_OpenFile(&demoFile, &reference);
@@ -659,7 +659,7 @@ static OSErr Preload_Core()
 #if __PREVENT_FILE_HACKING__
 		//This metafile MUST BE an WR official data file
 		if(MetaFile_CountDataSubTags(reference, kSubTag_Version) <= 0) {
-			ParamText(nil, nil, nil, demoFile.name);
+			ParamText(nil, nil, nil, demoFile.cName);
 			Wrapper_Error_Display(172, kError_CoreFileCorrupted, nil, false);
 			MetaFile_Read_CloseFile(reference);
 			return kError_CoreFileCorrupted;
@@ -669,7 +669,7 @@ static OSErr Preload_Core()
 		//It's a character
 		theError = Preload_Character(&demoFile, reference, &leahCharacterData);
 		if(theError) {
-			ParamText(nil, nil, nil, demoFile.name);
+			ParamText(nil, nil, nil, demoFile.cName);
 			Wrapper_Error_Display(168, theError, nil, false);
 		}
 		
@@ -681,7 +681,7 @@ static OSErr Preload_Core()
 	//Preload Leah's ship
 	{
 		//Get file
-		GetIndString(demoFile.name, folderFileNameResID, leahShipName);
+		GetIndString(demoFile.cName, folderFileNameResID, leahShipName);
 	
 		//Open MetaFile
 		theError = MetaFile_Read_OpenFile(&demoFile, &reference);
@@ -691,7 +691,7 @@ static OSErr Preload_Core()
 #if __PREVENT_FILE_HACKING__
 		//This metafile MUST BE an WR official data file
 		if(MetaFile_CountDataSubTags(reference, kSubTag_Version) <= 0) {
-			ParamText(nil, nil, nil, demoFile.name);
+			ParamText(nil, nil, nil, demoFile.cName);
 			Wrapper_Error_Display(172, kError_CoreFileCorrupted, nil, false);
 			MetaFile_Read_CloseFile(reference);
 			return kError_CoreFileCorrupted;
@@ -701,7 +701,7 @@ static OSErr Preload_Core()
 		//It's a ship
 		theError = Preload_Ship(&demoFile, reference, &leahShipData);
 		if(theError) {
-			ParamText(nil, nil, nil, demoFile.name);
+			ParamText(nil, nil, nil, demoFile.cName);
 			Wrapper_Error_Display(167, theError, nil, false);
 		}
 		
@@ -712,7 +712,7 @@ static OSErr Preload_Core()
 	//Preload Leah's terrain
 	{
 		//Get file
-		GetIndString(demoFile.name, folderFileNameResID, leahTerrainName);
+		GetIndString(demoFile.cName, folderFileNameResID, leahTerrainName);
 	
 		//Open MetaFile
 		theError = MetaFile_Read_OpenFile(&demoFile, &reference);
@@ -722,7 +722,7 @@ static OSErr Preload_Core()
 #if __PREVENT_FILE_HACKING__
 		//This metafile MUST BE an WR official data file
 		if(MetaFile_CountDataSubTags(reference, kSubTag_Version) <= 0) {
-			ParamText(nil, nil, nil, demoFile.name);
+			ParamText(nil, nil, nil, demoFile.cName);
 			Wrapper_Error_Display(172, kError_CoreFileCorrupted, nil, false);
 			MetaFile_Read_CloseFile(reference);
 			return kError_CoreFileCorrupted;
@@ -732,7 +732,7 @@ static OSErr Preload_Core()
 		//It's a terrain
 		theError = Preload_Terrain(&demoFile, reference, &leahTerrainData);
 		if(theError) {
-			ParamText(nil, nil, nil, demoFile.name);
+			ParamText(nil, nil, nil, demoFile.cName);
 			Wrapper_Error_Display(166, theError, nil, false);
 		}
 		

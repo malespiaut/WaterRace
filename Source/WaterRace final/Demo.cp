@@ -155,7 +155,7 @@ static OSErr FlyThrough()
 	//Get demo file
 	demoFile.vRefNum = coreFolder.vRefNum;
 	demoFile.parID = coreFolder.parID;
-	GetIndString(demoFile.name, folderFileNameResID, fileDemo);
+	GetIndString(demoFile.cName, folderFileNameResID, fileDemo); // Pomme: cName (C string)
 	
 	theError = World_Load(worldState, &demoFile, kDifficulty_Easy, kDemoFlyThroughID);
 	if(theError) {
@@ -296,7 +296,7 @@ OSErr Demo_Play()
 #else
 #if __USE_AUDIO_CD_TRACKS__ || __USE_AUDIO_FILES__
 	//Start music
-	GetIndString(musicsFolder.name, MusicFileNameResID, interfaceMusic);
+	GetIndString(musicsFolder.cName, MusicFileNameResID, interfaceMusic);
 #if __USE_AUDIO_CD_TRACKS__
 	theError = AudioCD_PlayAudioTrack_Wrapper(&musicsFolder);
 #elif __USE_AUDIO_FILES__
@@ -342,7 +342,7 @@ OSErr Demo_Play()
 	//Get intro file
 	introFile.vRefNum = coreFolder.vRefNum;
 	introFile.parID = coreFolder.parID;
-	GetIndString(introFile.name, folderFileNameResID, fileIntro);
+	GetIndString(introFile.cName, folderFileNameResID, fileIntro);
 	
 	//Find a Rave engine
 	theEngine = Get_GameEngine();
@@ -421,7 +421,7 @@ OSErr Demo_Play()
 #if __PLAY_JINGLE__
 #if __USE_AUDIO_CD_TRACKS__ || __USE_AUDIO_FILES__
 	//Start music
-	GetIndString(musicsFolder.name, MusicFileNameResID, interfaceMusic);
+	GetIndString(musicsFolder.cName, MusicFileNameResID, interfaceMusic);
 #if __USE_AUDIO_CD_TRACKS__
 	theError = AudioCD_PlayAudioTrack_Wrapper(&musicsFolder);
 #elif __USE_AUDIO_FILES__

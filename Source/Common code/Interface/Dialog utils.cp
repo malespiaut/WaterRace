@@ -76,7 +76,7 @@ void SetDialogItemNum(Handle itemHandle, long num)
 {
 	Str31			text;
 	
-	text[0] = Integer2Text(&text[1], num);
+	text[0] = Integer2Text((unsigned char*) &text[1], num);
 	SetDialogItemText(itemHandle, text);
 }
 
@@ -85,7 +85,7 @@ void GetDialogItemNum(Handle itemHandle, long* num)
 	Str31			text;
 	
 	GetDialogItemText(itemHandle, text);
-	*num = Text2Integer(&text[1], text[0]);
+	*num = Text2Integer((unsigned char*) &text[1], text[0]);
 }
 
 void SetDialogItemTime(Handle itemHandle, long time)
@@ -163,7 +163,7 @@ Point GetWindowPosition(WindowPtr window)
 
 Boolean MakeSure_WindowIsOnScreen(WindowPtr window)
 {
-	RgnHandle		desktopRgn = LMGetGrayRgn();
+	RgnHandle		desktopRgn = (RgnHandle) LMGetGrayRgn();
 	Rect			windowRect, //(**(((WindowPeek) window)->contRgn)).rgnBBox, //Not valid is window hidden
 					desktopRect;
 	Point			windowPos = GetWindowPosition(window);
@@ -179,7 +179,7 @@ Boolean MakeSure_WindowIsOnScreen(WindowPtr window)
 	return true;
 	
 	//Move window inside main device's desktop
-	desktopRect = (**GetMainDevice()).gdRect;
+	desktopRect = GetMainGDRect();
 	windowPos.h = windowRect.left;
 	windowPos.v = windowRect.top;
 	

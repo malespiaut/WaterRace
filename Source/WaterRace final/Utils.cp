@@ -230,7 +230,7 @@ PicHandle Capture_3DfxVRAM()
 	ForeColor(blackColor);
 	
 	//Setup params
-	destPixMapHandle = tempGWorld->portPixMap;
+	destPixMapHandle = GetGWorldPixMap(tempGWorld); // Pomme: GWorld has no portPixMap field
 	destSizeH = thePrefs.renderWidth;
 	destSizeV = thePrefs.renderHeight;
 	
@@ -297,8 +297,8 @@ OSErr Take_ScreenShot()
 #endif
 
 	SetRect(&copyRect, 0, 0, thePrefs.renderWidth, thePrefs.renderHeight);
-	OffsetRect(&copyRect, (screenResolution.h - thePrefs.renderWidth) / 2 + (**mainGDHandle).gdRect.left - (**LMGetGrayRgn()).rgnBBox.left, 
-		(screenResolution.v - thePrefs.renderHeight) / 2 + (**mainGDHandle).gdRect.top - (**LMGetGrayRgn()).rgnBBox.top);
+	OffsetRect(&copyRect, (screenResolution.h - thePrefs.renderWidth) / 2 + GetMainGDRect().left - (**LMGetGrayRgn()).rgnBBox.left,
+		(screenResolution.v - thePrefs.renderHeight) / 2 + GetMainGDRect().top - (**LMGetGrayRgn()).rgnBBox.top);
 	SetRect(&finalRect, -1, -1, -1, -1);
 	pic = Capture_VRAM(mainGDHandle, &copyRect, &finalRect);
 #if __3DFX_SCREENSHOTS__
@@ -308,8 +308,8 @@ OSErr Take_ScreenShot()
 	return kError_CantCaptureVRAM;
 	
 	NumToString(TickCount() & 0xFFFF, timeStr);
-	BlockMove(&timeStr[1], &file.name[file.name[0] + 1], timeStr[0]);
-	file.name[0] += timeStr[0];
+	BlockMove(&timeStr[1], &file.cName[file.cName[0] + 1], timeStr[0]); // Pomme: FSSpec.name is cName (C string); Pascal-to-C conversion for P1
+	file.cName[0] += timeStr[0];
 #if __MOVIE__
 	extern FSSpec			destFolder;
 	
@@ -382,11 +382,11 @@ void CopyBits_16WithAlpha(PixMap *alphaMap, PixMap *srcMap, PixMap *destMap, Rec
 	unsigned char		*alpha;
 	
 	alphaRowBytes = alphaMap->rowBytes & 0x3FFF;
-	alphaLineStart = alphaMap->baseAddr + alphaRect->top * alphaRowBytes + alphaRect->left;
+	alphaLineStart = GetPixBaseAddr(&alphaMap) + alphaRect->top * alphaRowBytes + alphaRect->left; // Pomme: PixMap has no baseAddr field
 	sourceRowBytes = srcMap->rowBytes & 0x3FFF;
-	sourceLineStart = srcMap->baseAddr + sourceRect->top * sourceRowBytes + sourceRect->left * 2;
+	sourceLineStart = GetPixBaseAddr(&srcMap) + sourceRect->top * sourceRowBytes + sourceRect->left * 2;
 	destRowBytes = destMap->rowBytes & 0x3FFF;
-	destLineStart = destMap->baseAddr + destRect->top * destRowBytes + destRect->left * 2;
+	destLineStart = GetPixBaseAddr(&destMap) + destRect->top * destRowBytes + destRect->left * 2;
 	
 	width = sourceRect->right - sourceRect->left;
 	height = sourceRect->bottom - sourceRect->top;
@@ -462,7 +462,7 @@ void Sound_PlaySFxHandle(Handle sound)
 
 void CopyFirstName(Str31 source, Str31 dest)
 {
-	unsigned char		*p1 = &source[1],
+	char				*p1 = &source[1], // Pomme: Str31 is char[] (was unsigned char*)
 						*p2 = &dest[1];
 	
 	dest[0] = 0;

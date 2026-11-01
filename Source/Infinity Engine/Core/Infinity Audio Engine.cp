@@ -511,7 +511,7 @@ static pascal void AudioCallBack(SndChannelPtr channel, SndCommand* command)
 OSErr InfinityAudio_Init(MatrixPtr matrix)
 {
 	SndCommand			theCommand;
-	UniversalProcPtr	routine = NewSndCallBackUPP(AudioCallBack);
+	SndCallbackUPP	routine = NewSndCallBackUPP(AudioCallBack);
 	OSErr				theError;
 	SoundComponentData	outputFormat;
 	

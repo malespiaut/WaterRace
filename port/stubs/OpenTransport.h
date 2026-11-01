@@ -85,7 +85,7 @@ enum {
 	T_CURRENT = 1,
 	T_SUCCESS,
 	T_READONLY,
-	T_DATA,
+	T_DATA = 0x0100,	// was 4, which duplicated kOTProviderWillClose in a switch; value unchecked
 	T_DISCONNECT
 };
 

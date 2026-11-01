@@ -177,7 +177,7 @@ OSErr Preference_Read()
 	goto New;
 	SetFPos(fileID, 1, 0);
 	bytesNumber = sizeof(Preferences);
-	theError = FSRead(fileID, &bytesNumber, &thePrefs);
+	theError = FSRead(fileID, &bytesNumber, (Ptr) &thePrefs);
 	FSClose(fileID);
 	
 	if(thePrefs.version != kPref_Version)
@@ -395,7 +395,7 @@ void Preference_Write()
 	
 	SetFPos(fileID, 1, 0);
 	bytesNumber = sizeof(Preferences);
-	theError = FSWrite(fileID, &bytesNumber, &thePrefs);
+	theError = FSWrite(fileID, &bytesNumber, (Ptr) &thePrefs);
 	FSClose(fileID);
 }
 

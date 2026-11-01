@@ -21,7 +21,7 @@
 
 #include			<Rave.h>
 #include			<PictUtils.h>
-#include			<QuickTimeComponents.h>
+// QuickTime importer declarations come from port/stubs/stub_infinity.h (editor-only path)
 
 #include			"Infinity Structures.h"
 #include			"Infinity Error Codes.h"
@@ -120,7 +120,7 @@ static OSErr ExtractAlphaLayer(PicHandle image, Handle* alphaLayer)
 	//Extract alpha layer
 	destPixel = (unsigned char*) **alphaLayer;
 	sourceRowBytes = (**pictPix).rowBytes & 0x3FFF;
-	sourceBaseAddress = (**pictPix).baseAddr;
+	sourceBaseAddress = GetPixBaseAddr(pictPix);	// Pomme has no PixMap.baseAddr
 	for(i = 0; i < pictRect.bottom; ++i) {
 		sourcePixel = (unsigned char*) sourceBaseAddress;
 		for(j = 0; j < pictRect.right; ++j) {
@@ -616,7 +616,7 @@ static OSErr Texture_CreateUncompressedPICT(CompressedTexturePtr texturePtr, Pic
 		height = texturePtr->height;
 		
 		destRowBytes = (**pictPix).rowBytes & 0x3FFF;
-		destBaseAddress = (**pictPix).baseAddr;
+		destBaseAddress = GetPixBaseAddr(pictPix);	// Pomme has no PixMap.baseAddr
 		for(i = 0; i < height; ++i) {
 			pixel8 = (unsigned char*) destBaseAddress;
 			for(j = 0; j < width; ++j) {

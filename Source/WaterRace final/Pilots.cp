@@ -40,7 +40,7 @@ inline long GetFileHardID(FSSpec* file)
 	CInfoPBRec			info;
 	
 	info.hFileInfo.ioCompletion = nil;
-	info.hFileInfo.ioNamePtr = file->name;
+	info.hFileInfo.ioNamePtr = file->cName; // Pomme: FSSpec.name is cName
 	info.hFileInfo.ioVRefNum = file->vRefNum;
 	info.hFileInfo.ioFDirIndex = 0;
 	info.hFileInfo.ioDirID = file->parID;
@@ -123,7 +123,7 @@ OSErr Pilot_Save(PilotPtr pilot)
 	Boolean		newFile = false;
 #endif
 	
-	BlockMove(pilot->name, destFile.name, sizeof(Str31));
+	BlockMove(pilot->name, destFile.cName, sizeof(Str31)); // Pomme: FSSpec.name is cName (C string); Pascal-to-C conversion for P1
 	
 	theError = FSpOpenDF(&destFile, fsRdWrPerm, &fileID);
 	if(theError) {
@@ -155,7 +155,7 @@ OSErr Pilot_Save(PilotPtr pilot)
 	else
 #endif
 	
-	theError = FSWrite(fileID, &bytesNumber, pilot);
+	theError = FSWrite(fileID, &bytesNumber, (Ptr) pilot);
 	FSClose(fileID);
 	
 	return theError;
@@ -168,13 +168,13 @@ OSErr Pilot_Load(Str63 name, PilotPtr pilot)
 	FSSpec		destFile = pilotsFolder;
 	long		bytesNumber;
 	
-	BlockMove(name, destFile.name, sizeof(Str63));
+	BlockMove(name, destFile.cName, sizeof(Str63));
 	theError = FSpOpenDF(&destFile, fsRdPerm, &fileID);
 	if(theError)
 	return theError;
 	SetFPos(fileID, fsFromStart, 0);
 	bytesNumber = sizeof(Pilot);
-	theError = FSRead(fileID, &bytesNumber, pilot);
+	theError = FSRead(fileID, &bytesNumber, (Ptr) pilot);
 	FSClose(fileID);
 	
 	if(pilot->version != kPilot_Version)
@@ -198,8 +198,8 @@ OSErr Pilot_Delete(Str63 name)
 	FSSpec		sourceFile = pilotsFolder,
 				destFile;
 	
-	BlockMove(name, sourceFile.name, sizeof(Str63));
-	destFile.name[0] = 0;
+	BlockMove(name, sourceFile.cName, sizeof(Str63));
+	destFile.cName[0] = 0;
 	theError = FindFolder(pilotsFolder.vRefNum, kTrashFolderType, kCreateFolder, &destFile.vRefNum, &destFile.parID);
 	if(theError)
 	return theError;
@@ -218,8 +218,8 @@ OSErr Pilot_Delete(Str63 name)
 	long		bytesNumber;
 #endif
 		
-	BlockMove(name, sourceFile.name, sizeof(Str63));
-	BlockMove(name, destFile.name, sizeof(Str63));
+	BlockMove(name, sourceFile.cName, sizeof(Str63));
+	BlockMove(name, destFile.cName, sizeof(Str63));
 	
 	theError = FindFolder(pilotsFolder.vRefNum, kTrashFolderType, kCreateFolder, &destFile.vRefNum, &destFile.parID);
 	if(theError)
@@ -261,7 +261,7 @@ OSErr Pilot_Delete(Str63 name)
 {
 	FSSpec		destFile = pilotsFolder;
 	
-	BlockMove(name, destFile.name, sizeof(Str63));
+	BlockMove(name, destFile.cName, sizeof(Str63));
 	
 	return FSpDelete(&destFile);
 }

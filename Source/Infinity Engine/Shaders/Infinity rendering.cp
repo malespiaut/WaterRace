@@ -92,7 +92,7 @@ static void Buffer_InitializeMethod_BufferCopy(const TQADrawContext* drawContext
 	//Set up pointers
 	thePixMapPtr = *initializePixMapHandle;
 	sourceRowBytes = thePixMapPtr->rowBytes & 0x3FFF;
-	sourceBaseAddress = thePixMapPtr->baseAddr;
+	sourceBaseAddress = GetPixBaseAddr(initializePixMapHandle);	// Pomme has no PixMap.baseAddr
 	
 	if(buffer->deviceType != kQADeviceMemory)
 	return;

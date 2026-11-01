@@ -92,7 +92,7 @@ OSStatus	ISpSuspend(void);
 OSStatus	ISpResume(void);
 OSStatus	ISpStop(void);
 OSStatus	ISpConfigure(ISpEventProcPtr eventProc);
-UInt32		ISpGetVersion(void);
+NumVersion	ISpGetVersion(void);
 OSStatus	ISpInit(unsigned long needCount, ISpNeed* needs, ISpElementReference* elements, OSType creator, OSType version, unsigned long flags, short setListResID, unsigned long reserved);
 
 OSStatus	ISpDevices_ExtractByClass(unsigned long deviceClass, unsigned long maxDevices, UInt32* count, ISpDeviceReference* devices);
