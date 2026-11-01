@@ -23,6 +23,12 @@
 
 //ROUTINES:
 
+void CopyPascalToCName(ConstStr255Param pstr, char* cName)
+{
+	BlockMove(&pstr[1], cName, pstr[0]);
+	cName[pstr[0]] = 0;
+}
+
 OSErr ScanForFolder(short volumeID, long parentFolderID, Str63 folderName, long* folderID)
 {
 	short			idx;

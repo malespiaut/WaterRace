@@ -19,6 +19,8 @@
  *****************************************************************************/
 
 
+#include			<cstring>
+
 #include			"WaterRace.h"
 #include			"Strings.h"
 #include			"Game.h"
@@ -60,20 +62,20 @@ static Handle		sfxSounds[kNbSFX];
 
 #if __USE_AUDIO_CD_TRACKS__
 static Str31		audioCDTranslationTable[] = {
-						"\p<data>",
-						"\pWaterRock'in Race",
-						"\pWang the One",
-						"\pCote D'Azur",
-						"\pVenezia",
-						"\pNY'Masta' Race",
-						"\pScottix",
-						"\pCowboy",
-						"\pArmy",
-						"\pRastaTouch",
-						"\pRussian",
-						"\pWaterfunk'83",
-						"\pFeel da Powa'Race",
-						"\p"
+						"\006<data>",
+						"\021WaterRock'in Race",
+						"\014Wang the One",
+						"\013Cote D'Azur",
+						"\007Venezia",
+						"\016NY'Masta' Race",
+						"\007Scottix",
+						"\006Cowboy",
+						"\004Army",
+						"\012RastaTouch",
+						"\007Russian",
+						"\014Waterfunk'83",
+						"\021Feel da Powa'Race",
+						"\000"
 					};
 #endif
 
@@ -282,7 +284,7 @@ OSErr Take_ScreenShot()
 	Rect					copyRect,
 							finalRect;
 	PicHandle				pic;
-	FSSpec					file = {0, 0, kString_Misc_ScreenshotFileName};
+	FSSpec					file = {0, 0, ""};
 	Str31					timeStr;
 	RGBColor				white = {0xFFFF, 0xFFFF, 0xFFFF};
 	
@@ -308,8 +310,8 @@ OSErr Take_ScreenShot()
 	return kError_CantCaptureVRAM;
 	
 	NumToString(TickCount() & 0xFFFF, timeStr);
-	BlockMove(&timeStr[1], &file.cName[file.cName[0] + 1], timeStr[0]); // Pomme: FSSpec.name is cName (C string); Pascal-to-C conversion for P1
-	file.cName[0] += timeStr[0];
+	CopyPascalToCName(kString_Misc_ScreenshotFileName, file.cName);
+	strncat(file.cName, (char*) &timeStr[1], timeStr[0]);
 #if __MOVIE__
 	extern FSSpec			destFolder;
 	

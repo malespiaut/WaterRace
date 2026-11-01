@@ -10,7 +10,7 @@ xargs nm -u < "$TMP/objs.txt" 2>/dev/null | awk 'NF==2 {print $2}' | sort -u > "
 xargs nm --defined-only < "$TMP/objs.txt" 2>/dev/null | awk 'NF==3 {print $3}' | sort -u > "$TMP/defined.txt"
 nm --defined-only "$ROOT"/../*.a "$BUILD"/Pomme/*.a "$BUILD"/Pomme/*.so 2>/dev/null | awk 'NF==3 {print $3}' | sort -u >> "$TMP/defined.txt"
 for lib in /usr/lib/libc.so.6 /usr/lib/libm.so.6 /usr/lib/libstdc++.so.6 /usr/lib/libgcc_s.so.1; do
-  [ -e "$lib" ] && nm -D --defined-only "$lib" | awk 'NF==3 {print $3}'
+  [ -e "$lib" ] && nm -D --defined-only "$lib" | awk 'NF==3 {sub(/@.*/, "", $3); print $3}'
 done | sort -u >> "$TMP/defined.txt"
 sort -u "$TMP/defined.txt" -o "$TMP/defined.txt"
 comm -23 "$TMP/undef.txt" "$TMP/defined.txt" | grep -v '^_GLOBAL_\|^__' > "$TMP/todo.txt"
