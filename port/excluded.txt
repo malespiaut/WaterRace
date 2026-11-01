@@ -1,0 +1,5 @@
+# Source files left out of the P0 build (PORTING.md §3, §6.2). Paths relative to Source/.
+# Navigation Services is replaced by a fixed replay folder (§6.2).
+Common code/Interface/Navigation Services.cp
+# Editor-only; the game build leaves it out (§3, §6.8).
+Infinity Engine/MetaFile/MetaFile Write.cp

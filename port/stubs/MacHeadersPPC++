@@ -1,0 +1,11 @@
+// P0 stub for the original CodeWarrior prefix header. Pulls in Pomme and every
+// port stub family. Each family lives in its own header so agents can work in parallel.
+#pragma once
+#include "Pomme.h"
+#include "stub_quickdraw.h"
+#include "stub_toolbox.h"
+#include "stub_system.h"
+#include "stub_external.h"
+
+// Pomme exposes GetIndString as GetIndStringC (same arguments, Str255 out).
+#define GetIndString(s, list, index) GetIndStringC((s), (list), (index))
