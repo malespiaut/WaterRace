@@ -131,10 +131,10 @@ inline void Draw_TextLine_Clipped(long textWidth, unsigned short color, PixMapPt
 						v,
 						size;
 						
-	srcRowBytes = (**(fontGWorld->portPixMap)).rowBytes & 0x3FFF;
-	srcAddress = (**(fontGWorld->portPixMap)).baseAddr + srcRowBytes + 1;
+	srcRowBytes = (**(GetGWorldPixMap(fontGWorld))).rowBytes & 0x3FFF;
+	srcAddress = GetPixBaseAddr(GetGWorldPixMap(fontGWorld)) + srcRowBytes + 1;
 	destRowBytes = thePixMapPtr->rowBytes & 0x3FFF;
-	destAddress = thePixMapPtr->baseAddr + destRowBytes * destPoint.v + destPoint.h * 2;
+	destAddress = GetPixBaseAddr(&thePixMapPtr) + destRowBytes * destPoint.v + destPoint.h * 2;
 	for(v = 0; v < maxHeight; ++v) {
 		//Do we need to clip?
 		if(destPoint.v + v < localTopClip) {
@@ -181,10 +181,10 @@ inline void Draw_TextLine_Clipped_WithFade(long textWidth, unsigned short color,
 						v,
 						size;
 						
-	srcRowBytes = (**(fontGWorld->portPixMap)).rowBytes & 0x3FFF;
-	srcAddress = (**(fontGWorld->portPixMap)).baseAddr + srcRowBytes + 1;
+	srcRowBytes = (**(GetGWorldPixMap(fontGWorld))).rowBytes & 0x3FFF;
+	srcAddress = GetPixBaseAddr(GetGWorldPixMap(fontGWorld)) + srcRowBytes + 1;
 	destRowBytes = thePixMapPtr->rowBytes & 0x3FFF;
-	destAddress = thePixMapPtr->baseAddr + destRowBytes * destPoint.v + destPoint.h * 2;
+	destAddress = GetPixBaseAddr(&thePixMapPtr) + destRowBytes * destPoint.v + destPoint.h * 2;
 	for(v = 0; v < maxHeight; ++v) {
 		//Do we need to clip?
 		if(destPoint.v + v < localTopClip) {

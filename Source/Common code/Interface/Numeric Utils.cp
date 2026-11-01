@@ -283,32 +283,32 @@ long Text2Time(unsigned char* buffer, long size)
 //High level
 void FloatToString(float num, Str31 string)
 {
-	string[0] = Float2Text(num, &string[1], decimalChar);
+	string[0] = Float2Text(num, (unsigned char*) &string[1], decimalChar);
 }
 
 void StringToFloat(Str31 string, float* num)
 {
-	*num = Text2Float(&string[1], string[0], decimalChar);
+	*num = Text2Float((unsigned char*) &string[1], string[0], decimalChar);
 }
 
 void StringToInteger(Str31 string, long* num)
 {
-	*num = Text2Integer(&string[1], string[0]);
+	*num = Text2Integer((unsigned char*) &string[1], string[0]);
 }
 
 void IntegerToString(Str31 string, long num)
 {
-	string[0] = Integer2Text(&string[1], num);
+	string[0] = Integer2Text((unsigned char*) &string[1], num);
 }
 
 void TimeToString(long time, Str31 string)
 {
-	string[0] = Time2Text(&string[1], time);
+	string[0] = Time2Text((unsigned char*) &string[1], time);
 }
 
 void StringToTime(Str31 string, long* time)
 {
-	*time = Text2Time(&string[1], string[0]);
+	*time = Text2Time((unsigned char*) &string[1], string[0]);
 }
 
 void IDToString(OSType id, Str31 string)

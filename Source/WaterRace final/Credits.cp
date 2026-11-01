@@ -131,7 +131,7 @@ static OSErr Credits_Start()
 	text = Get1Resource('TEXT', kCreditsTextID);
 	if(text == nil)
 	return ResError();
-	GetResInfo(text, &resID, (unsigned long*) &i, name);
+	GetResInfo(text, &resID, (ResType*) &i, name); // ResType is unsigned int in Pomme
 	name[0] = 0;
 	while(name[name[0] + 1] != ' ')
 	++name[0];

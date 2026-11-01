@@ -151,7 +151,7 @@ enum {
 
 //STRUCTURES:
 
-typedef struct Pilot Pilot;
+typedef struct Pilot_Definition Pilot;
 typedef Pilot* PilotPtr;
 
 typedef struct ReplayEvent
@@ -396,12 +396,12 @@ extern Boolean					run,
 
 #define	Digit2Char(d) ('0' + (d))
 
-inline void FastNumToString1(long num, unsigned char* text)
+inline void FastNumToString1(long num, char* text) // char: Pomme's Str255/Str31 are char arrays
 {
 	*text = Digit2Char(num);
 }
 
-inline void FastNumToString2(long num, unsigned char* text)
+inline void FastNumToString2(long num, char* text) // char: Pomme's Str255/Str31 are char arrays
 {
 	if(num > 9) {
 		*text++ = Digit2Char(num / 10);
@@ -413,7 +413,7 @@ inline void FastNumToString2(long num, unsigned char* text)
 	}
 }
 
-inline void FastNumToString3(long num, unsigned char* text)
+inline void FastNumToString3(long num, char* text) // char: Pomme's Str255/Str31 are char arrays
 {
 	if(num > 99) {
 		*text++ = Digit2Char(num / 100);
@@ -433,7 +433,7 @@ inline void FastNumToString3(long num, unsigned char* text)
 	}
 }
 
-inline unsigned char FastNumToString4(long num, unsigned char* text)
+inline unsigned char FastNumToString4(long num, char* text) // char: Pomme's Str255/Str31 are char arrays
 {
 	if(num > 999) {
 		*text++ = Digit2Char(num / 1000);

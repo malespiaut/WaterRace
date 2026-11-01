@@ -314,7 +314,7 @@ OSErr QDPlayer_Start(FSSpec* fileSpec)
 	SoundComponentData		inputFormat,
 							outputFormat;
 	SndCommand				theCommand;
-	UniversalProcPtr		routine = NewSndCallBackUPP(AudioCallBack);
+	SndCallbackUPP		routine = NewSndCallBackUPP((SndCallBackProcPtr) AudioCallBack);	// Mac UPP macros cast the routine; the callback ignores its SndCommand
 	
 	if(QDChannel != nil)
 	QDPlayer_Stop();
@@ -415,7 +415,7 @@ OSErr QDPlayer_Start(FSSpec* fileSpec)
 	//Setup deferred task params
 	dtask.qType = dtQType;
 	dtask.dtFlags = 0;
-	dtask.dtAddr = NewDeferredTaskProc(AudioFillBuffer);
+	dtask.dtAddr = NewDeferredTaskProc((DeferredTaskProcPtr) AudioFillBuffer);
 	dtask.dtReserved = 0;
 	
 	//Fill buffer and set it as buffer to play

@@ -27,7 +27,7 @@
 
 //MACROS:
 
-#define	GWBitMapPtr(w) &(((GrafPtr)(w))->portBits)
+#define	GWBitMapPtr(w) GetPortBitMapForCopyBits((CGrafPtr)(w))	// Pomme has no portBits field
 
 //ROUTINES:
 
@@ -50,20 +50,20 @@ PicHandle Capture_VRAM(GDHandle device, Rect* copyRect, Rect* finalRect)
 	GetGWorld(&oldGWorld, &oldGDHandle);
 	tempRect = *copyRect;
 	OffsetRect(&tempRect, -tempRect.left, -tempRect.top);
-	sourcePixMap = *((**device).gdPMap);
+	sourcePixMap = *((**(GDeviceHandle)device).gdPMap);
 	if(NewGWorld(&tempGWorld, sourcePixMap->pixelSize, &tempRect, NULL, NULL, useTempMem))
 	return nil;
 	SetGWorld(tempGWorld, nil);
 	LockPixels(GetGWorldPixMap(tempGWorld));
 	BackColor(whiteColor);
 	ForeColor(blackColor);
-	destPixMap = *(tempGWorld->portPixMap);
+	destPixMap = *GetGWorldPixMap(tempGWorld);
 	
 	//Copy VRAM data
 	sourceRowBytes = sourcePixMap->rowBytes & 0x3FFF;
 	destRowBytes = destPixMap->rowBytes & 0x3FFF;
-	sourceBaseAddress = sourcePixMap->baseAddr + copyRect->top * sourceRowBytes + copyRect->left * sourcePixMap->pixelSize / 8;
-	destBaseAddress = destPixMap->baseAddr;
+	sourceBaseAddress = GetPixBaseAddr((**(GDeviceHandle)device).gdPMap) + copyRect->top * sourceRowBytes + copyRect->left * sourcePixMap->pixelSize / 8;
+	destBaseAddress = GetPixBaseAddr(GetGWorldPixMap(tempGWorld));
 	height = copyRect->bottom - copyRect->top;
 	do {
 		BlockMove(sourceBaseAddress, destBaseAddress, (copyRect->right - copyRect->left) * sourcePixMap->pixelSize / 8);
@@ -122,7 +122,7 @@ OSErr Capture_WritePICTFile(PicHandle pic, FSSpec* destFile)
 	SetFPos(destFileID, fsFromStart, kPICTFileOffset);
 	bytes = GetHandleSize((Handle) pic);
 	HLock((Handle) pic);
-	FSWrite(destFileID, &bytes, *pic);
+	FSWrite(destFileID, &bytes, (Ptr) *pic);	// Pomme keeps no PICT bytes; this writes the Picture record
 	HUnlock((Handle) pic);
 	
 	FSClose(destFileID);

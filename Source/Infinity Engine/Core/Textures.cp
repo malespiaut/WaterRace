@@ -134,7 +134,7 @@ OSErr Texture_Decompress(CompressedTexturePtr texturePtr, PixMapHandle destPixMa
 			GetGWorld(&savePort, &saveDevice);
 			SetGWorld(_buffer32, NULL);
 			DrawPicture(texturePtr->image, destRect);
-			CopyBits(GWBitMapPtr(_buffer32), (BitMap*) *destPixMap, destRect, destRect, srcCopy, nil);
+			CopyBits(GWBitMapPtr(_buffer32), *destPixMap, destRect, destRect, srcCopy, nil);
 			SetGWorld(savePort, saveDevice);
 #else
 			GWorldPtr				pictWorld = NULL;
@@ -153,7 +153,7 @@ OSErr Texture_Decompress(CompressedTexturePtr texturePtr, PixMapHandle destPixMa
 			BackColor(whiteColor);
 			ForeColor(blackColor);
 			DrawPicture(texturePtr->image, destRect);
-			CopyBits(GWBitMapPtr(pictWorld), (BitMap*) *destPixMap, destRect, destRect, srcCopy, nil);
+			CopyBits(GWBitMapPtr(pictWorld), *destPixMap, destRect, destRect, srcCopy, nil);
 			SetGWorld(savePort, saveDevice);
 			DisposeGWorld(pictWorld);
 #endif
@@ -172,7 +172,7 @@ OSErr Texture_Decompress(CompressedTexturePtr texturePtr, PixMapHandle destPixMa
 		destRowBytes = (**destPixMap).rowBytes & 0x3FFF;
 		
 		if(texturePtr->alphaDepth == kAlpha_1Bit) {
-			destBaseAddress = (**destPixMap).baseAddr + destRect->top * destRowBytes + destRect->left * 2;
+			destBaseAddress = GetPixBaseAddr(destPixMap) + destRect->top * destRowBytes + destRect->left * 2;
 		
 			for(i = 0; i < height; ++i) {
 				pixel16 = (unsigned short*) destBaseAddress;
@@ -185,7 +185,7 @@ OSErr Texture_Decompress(CompressedTexturePtr texturePtr, PixMapHandle destPixMa
 			}
 		}
 		else if(texturePtr->alphaDepth == kAlpha_8Bits) {
-			destBaseAddress = (**destPixMap).baseAddr + destRect->top * destRowBytes + destRect->left * 4;
+			destBaseAddress = GetPixBaseAddr(destPixMap) + destRect->top * destRowBytes + destRect->left * 4;
 		
 			for(i = 0; i < height; ++i) {
 				pixel8 = (unsigned char*) destBaseAddress;

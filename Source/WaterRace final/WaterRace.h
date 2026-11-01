@@ -119,8 +119,8 @@ typedef ExtendedShip_Definition* ExtendedShipPtr;
 
 //MACROS:
 
-#define GetWindowPixMapPtr(w) *(((CGrafPtr)(w))->portPixMap)
-#define	GWBitMapPtr(w) &(((GrafPtr)(w))->portBits)
+#define GetWindowPixMapPtr(w) *GetGWorldPixMap((CGrafPtr)(w)) // Pomme has no portPixMap field (as Textures.h)
+#define	GWBitMapPtr(w) GetPortBitMapForCopyBits((CGrafPtr)(w)) // Pomme has no portBits field (as Textures.h)
 
 //VARIABLES:
 

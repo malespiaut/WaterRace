@@ -1,0 +1,3 @@
+# Files built with -fpermissive (PORTING.md §6.5 debt). shortcut: Str255 is char in Pomme but unsigned char in these call sites; pointer conversions only. Fix by typing Str255 consistently or casting, when upgrading to P5.
+WaterRace final/Drawing.cp
+WaterRace final/Drivers Camera.cp

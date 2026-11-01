@@ -35,7 +35,7 @@ OSErr Convert_Sound(Handle theSound, Boolean correctLoop)
 	
 	//Gather sound info
 	if(correctLoop) {
-		theError = ParseSndHeader((SndListHandle) theSound, &inputSndInfo, &numFrames, &dataOffset);
+		theError = ParseSndHeader((SndListHandle) theSound, &inputSndInfo, &numFrames, (long*) &dataOffset);
 		if(theError)
 		correctLoop = false;
 	}

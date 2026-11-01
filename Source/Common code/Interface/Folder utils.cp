@@ -63,21 +63,21 @@ OSErr ScanForFolderAlias(FSSpec* folder)
 	destFolder.vRefNum = folder->vRefNum;
 	destFolder.parID = folder->parID;
 	fpb->ioVRefNum = folder->vRefNum;
-	fpb->ioNamePtr = destFolder.name;
+	fpb->ioNamePtr = destFolder.cName;
 	for(idx = 1; true; ++idx) {
 		fpb->ioDirID = folder->parID;
 		fpb->ioFDirIndex = idx;
 		if(PBGetCatInfo(&cipbr, false))
 		break;
 		
-		if(EqualString(destFolder.name, folder->name, false, false)) {
+		if(EqualString(destFolder.cName, folder->cName, false, false)) {
 			theError = ResolveAliasFile(&destFolder, true, &targetIsFolder, &wasAliased);
 			if(theError)
 			return theError;
 		
 			if(targetIsFolder) {
 				fpb2->ioVRefNum = destFolder.vRefNum;
-				fpb2->ioNamePtr = destFolder.name;
+				fpb2->ioNamePtr = destFolder.cName;
 				fpb2->ioDirID = destFolder.parID;
 				fpb2->ioFDirIndex = 0;
 				theError = PBGetCatInfo(&cipbr2, false);

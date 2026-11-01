@@ -141,9 +141,9 @@ static pascal ControlPartCode ColorBox_HitProc(ControlHandle theControl, Point s
 
 void ColorBox_StartUp(DialogPtr dialog, short num, RGBColor* color)
 {
-	UniversalProcPtr	ColorBoxDrawRoutine = NewControlUserPaneDrawProc(ColorBox_DrawProc),
-						ColorBoxHitRoutine = NewControlUserPaneHitTestProc(ColorBox_HitProc),
-						ColorBoxTrackRoutine = NewControlUserPaneTrackingProc(ColorBox_TrackProc);
+	ControlUserPaneDrawUPP	ColorBoxDrawRoutine = NewControlUserPaneDrawProc(ColorBox_DrawProc);
+	ControlUserPaneHitTestUPP	ColorBoxHitRoutine = NewControlUserPaneHitTestProc(ColorBox_HitProc);
+	ControlUserPaneTrackingUPP	ColorBoxTrackRoutine = NewControlUserPaneTrackingProc(ColorBox_TrackProc);
 	ControlHandle		box;
 	
 	GetDialogItemAsControl(dialog, num, &box);
@@ -206,7 +206,7 @@ static pascal void PictBox_DrawClipProc(ControlHandle theControl, short thePart)
 
 void PictBox_Clip_StartUp(DialogPtr dialog, short num, PicHandle picture)
 {
-	UniversalProcPtr	PictBoxDrawRoutine = NewControlUserPaneDrawProc(PictBox_DrawClipProc);
+	ControlUserPaneDrawUPP	PictBoxDrawRoutine = NewControlUserPaneDrawProc(PictBox_DrawClipProc);
 	ControlHandle		box;
 	Rect*				destRect;
 	short				width,
@@ -269,7 +269,7 @@ static pascal void PictBox_DrawSchrinkProc(ControlHandle theControl, short thePa
 
 void PictBox_Schrink_StartUp(DialogPtr dialog, short num, PicHandle picture)
 {
-	UniversalProcPtr	PictBoxDrawRoutine = NewControlUserPaneDrawProc(PictBox_DrawSchrinkProc);
+	ControlUserPaneDrawUPP	PictBoxDrawRoutine = NewControlUserPaneDrawProc(PictBox_DrawSchrinkProc);
 	ControlHandle		box;
 	float				xRatio,
 						yRatio;
@@ -433,9 +433,9 @@ static pascal ControlPartCode PictBox_HitProc(ControlHandle theControl, Point st
 
 void PictBox_Interactive_StartUp(DialogPtr dialog, short num, PicHandle picture)
 {
-	UniversalProcPtr	PictBoxDrawRoutine = NewControlUserPaneDrawProc(PictBox_DrawInteractiveProc),
-						PictBoxHitRoutine = NewControlUserPaneHitTestProc(PictBox_HitProc),
-						PictBoxTrackRoutine = NewControlUserPaneTrackingProc(PictBox_TrackProc);
+	ControlUserPaneDrawUPP	PictBoxDrawRoutine = NewControlUserPaneDrawProc(PictBox_DrawInteractiveProc);
+	ControlUserPaneHitTestUPP	PictBoxHitRoutine = NewControlUserPaneHitTestProc(PictBox_HitProc);
+	ControlUserPaneTrackingUPP	PictBoxTrackRoutine = NewControlUserPaneTrackingProc(PictBox_TrackProc);
 	ControlHandle		box;
 	Rect*				destRect;
 	short				width,
@@ -537,7 +537,7 @@ static pascal void TextBox_DrawProc(ControlHandle theControl, short thePart)
 
 void TextBox_StartUp(DialogPtr dialog, short num, Ptr text)
 {
-	UniversalProcPtr	TextBoxDrawRoutine = NewControlUserPaneDrawProc(TextBox_DrawProc);
+	ControlUserPaneDrawUPP	TextBoxDrawRoutine = NewControlUserPaneDrawProc(TextBox_DrawProc);
 	ControlHandle		box;
 	
 	GetDialogItemAsControl(dialog, num, &box);

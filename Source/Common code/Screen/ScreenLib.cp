@@ -676,8 +676,8 @@ DisplayIDType SL_PickUpScreen(Str255 message)
 	theGDevice = DMGetFirstScreenDevice(true);
 	while(theGDevice) {
 		DMGetDisplayIDByGDevice(theGDevice, &desktop.deviceIDList[desktop.deviceIDCount], true); //On error return main screen
-		desktop.deviceRectList[desktop.deviceIDCount] = (**theGDevice).gdRect;
-		UnionRect(&(**theGDevice).gdRect, &desktop.desktopRect, &desktop.desktopRect);
+		desktop.deviceRectList[desktop.deviceIDCount] = (**(GDeviceHandle)theGDevice).gdRect;
+		UnionRect(&(**(GDeviceHandle)theGDevice).gdRect, &desktop.desktopRect, &desktop.desktopRect);
 		
 		if(theGDevice == GetMainDevice())
 		desktop.mainDevice = desktop.deviceIDCount;
@@ -693,8 +693,8 @@ DisplayIDType SL_PickUpScreen(Str255 message)
 	{
 		DialogPtr			theDialog;
 		GrafPtr				savePort;
-		UniversalProcPtr	DesktopBoxDrawRoutine = NewControlUserPaneDrawProc(DesktopBox_DrawProc),
-							DesktopBoxHitRoutine = NewControlUserPaneHitTestProc(DesktopBox_HitProc);
+		ControlUserPaneDrawUPP	DesktopBoxDrawRoutine = NewControlUserPaneDrawProc(DesktopBox_DrawProc);
+		ControlUserPaneHitTestUPP	DesktopBoxHitRoutine = NewControlUserPaneHitTestProc(DesktopBox_HitProc);
 		ControlHandle		box;
 		short				itemHit;
 		Rect				itemRect,

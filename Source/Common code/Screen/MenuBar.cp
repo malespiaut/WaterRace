@@ -106,14 +106,14 @@ static void GetMBarRgn(RgnHandle mBarRgn)
 {
 	Rect			mBarRect;
 
-	mBarRect = qd.screenBits.bounds;
+	mBarRect = GetMainGDRect();
 	mBarRect.bottom = mBarRect.top + GetMBarHeight();
 	RectRgn(mBarRgn, &mBarRect);
 }
 
 void Hide_MenuBar()
 {
-	RgnHandle		GrayRgn = LMGetGrayRgn();
+	RgnHandle		GrayRgn = (RgnHandle) LMGetGrayRgn();
 	
 	mBarHeight = GetMBarHeight();
 	mBarRgn = NewRgn();
@@ -131,7 +131,7 @@ void Hide_MenuBar()
 
 void Show_MenuBar()
 {
-	RgnHandle		GrayRgn = LMGetGrayRgn();
+	RgnHandle		GrayRgn = (RgnHandle) LMGetGrayRgn();
 	
 	LMSetMBarHeight(mBarHeight);
 	DiffRgn(GrayRgn, mBarRgn, GrayRgn);

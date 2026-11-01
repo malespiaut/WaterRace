@@ -1,0 +1,11 @@
+# Source files left out of the P0 build (PORTING.md §3, §6.2). Paths relative to Source/.
+# Navigation Services is replaced by a fixed replay folder (§6.2).
+Common code/Interface/Navigation Services.cp
+# Editor-only; the game build leaves it out (§3, §6.8).
+Infinity Engine/MetaFile/MetaFile Write.cp
+# Editor-only texture import/export (PORTING.md §7 P0); no callers outside this file.
+Infinity Engine/Utils/Texture Utils.cp
+# Hardware gamma via GDevice internals (PORTING.md §6.3 replaces it with a fade quad). Fade* symbols are link-time gaps for P3.
+WaterRace final/Local ColorGamma.cp
+# Not in the CodeWarrior project (WaterRace.µ); duplicates SL_GetMaxResolution from ScreenLib.cp.
+Common code/Screen/Screen Device.cp

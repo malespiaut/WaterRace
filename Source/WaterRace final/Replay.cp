@@ -141,14 +141,14 @@ OSErr Replay_Save(FSSpec* destFile)
 	
 	//Write replayParams
 	bytesNumber = sizeof(Replay_GameParameters);
-	theError = FSWrite(fileID, &bytesNumber, &replayParams);
+	theError = FSWrite(fileID, &bytesNumber, (Ptr) &replayParams);
 	if(theError)
 	return theError;
 	
 	//Write replay event buffers
 	for(i = 0; i < gameConfig.playerCount; ++i) {
 		bytesNumber = replayParams.eventBufferSize;
-		theError = FSWrite(fileID, &bytesNumber, shipList[i].eventBuffer);
+		theError = FSWrite(fileID, &bytesNumber, (Ptr) shipList[i].eventBuffer);
 		if(theError)
 		return theError;
 	}
@@ -174,7 +174,7 @@ OSErr Replay_SetupGame(FSSpec* file)
 	
 	//Read replayParams
 	bytesNumber = sizeof(Replay_GameParameters);
-	theError = FSRead(fileID, &bytesNumber, &replayParams);
+	theError = FSRead(fileID, &bytesNumber, (Ptr) &replayParams);
 	if(theError)
 	return theError;
 	
@@ -192,7 +192,7 @@ OSErr Replay_SetupGame(FSSpec* file)
 			return MemError();
 		}
 		bytesNumber = replayParams.eventBufferSize;
-		theError = FSRead(fileID, &bytesNumber, shipList[i].eventBuffer);
+		theError = FSRead(fileID, &bytesNumber, (Ptr) shipList[i].eventBuffer);
 		if(theError) {
 			FSClose(fileID);
 			return theError;

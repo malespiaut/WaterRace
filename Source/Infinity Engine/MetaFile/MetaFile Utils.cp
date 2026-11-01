@@ -91,7 +91,7 @@ long MetaFile_PickModelIndex(MetaFile_ReferencePtr reference, UniversalProcPtr f
 	
 	InitCursor();
 	do {
-		ModalDialog(filterProc, &itemHit);
+		ModalDialog((ModalFilterUPP) filterProc, &itemHit);
 		
 		theCell.h = 0;
 		theCell.v = 0;
@@ -151,7 +151,7 @@ long MetaFile_PickModelTextureSetIndex(MetaFile_ReferencePtr reference, OSType m
 	
 	InitCursor();
 	do {
-		ModalDialog(filterProc, &itemHit);
+		ModalDialog((ModalFilterUPP) filterProc, &itemHit);
 		
 		theCell.h = 0;
 		theCell.v = 0;

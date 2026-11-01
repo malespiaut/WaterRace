@@ -218,7 +218,7 @@ static OSErr Load_Texture(MetaFile_ReferencePtr reference, CompressedTexturePtr*
 	
 	//Read texture data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, *texture);
+	theError = FSRead(destFileID, &bytes, (Ptr) *texture);
 	if(theError)
 	return theError;
 	
@@ -237,7 +237,7 @@ static OSErr Load_Texture(MetaFile_ReferencePtr reference, CompressedTexturePtr*
 	//Read image
 	bytes = tagEntry->dataSize;
 	HLock((Handle) (*texture)->image);
-	theError = FSRead(destFileID, &bytes, *((*texture)->image));
+	theError = FSRead(destFileID, &bytes, (Ptr) *((*texture)->image));
 	HUnlock((Handle) (*texture)->image);
 	if(theError)
 	return theError;
@@ -261,7 +261,7 @@ static OSErr Load_TextureSet(MetaFile_ReferencePtr reference, TextureSetPtr* set
 	
 	//Read texture set data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, *set);
+	theError = FSRead(destFileID, &bytes, (Ptr) *set);
 	if(theError)
 	return theError;
 	
@@ -387,7 +387,7 @@ static OSErr Load_CameraPosition(MetaFile_ReferencePtr reference, CameraPosition
 	
 	//Read camera position data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, camera);
+	theError = FSRead(destFileID, &bytes, (Ptr) camera);
 	if(theError)
 	return theError;
 	
@@ -420,7 +420,7 @@ static OSErr Load_View(MetaFile_ReferencePtr reference, ViewPtr* view)
 	
 	//Read camera position data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, *view);
+	theError = FSRead(destFileID, &bytes, (Ptr) *view);
 	if(theError)
 	return theError;
 	
@@ -474,7 +474,7 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 	
 	//Read shape data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, *shape);
+	theError = FSRead(destFileID, &bytes, (Ptr) *shape);
 	if(theError)
 	return theError;
 	
@@ -495,7 +495,7 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 		
 		//Read points
 		bytes = tagEntry->dataSize;
-		theError = FSRead(destFileID, &bytes, (*shape)->pointList);
+		theError = FSRead(destFileID, &bytes, (Ptr) (*shape)->pointList);
 		if(theError)
 		return theError;
 	}
@@ -517,7 +517,7 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 		
 		//Read triangles
 		bytes = tagEntry->dataSize;
-		theError = FSRead(destFileID, &bytes, (*shape)->triangleList);
+		theError = FSRead(destFileID, &bytes, (Ptr) (*shape)->triangleList);
 		if(theError)
 		return theError;
 	}
@@ -538,7 +538,7 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 	
 		//Read normals
 		bytes = tagEntry->dataSize;
-		theError = FSRead(destFileID, &bytes, (*shape)->normalList);
+		theError = FSRead(destFileID, &bytes, (Ptr) (*shape)->normalList);
 		if(theError)
 		return theError;
 	}
@@ -586,7 +586,7 @@ static OSErr Load_Script(MetaFile_ReferencePtr reference, ScriptPtr* script)
 	
 	//Read script data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, *script);
+	theError = FSRead(destFileID, &bytes, (Ptr) *script);
 	if(theError)
 	return theError;
 	
@@ -606,7 +606,7 @@ static OSErr Load_Script(MetaFile_ReferencePtr reference, ScriptPtr* script)
 	
 		//Read animation
 		bytes = tagEntry->dataSize;
-		theError = FSRead(destFileID, &bytes, (*script)->animationList[i]);
+		theError = FSRead(destFileID, &bytes, (Ptr) (*script)->animationList[i]);
 		if(theError)
 		return theError;
 	}
@@ -628,7 +628,7 @@ static OSErr Load_Skeleton(MetaFile_ReferencePtr reference, SkeletonPtr* skeleto
 	
 	//Read skeleton data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, *skeleton);
+	theError = FSRead(destFileID, &bytes, (Ptr) *skeleton);
 	if(theError)
 	return theError;
 	
@@ -649,7 +649,7 @@ static OSErr Load_Camera(MetaFile_ReferencePtr reference, CameraPtr* camera)
 	
 	//Read camera data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, *camera);
+	theError = FSRead(destFileID, &bytes, (Ptr) *camera);
 	if(theError)
 	return theError;
 	
@@ -693,7 +693,7 @@ static OSErr Load_MegaObject(MetaFile_ReferencePtr reference, MegaObjectPtr mega
 	if(tagEntry->version == 0x0100) {
 		//OLD FORLMAT: Read megaobject data directly
 		bytes = tagEntry->dataSize;
-		theError = FSRead(destFileID, &bytes, mega);
+		theError = FSRead(destFileID, &bytes, (Ptr) mega);
 		if(theError)
 		return theError;
 		
@@ -703,7 +703,7 @@ static OSErr Load_MegaObject(MetaFile_ReferencePtr reference, MegaObjectPtr mega
 	else if(tagEntry->version == 0x0200) {
 		//NEW FORMAT: Read model 3D
 		bytes = tagEntry->dataSize;
-		theError = FSRead(destFileID, &bytes, &model);
+		theError = FSRead(destFileID, &bytes, (Ptr) &model);
 		if(theError)
 		return theError;
 		
@@ -719,7 +719,7 @@ static OSErr Load_MegaObject(MetaFile_ReferencePtr reference, MegaObjectPtr mega
 	else {
 		//NEW FORMAT: Read megaobject data directly
 		bytes = tagEntry->dataSize;
-		theError = FSRead(destFileID, &bytes, mega);
+		theError = FSRead(destFileID, &bytes, (Ptr) mega);
 		if(theError)
 		return theError;
 	}
@@ -861,7 +861,7 @@ static OSErr Load_TerrainMesh(MetaFile_ReferencePtr reference, TerrainMeshPtr* m
 	
 	//Read mesh data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, *mesh);
+	theError = FSRead(destFileID, &bytes, (Ptr) *mesh);
 	if(theError)
 	return theError;
 	
@@ -879,7 +879,7 @@ static OSErr Load_TerrainMesh(MetaFile_ReferencePtr reference, TerrainMeshPtr* m
 	
 	//Read points
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (*mesh)->pointList);
+	theError = FSRead(destFileID, &bytes, (Ptr) (*mesh)->pointList);
 	if(theError)
 	return theError;
 	
@@ -897,7 +897,7 @@ static OSErr Load_TerrainMesh(MetaFile_ReferencePtr reference, TerrainMeshPtr* m
 	
 	//Read lightning
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (*mesh)->lightningList);
+	theError = FSRead(destFileID, &bytes, (Ptr) (*mesh)->lightningList);
 	if(theError)
 	return theError;
 	
@@ -915,7 +915,7 @@ static OSErr Load_TerrainMesh(MetaFile_ReferencePtr reference, TerrainMeshPtr* m
 	
 	//Read triangles
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (*mesh)->triangleList);
+	theError = FSRead(destFileID, &bytes, (Ptr) (*mesh)->triangleList);
 	if(theError)
 	return theError;
 	
@@ -933,7 +933,7 @@ static OSErr Load_TerrainMesh(MetaFile_ReferencePtr reference, TerrainMeshPtr* m
 
 	//Read normals
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (*mesh)->normalList);
+	theError = FSRead(destFileID, &bytes, (Ptr) (*mesh)->normalList);
 	if(theError)
 	return theError;
 	
@@ -954,7 +954,7 @@ static OSErr Load_SeaMesh(MetaFile_ReferencePtr reference, SeaMeshPtr* mesh)
 	
 	//Read mesh data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, *mesh);
+	theError = FSRead(destFileID, &bytes, (Ptr) *mesh);
 	if(theError)
 	return theError;
 	
@@ -972,7 +972,7 @@ static OSErr Load_SeaMesh(MetaFile_ReferencePtr reference, SeaMeshPtr* mesh)
 	
 	//Read points
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (*mesh)->pointList);
+	theError = FSRead(destFileID, &bytes, (Ptr) (*mesh)->pointList);
 	if(theError)
 	return theError;
 	
@@ -990,7 +990,7 @@ static OSErr Load_SeaMesh(MetaFile_ReferencePtr reference, SeaMeshPtr* mesh)
 	
 	//Read lightning
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (*mesh)->lightningList);
+	theError = FSRead(destFileID, &bytes, (Ptr) (*mesh)->lightningList);
 	if(theError)
 	return theError;
 	
@@ -1008,7 +1008,7 @@ static OSErr Load_SeaMesh(MetaFile_ReferencePtr reference, SeaMeshPtr* mesh)
 	
 	//Read triangles
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (*mesh)->triangleList);
+	theError = FSRead(destFileID, &bytes, (Ptr) (*mesh)->triangleList);
 	if(theError)
 	return theError;
 	
@@ -1029,7 +1029,7 @@ static OSErr Load_AmbientSound(MetaFile_ReferencePtr reference, AmbientSoundPtr*
 	
 	//Read sound data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, *sound);
+	theError = FSRead(destFileID, &bytes, (Ptr) *sound);
 	if(theError)
 	return theError;
 	
@@ -1050,7 +1050,7 @@ static OSErr Load_ModelAnimation(MetaFile_ReferencePtr reference, ModelAnimation
 	
 	//Read path data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, *path);
+	theError = FSRead(destFileID, &bytes, (Ptr) *path);
 	if(theError)
 	return theError;
 	
@@ -1071,7 +1071,7 @@ static OSErr Load_Track(MetaFile_ReferencePtr reference, RaceTrackPtr* track)
 	
 	//Read track data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, *track);
+	theError = FSRead(destFileID, &bytes, (Ptr) *track);
 	if(theError)
 	return theError;
 	
@@ -1092,7 +1092,7 @@ static OSErr Load_Enclosure(MetaFile_ReferencePtr reference, CollisionEnclosureP
 	
 	//Read track data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, *enclosure);
+	theError = FSRead(destFileID, &bytes, (Ptr) *enclosure);
 	if(theError)
 	return theError;
 	
@@ -1113,7 +1113,7 @@ static OSErr Load_ItemList(MetaFile_ReferencePtr reference, SpecialItemReference
 	
 	//Read track data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, *itemList);
+	theError = FSRead(destFileID, &bytes, (Ptr) *itemList);
 	if(theError)
 	return theError;
 	
@@ -1131,7 +1131,7 @@ static OSErr Load_Terrain(MetaFile_ReferencePtr reference, TerrainPtr terrain, l
 	
 	//Read terrain data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, terrain);
+	theError = FSRead(destFileID, &bytes, (Ptr) terrain);
 	if(theError)
 	return theError;
 	
@@ -1306,7 +1306,7 @@ OSErr MetaFile_Read_MegaObjectNameID_ByIndex(MetaFile_ReferencePtr reference, St
 	//Read megaobject data
 	tagEntry = &reference->tagTable.tagList[reference->currentTag];
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, &tempObject);
+	theError = FSRead(destFileID, &bytes, (Ptr) &tempObject);
 	if(theError)
 	return theError;
 	
@@ -1332,7 +1332,7 @@ OSErr MetaFile_Read_TerrainNameID_ByIndex(MetaFile_ReferencePtr reference, Str63
 	//Read terrain data
 	tagEntry = &reference->tagTable.tagList[reference->currentTag];
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, &tempTerrain);
+	theError = FSRead(destFileID, &bytes, (Ptr) &tempTerrain);
 	if(theError)
 	return theError;
 	
@@ -1363,7 +1363,7 @@ OSErr MetaFile_Read_TextureSetName_ByIndex(MetaFile_ReferencePtr reference, OSTy
 	//Read texture set data
 	tagEntry = &reference->tagTable.tagList[reference->currentTag];
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, &tempSet);
+	theError = FSRead(destFileID, &bytes, (Ptr) &tempSet);
 	if(theError)
 	return theError;
 	
@@ -1393,7 +1393,7 @@ OSErr MetaFile_Read_Preview(MetaFile_ReferencePtr reference, PicHandle* previewP
 	//Read preview data
 	bytes = tagEntry->dataSize;
 	HLock((Handle) *previewPic);
-	theError = FSRead(destFileID, &bytes, **previewPic);
+	theError = FSRead(destFileID, &bytes, (Ptr) **previewPic);
 	HUnlock((Handle) *previewPic);
 	if(theError)
 	return theError;
@@ -1420,27 +1420,27 @@ OSErr MetaFile_Read_CameraLayout(MetaFile_ReferencePtr reference, CameraStatePtr
 	
 	//Read camera data
 	bytes = sizeof(CameraState);
-	theError = FSRead(destFileID, &bytes, localCamera);
+	theError = FSRead(destFileID, &bytes, (Ptr) localCamera);
 	if(theError)
 	return theError;
 	
 	bytes = sizeof(CameraState);
-	theError = FSRead(destFileID, &bytes, topCamera);
+	theError = FSRead(destFileID, &bytes, (Ptr) topCamera);
 	if(theError)
 	return theError;
 	
 	bytes = sizeof(CameraState);
-	theError = FSRead(destFileID, &bytes, frontCamera);
+	theError = FSRead(destFileID, &bytes, (Ptr) frontCamera);
 	if(theError)
 	return theError;
 	
 	bytes = sizeof(CameraState);
-	theError = FSRead(destFileID, &bytes, rightCamera);
+	theError = FSRead(destFileID, &bytes, (Ptr) rightCamera);
 	if(theError)
 	return theError;
 	
 	bytes = sizeof(CameraState);
-	theError = FSRead(destFileID, &bytes, worldState);
+	theError = FSRead(destFileID, &bytes, (Ptr) worldState);
 	if(theError)
 	return theError;
 	
@@ -1545,7 +1545,7 @@ OSErr MetaFile_Read_OpenFile(FSSpec* destFile, MetaFile_ReferencePtr* newReferen
 	
 	//Read header
 	bytes = sizeof(MetaFile_Header);
-	theError = FSRead(destFileID, &bytes, &header);
+	theError = FSRead(destFileID, &bytes, (Ptr) &header);
 	if(theError)
 	return theError;
 	
@@ -1563,7 +1563,7 @@ OSErr MetaFile_Read_OpenFile(FSSpec* destFile, MetaFile_ReferencePtr* newReferen
 	//Read tag table
 	SetFPos(destFileID, fsFromStart, header.tagTablePosition);
 	bytes = header.tagTableSize;
-	theError = FSRead(destFileID, &bytes, &reference->tagTable);
+	theError = FSRead(destFileID, &bytes, (Ptr) &reference->tagTable);
 	if(theError)
 	return theError;
 	

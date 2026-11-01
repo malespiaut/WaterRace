@@ -34,7 +34,7 @@
 
 //MACROS:
 
-#define	GWBitMapPtr(w) &(((GrafPtr)(w))->portBits)
+#define	GWBitMapPtr(w) GetPortBitMapForCopyBits((CGrafPtr)(w))	// Pomme has no portBits field
 
 //ROUTINES:
 

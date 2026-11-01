@@ -311,7 +311,7 @@ typedef struct {
 typedef SeaMesh_Definition SeaMesh;
 typedef SeaMesh_Definition* SeaMeshPtr;
 
-typedef struct {
+typedef struct TerrainMesh_Definition {
 	Str31			name;
 	OSType			id;
 	unsigned long	flags;
@@ -405,7 +405,7 @@ typedef struct {
 } CollisionEnclosure;
 typedef CollisionEnclosure* CollisionEnclosurePtr;
 
-typedef struct {
+typedef struct Terrain_Definition {
 	Str63			name;
 	OSType			id;
 	unsigned long	flags;

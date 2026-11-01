@@ -287,9 +287,9 @@ static OSErr Screen_Init()
 	
 	//Set up interface window
 	mainWin = GetNewCWindow(129, nil, (WindowPtr) -1L);
-	mainWinOffset.h = ((**mainGDHandle).gdRect.right - (**mainGDHandle).gdRect.left - kInterface_Width) / 2;
-	mainWinOffset.v = ((**mainGDHandle).gdRect.bottom - (**mainGDHandle).gdRect.top - kInterface_Height) / 2;
-	MoveWindow(mainWin, mainWinOffset.h + (**mainGDHandle).gdRect.left, mainWinOffset.v + (**mainGDHandle).gdRect.top, false);
+	mainWinOffset.h = (GetMainGDRect().right - GetMainGDRect().left - kInterface_Width) / 2;
+	mainWinOffset.v = (GetMainGDRect().bottom - GetMainGDRect().top - kInterface_Height) / 2;
+	MoveWindow(mainWin, mainWinOffset.h + GetMainGDRect().left, mainWinOffset.v + GetMainGDRect().top, false);
 	SizeWindow(mainWin, kInterface_Width, kInterface_Height, true);
 	SetPort(mainWin);
 	BackColor(whiteColor);
@@ -1062,7 +1062,7 @@ static Boolean Check_ForReplay()
 	unsigned long			startTime;
 	
 	ODOC_Handler_Routine = NewAEEventHandlerProc(ODOC_Handler);
-	startUpReplayFile.name[0] = 0;
+	startUpReplayFile.cName[0] = 0; // Pomme: FSSpec.name is cName
 	AEInstallEventHandler(kCoreEventClass, kAEOpenDocuments, ODOC_Handler_Routine, (long) &startUpReplayFile, false);
 	startTime = TickCount();
 	while(TickCount() < startTime + kAEWaitDelay)
@@ -1071,7 +1071,7 @@ static Boolean Check_ForReplay()
 		AEProcessAppleEvent(&event);
 	}
 	AERemoveEventHandler(kCoreEventClass, kAEOpenDocuments, ODOC_Handler_Routine, false);
-	if(startUpReplayFile.name[0] == 0)
+	if(startUpReplayFile.cName[0] == 0)
 	return false;
 	
 	Replay_SetupGame(&startUpReplayFile);
@@ -1108,7 +1108,7 @@ static Boolean Request_Replay()
 }
 #endif
 
-void main()
+int main() // CodeWarrior allowed void main; C++ requires int (PORTING.md 6.8)
 {
 	OSErr			theError;
 	
@@ -1265,6 +1265,7 @@ void main()
 
 	//Terminate...
 	Shut_Down();
+	return 0;
 }
 
 #if __SECURE_CRASH__
