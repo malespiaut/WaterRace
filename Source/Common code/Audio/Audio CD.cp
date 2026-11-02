@@ -26,7 +26,7 @@
 
 //CONSTANTES:
 
-#define kCDDriverName			"\p.AppleCD"
+#define kCDDriverName			"\010.AppleCD"
 #define	kIOVRefNumValue			0 //was 1
 
 //Standard Driver Calls

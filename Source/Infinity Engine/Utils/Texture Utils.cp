@@ -291,11 +291,11 @@ static OSErr Texture_New(PicHandle image, OSType name, CompressedTexturePtr* tex
 	SetControlValue(items[2 + lastAlphaSelected], true);
 	
 	if(GetHandleSize((Handle) image) < 1024)
-	BlockMove("\p< 1", sourceSize, sizeof(Str31));
+	BlockMove("\003< 1", sourceSize, sizeof(Str31));
 	else
 	NumToString(GetHandleSize((Handle) image) / 1024, sourceSize);
 	if(GetHandleSize((Handle) newImage) < 1024)
-	BlockMove("\p< 1", destSize, sizeof(Str31));
+	BlockMove("\003< 1", destSize, sizeof(Str31));
 	else
 	NumToString(GetHandleSize((Handle) newImage) / 1024, destSize);
 	NumToString((**image).picFrame.right - (**image).picFrame.left, width);
@@ -379,7 +379,7 @@ static OSErr Texture_New(PicHandle image, OSType name, CompressedTexturePtr* tex
 				theError = SCCompressPicture(ci, image, newImage);
 			}
 			if(GetHandleSize((Handle) newImage) < 1024)
-			BlockMove("\p< 1", destSize, sizeof(Str31));
+			BlockMove("\003< 1", destSize, sizeof(Str31));
 			else
 			NumToString(GetHandleSize((Handle) newImage) / 1024, destSize);
 			ParamText(sourceSize, destSize, width, height);

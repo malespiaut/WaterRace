@@ -27,11 +27,11 @@
 /*	• only strings in uppercase should be translated in uppercase	*/
 /*	• translated strings must be - if possible - same size of		*/
 /*		shorter	than the original string							*/
-/*	• If any, preserve ABSOLUTELY the "\p" at the beginning of the	*/
+/*	• If any, preserve ABSOLUTELY the "\000" at the beginning of the	*/
 /*		string														*/
 /*	• Some strings need their length computed manually.	If this is	*/
 /*		the case, replace kString_xxx_L with the length of the		*/
-/*		string ("\p" = 1 character, not 2) */
+/*		string ("\000" = 1 character, not 2) */
 /********************************************************************/
 
 
@@ -43,49 +43,49 @@
 
 #if __LANGUAGE__ == kLanguage_English
 
-#define	kString_Drop_OffLimit			"\pOFF LIMIT!"
-#define	kString_Drop_UpsideDown			"\pUPSIDE-DOWN!"
-#define	kString_Drop_UnderWater			"\pUNDER WATER!"
-#define	kString_Drop_Collision			"\pCOLLISION!"
-#define	kString_Drop_Manual				"\pPLAYER DROP!"
+#define	kString_Drop_OffLimit			"\012OFF LIMIT!"
+#define	kString_Drop_UpsideDown			"\014UPSIDE-DOWN!"
+#define	kString_Drop_UnderWater			"\014UNDER WATER!"
+#define	kString_Drop_Collision			"\012COLLISION!"
+#define	kString_Drop_Manual				"\014PLAYER DROP!"
 
-#define	kString_Network_PlayerOffLine	"\pPLAYER OFFLINE!"
-#define	kString_Network_BotLocation		"\pBotland"
-#define	kString_Network_ServerOffLine	"\pSERVER OFFLINE!"
+#define	kString_Network_PlayerOffLine	"\017PLAYER OFFLINE!"
+#define	kString_Network_BotLocation		"\007Botland"
+#define	kString_Network_ServerOffLine	"\017SERVER OFFLINE!"
 
 #if __DISPLAY_CHECK_POINT__
-#define	kString_Driver_CheckPoint		"\pCHECK POINT!"
+#define	kString_Driver_CheckPoint		"\014CHECK POINT!"
 #define	kString_Driver_CheckPoint_L		13
 #endif
 #if __DISPLAY_MISSED_CHECK_POINT__
-#define	kString_Driver_MissedCheckPoint	"\pCHECK POINT MISSED!"
+#define	kString_Driver_MissedCheckPoint	"\023CHECK POINT MISSED!"
 #define	kString_Driver_MissedCheckPoint_L	20
 #endif
-#define	kString_Driver_BestLapTime		"\pBEST LAP TIME: "
+#define	kString_Driver_BestLapTime		"\017BEST LAP TIME: "
 #define	kString_Driver_BestLapTime_L	16
-#define	kString_Driver_LapTime			"\pLAP TIME: "
+#define	kString_Driver_LapTime			"\012LAP TIME: "
 #define	kString_Driver_LapTime_L		11
-#define	kString_Driver_TimeExtended		"\pTIME EXTENDED: +"
+#define	kString_Driver_TimeExtended		"\020TIME EXTENDED: +"
 #define	kString_Driver_TimeExtended_L	17
-#define	kString_Driver_FirstPlace		"\pFIRST PLACE!"
+#define	kString_Driver_FirstPlace		"\014FIRST PLACE!"
 #define	kString_Driver_FirstPlace_L		13
 #define	kString_Driver_Finished			" HAS FINISHED!"
 #define	kString_Driver_Finished_L		14
 #if __BOTS_FINISH_RACE__
-#define	kString_Driver_LocalFinish		"\pYOU HAVE FINISHED!"
-#define	kString_Driver_LocalWon			"\pYOU ARE THE WINNER!"
+#define	kString_Driver_LocalFinish		"\022YOU HAVE FINISHED!"
+#define	kString_Driver_LocalWon			"\023YOU ARE THE WINNER!"
 #endif
 #define	kString_Driver_Ready			"READY: x"
 #define	kString_Driver_Ready_L			8
 #define	kString_Driver_Left				"LEFT: x"
 #define	kString_Driver_Left_L			7
 #if __DISPLAY_WRONG_DIRECTION__
-#define	kString_Driver_WrongDirection	"\pWRONG DIRECTION!"
+#define	kString_Driver_WrongDirection	"\020WRONG DIRECTION!"
 #define	kString_Driver_WrongDirection_L	17
 #endif
 #if __AUTOPILOT__
-#define	kString_Driver_AutoPilot		"\pAUTO PILOT!"
-#define	kString_Driver_Finish			"\pPRESS ESC TO END RACE"
+#define	kString_Driver_AutoPilot		"\013AUTO PILOT!"
+#define	kString_Driver_Finish			"\025PRESS ESC TO END RACE"
 #endif
 
 #define	kString_WhiteScreen_Escape_1	"PRESS ESC TO"
@@ -115,9 +115,9 @@
 #define	kString_WhiteScreen_AvSpeed		"AV. SPEED:"
 #define	kString_WhiteScreen_AvSpeed_L	10
 
-#define	kString_Interface_ManualResolution	"\pPress the command key during start up to show this dialog again."
-#define	kString_Interface_NA			"\pN/A"
-#define	kString_Interface_RequiredP		"\pRequired points:"
+#define	kString_Interface_ManualResolution	"\100Press the command key during start up to show this dialog again."
+#define	kString_Interface_NA			"\003N/A"
+#define	kString_Interface_RequiredP		"\020Required points:"
 #define	kString_Interface_JokerAccess	"JOKER ACCESS!"
 #define	kString_Interface_JokerAccess_L	13
 #define	kString_Interface_JokerRedo		"You can use a joker to redo\rthis race."
@@ -126,68 +126,68 @@
 #define	kString_Interface_AccessDenied_L	14
 #define	kString_Interface_JokerNeed		"You need a joker to redo\rthis race."
 #define	kString_Interface_JokerNeed_L	35
-#define	kString_Interface_RaceLocation	"\pRace location"
-#define	kString_Interface_Rank			"\pRank"
-#define	kString_Interface_Score			"\pScore"
-#define	kString_Interface_TimeLeft		"\pTime left"
-#define	kString_Interface_Level			"\pLevel "
-#define	kString_Interface_GameOver		"\pGame over"
-#define	kString_Interface_Champion		"\pChampion"
-#define	kString_Interface_Challenge		"\pChallenge"
+#define	kString_Interface_RaceLocation	"\015Race location"
+#define	kString_Interface_Rank			"\004Rank"
+#define	kString_Interface_Score			"\005Score"
+#define	kString_Interface_TimeLeft		"\011Time left"
+#define	kString_Interface_Level			"\006Level "
+#define	kString_Interface_GameOver		"\011Game over"
+#define	kString_Interface_Champion		"\010Champion"
+#define	kString_Interface_Challenge		"\011Challenge"
 
-#define	kString_Camera_Free				"\pFREE CAMERA"
-#define	kString_Camera_Follow			"\pFOLLOW CAMERA"
-#define	kString_Camera_Head				"\pHEAD CAMERA"
-#define	kString_Camera_Onboard			"\pONBOARD CAMERA"
-#define	kString_Camera_TV				"\pWATERRACE TV"
-#define	kString_Camera_Chase			"\pCHASE CAMERA"
-#define	kString_Camera_From				"\p FROM "
-#define	kString_Camera_Of				"\p OF "
-#define	kString_Camera_On				"\p ON "
-#define	kString_Camera_Replay			"\pREPLAY"
-#define	kString_Camera_Separator		"\p / "
-#define	kString_Camera_Track			"\pTRACK CAMERA"
+#define	kString_Camera_Free				"\013FREE CAMERA"
+#define	kString_Camera_Follow			"\015FOLLOW CAMERA"
+#define	kString_Camera_Head				"\013HEAD CAMERA"
+#define	kString_Camera_Onboard			"\016ONBOARD CAMERA"
+#define	kString_Camera_TV				"\014WATERRACE TV"
+#define	kString_Camera_Chase			"\014CHASE CAMERA"
+#define	kString_Camera_From				"\006 FROM "
+#define	kString_Camera_Of				"\004 OF "
+#define	kString_Camera_On				"\004 ON "
+#define	kString_Camera_Replay			"\006REPLAY"
+#define	kString_Camera_Separator		"\003 / "
+#define	kString_Camera_Track			"\014TRACK CAMERA"
 
-#define	kString_Preferences_Name		"\pMy name"
-#define	kString_Preferences_Location	"\pMy location"
-#define	kString_Preferences_Computer	"\pComputer's name"
-#define	kString_Preferences_Welcome		"\pWelcome to my game!"
+#define	kString_Preferences_Name		"\007My name"
+#define	kString_Preferences_Location	"\013My location"
+#define	kString_Preferences_Computer	"\017Computer's name"
+#define	kString_Preferences_Welcome		"\023Welcome to my game!"
 
-#define	kString_Misc_ReplayFileName		"\pRace Replay "
-#define	kString_Misc_Continue			"\pContinue"
-#define	kString_Misc_Quit				"\pQuit"
-#define	kString_Misc_ScreenshotFileName	"\pWR Screenshot "
+#define	kString_Misc_ReplayFileName		"\014Race Replay "
+#define	kString_Misc_Continue			"\010Continue"
+#define	kString_Misc_Quit				"\004Quit"
+#define	kString_Misc_ScreenshotFileName	"\016WR Screenshot "
 
-#define	kString_Network_Disconnected	"\pDisconnected from host!\rReason: "
-#define	kString_Network_Reason1			"\pIncorrect game version.\r"
-#define	kString_Network_Reason2			"\pWrong password.\r"
-#define	kString_Network_Reason3			"\pServer was shut down.\r"
-#define	kString_Network_Reason4			"\pGame has already started on server.\rTry again later.\r"
-#define	kString_Network_Reason5			"\pUnknow.\r"
-#define	kString_Network_Client1			"\pServer info received:\r    "
-#define	kString_Network_Client2			"\p\r    "
-#define	kString_Network_Client3			"\p\r    Server running "
-#define	kString_Network_Client4			"\p on "
-#define	kString_Network_Client5			"\pTerrain name: "
-#define	kString_Network_Client6			"\p\r\rSending player info...\r\r"
-#define	kString_Network_Client7			"\pWaiting for game to begin...\r\r"
-#define	kString_Network_Client8			"\pGame has started!\r"
-#define	kString_Network_Server1			"\pServer offline!\r"
-#define	kString_Network_Server2			"\pPlayer has joined: "
-#define	kString_Network_Server3			"\p from "
-#define	kString_Network_Server4			"\p was disconnected!\r"
-#define	kString_Network_Connecting1		"\pConnecting to "
-#define	kString_Network_Connecting2		"\p... (please wait - 10 seconds max delay)\r"
-#define	kString_Network_Connecting3		"\pCould not connect to host!\rReason: "
-#define	kString_Network_Connecting4		"\pServer unreachable (wrong IP address, server might be down or too many players).\r"
-#define	kString_Network_Connecting5		"\pConnection established.\r\r"
-#define	kString_Network_Connecting6		"\pWaiting for server info...\r"
-#define	kString_Network_Connecting7		"\p(Error "
-#define	kString_Network_Hosting1		"\pStarting server at "
-#define	kString_Network_Hosting2		"\pCould not start server! (Error "
-#define	kString_Network_Hosting3		"\pServer online.\r"
-#define	kString_Network_Hosting4		"\pWaiting for clients...\r\r"
-#define	kString_Network_Hosting5		"\pCannot connect local player!\r"
+#define	kString_Network_Disconnected	"\040Disconnected from host!\rReason: "
+#define	kString_Network_Reason1			"\030Incorrect game version.\r"
+#define	kString_Network_Reason2			"\020Wrong password.\r"
+#define	kString_Network_Reason3			"\026Server was shut down.\r"
+#define	kString_Network_Reason4			"\065Game has already started on server.\rTry again later.\r"
+#define	kString_Network_Reason5			"\010Unknow.\r"
+#define	kString_Network_Client1			"\032Server info received:\r    "
+#define	kString_Network_Client2			"\005\r    "
+#define	kString_Network_Client3			"\024\r    Server running "
+#define	kString_Network_Client4			"\004 on "
+#define	kString_Network_Client5			"\016Terrain name: "
+#define	kString_Network_Client6			"\032\r\rSending player info...\r\r"
+#define	kString_Network_Client7			"\036Waiting for game to begin...\r\r"
+#define	kString_Network_Client8			"\022Game has started!\r"
+#define	kString_Network_Server1			"\020Server offline!\r"
+#define	kString_Network_Server2			"\023Player has joined: "
+#define	kString_Network_Server3			"\006 from "
+#define	kString_Network_Server4			"\023 was disconnected!\r"
+#define	kString_Network_Connecting1		"\016Connecting to "
+#define	kString_Network_Connecting2		"\051... (please wait - 10 seconds max delay)\r"
+#define	kString_Network_Connecting3		"\043Could not connect to host!\rReason: "
+#define	kString_Network_Connecting4		"\121Server unreachable (wrong IP address, server might be down or too many players).\r"
+#define	kString_Network_Connecting5		"\031Connection established.\r\r"
+#define	kString_Network_Connecting6		"\033Waiting for server info...\r"
+#define	kString_Network_Connecting7		"\007(Error "
+#define	kString_Network_Hosting1		"\023Starting server at "
+#define	kString_Network_Hosting2		"\037Could not start server! (Error "
+#define	kString_Network_Hosting3		"\017Server online.\r"
+#define	kString_Network_Hosting4		"\030Waiting for clients...\r\r"
+#define	kString_Network_Hosting5		"\035Cannot connect local player!\r"
 
 
 /****************************************************************/
@@ -196,49 +196,49 @@
 
 #elif __LANGUAGE__ == kLanguage_French
 
-#define	kString_Drop_OffLimit			"\pHORS LIMITE!"
-#define	kString_Drop_UpsideDown			"\pRENVERSE!"
-#define	kString_Drop_UnderWater			"\pSOUS L'EAU!"
-#define	kString_Drop_Collision			"\pCOLLISION!"
-#define	kString_Drop_Manual				"\pRELANCE JOUEUR!"
+#define	kString_Drop_OffLimit			"\014HORS LIMITE!"
+#define	kString_Drop_UpsideDown			"\011RENVERSE!"
+#define	kString_Drop_UnderWater			"\013SOUS L'EAU!"
+#define	kString_Drop_Collision			"\012COLLISION!"
+#define	kString_Drop_Manual				"\017RELANCE JOUEUR!"
 
-#define	kString_Network_PlayerOffLine	"\pJOUEUR DECONNECTE!"
-#define	kString_Network_BotLocation		"\pBotland"
-#define	kString_Network_ServerOffLine	"\pSERVEUR DECONNECTE!"
+#define	kString_Network_PlayerOffLine	"\022JOUEUR DECONNECTE!"
+#define	kString_Network_BotLocation		"\007Botland"
+#define	kString_Network_ServerOffLine	"\023SERVEUR DECONNECTE!"
 
 #if __DISPLAY_CHECK_POINT__
-#define	kString_Driver_CheckPoint		"\pCHECK POINT!"
+#define	kString_Driver_CheckPoint		"\014CHECK POINT!"
 #define	kString_Driver_CheckPoint_L		13
 #endif
 #if __DISPLAY_MISSED_CHECK_POINT__
-#define	kString_Driver_MissedCheckPoint	"\pCHECK POINT MANQUE!"
+#define	kString_Driver_MissedCheckPoint	"\023CHECK POINT MANQUE!"
 #define	kString_Driver_MissedCheckPoint_L	20
 #endif
-#define	kString_Driver_BestLapTime		"\pMEILLEUR TEMPS: "
+#define	kString_Driver_BestLapTime		"\020MEILLEUR TEMPS: "
 #define	kString_Driver_BestLapTime_L	17
-#define	kString_Driver_LapTime			"\pTEMPS DU TOUR: "
+#define	kString_Driver_LapTime			"\017TEMPS DU TOUR: "
 #define	kString_Driver_LapTime_L		16
-#define	kString_Driver_TimeExtended		"\pPROLONGATION: +"
+#define	kString_Driver_TimeExtended		"\017PROLONGATION: +"
 #define	kString_Driver_TimeExtended_L	16
-#define	kString_Driver_FirstPlace		"\pPREMIERE PLACE!"
+#define	kString_Driver_FirstPlace		"\017PREMIERE PLACE!"
 #define	kString_Driver_FirstPlace_L		16
 #define	kString_Driver_Finished			" A TERMINE!"
 #define	kString_Driver_Finished_L		11
 #if __BOTS_FINISH_RACE__
-#define	kString_Driver_LocalFinish		"\pVOUS AVEZ TERMINE!"
-#define	kString_Driver_LocalWon			"\pVOUS ETES LE VAINQUEUR!"
+#define	kString_Driver_LocalFinish		"\022VOUS AVEZ TERMINE!"
+#define	kString_Driver_LocalWon			"\027VOUS ETES LE VAINQUEUR!"
 #endif
 #define	kString_Driver_Ready			"PRET: x"
 #define	kString_Driver_Ready_L			7
 #define	kString_Driver_Left				"RESTANT: x"
 #define	kString_Driver_Left_L			10
 #if __DISPLAY_WRONG_DIRECTION__
-#define	kString_Driver_WrongDirection	"\pMAUVAISE DIRECTION!"
+#define	kString_Driver_WrongDirection	"\023MAUVAISE DIRECTION!"
 #define	kString_Driver_WrongDirection_L	20
 #endif
 #if __AUTOPILOT__
-#define	kString_Driver_AutoPilot		"\pPILOTE AUTOMATIQUE!"
-#define	kString_Driver_Finish			"\pAPPUYEZ SUR ESC POUR TERMINER"
+#define	kString_Driver_AutoPilot		"\023PILOTE AUTOMATIQUE!"
+#define	kString_Driver_Finish			"\035APPUYEZ SUR ESC POUR TERMINER"
 #endif
 
 #define	kString_WhiteScreen_Escape_1	"APPUYEZ SUR ESC POUR"
@@ -268,9 +268,9 @@
 #define	kString_WhiteScreen_AvSpeed		"V. MOYENNE:"
 #define	kString_WhiteScreen_AvSpeed_L	11
 
-#define	kString_Interface_ManualResolution	"\pAppuyez sur commande au démarrage pour afficher à nouveau ce dialogue."
-#define	kString_Interface_NA			"\pN/D"
-#define	kString_Interface_RequiredP		"\pPoints nécessaires:"
+#define	kString_Interface_ManualResolution	"\106Appuyez sur commande au démarrage pour afficher à nouveau ce dialogue."
+#define	kString_Interface_NA			"\003N/D"
+#define	kString_Interface_RequiredP		"\023Points nécessaires:"
 #define	kString_Interface_JokerAccess	"NECESSITE UN JOKER"
 #define	kString_Interface_JokerAccess_L	18
 #define	kString_Interface_JokerRedo		"Vous pouvez utiliser un joker pour refaire\rcette course."
@@ -279,68 +279,68 @@
 #define	kString_Interface_AccessDenied_L	13
 #define	kString_Interface_JokerNeed		"Vous avez besoin d'un joker\rpour refaire cette course."
 #define	kString_Interface_JokerNeed_L	55
-#define	kString_Interface_RaceLocation	"\pLieu de la course"
-#define	kString_Interface_Rank			"\pRang"
-#define	kString_Interface_Score			"\pScore"
-#define	kString_Interface_TimeLeft		"\pTemps restant"
-#define	kString_Interface_Level			"\pNiveau "
-#define	kString_Interface_GameOver		"\pPerdu"
-#define	kString_Interface_Champion		"\pChampion"
-#define	kString_Interface_Challenge		"\pChallenge"
+#define	kString_Interface_RaceLocation	"\021Lieu de la course"
+#define	kString_Interface_Rank			"\004Rang"
+#define	kString_Interface_Score			"\005Score"
+#define	kString_Interface_TimeLeft		"\015Temps restant"
+#define	kString_Interface_Level			"\007Niveau "
+#define	kString_Interface_GameOver		"\005Perdu"
+#define	kString_Interface_Champion		"\010Champion"
+#define	kString_Interface_Challenge		"\011Challenge"
 
-#define	kString_Camera_Free				"\pCAMERA LIBRE"
-#define	kString_Camera_Follow			"\pCAMERA SUIVANTE"
-#define	kString_Camera_Head				"\pCAMERA COCKPIT"
-#define	kString_Camera_Onboard			"\pCAMERA A BORD"
-#define	kString_Camera_TV				"\pWATERRACE TV"
-#define	kString_Camera_Chase			"\pCAMERA DE CHASSE"
-#define	kString_Camera_From				"\p DE "
-#define	kString_Camera_Of				"\p DE "
-#define	kString_Camera_On				"\p SUR "
-#define	kString_Camera_Replay			"\pREVOIR"
-#define	kString_Camera_Separator		"\p / "
-#define	kString_Camera_Track			"\pCAMERA DE COURSE"
+#define	kString_Camera_Free				"\014CAMERA LIBRE"
+#define	kString_Camera_Follow			"\017CAMERA SUIVANTE"
+#define	kString_Camera_Head				"\016CAMERA COCKPIT"
+#define	kString_Camera_Onboard			"\015CAMERA A BORD"
+#define	kString_Camera_TV				"\014WATERRACE TV"
+#define	kString_Camera_Chase			"\020CAMERA DE CHASSE"
+#define	kString_Camera_From				"\004 DE "
+#define	kString_Camera_Of				"\004 DE "
+#define	kString_Camera_On				"\005 SUR "
+#define	kString_Camera_Replay			"\006REVOIR"
+#define	kString_Camera_Separator		"\003 / "
+#define	kString_Camera_Track			"\020CAMERA DE COURSE"
 
-#define	kString_Preferences_Name		"\pMon nom"
-#define	kString_Preferences_Location	"\pMon lieu"
-#define	kString_Preferences_Computer	"\pNom de l'ordinateur"
-#define	kString_Preferences_Welcome		"\pBienvenue au jeu!"
+#define	kString_Preferences_Name		"\007Mon nom"
+#define	kString_Preferences_Location	"\010Mon lieu"
+#define	kString_Preferences_Computer	"\023Nom de l'ordinateur"
+#define	kString_Preferences_Welcome		"\021Bienvenue au jeu!"
 
-#define	kString_Misc_ReplayFileName		"\pRace Replay "
-#define	kString_Misc_Continue			"\pContinuer"
-#define	kString_Misc_Quit				"\pQuitter"
-#define	kString_Misc_ScreenshotFileName	"\pWR Screenshot "
+#define	kString_Misc_ReplayFileName		"\014Race Replay "
+#define	kString_Misc_Continue			"\011Continuer"
+#define	kString_Misc_Quit				"\007Quitter"
+#define	kString_Misc_ScreenshotFileName	"\016WR Screenshot "
 
-#define	kString_Network_Disconnected	"\pDéconnection du serveur!\rRaison: "
-#define	kString_Network_Reason1			"\pVersion du jeu incorrecte.\r"
-#define	kString_Network_Reason2			"\pMauvais mot de passe.\r"
-#define	kString_Network_Reason3			"\pLe serveur a été arrêté.\r"
-#define	kString_Network_Reason4			"\pLe jeu a déjà démarré sur le serveur.\rEssayez plus tard.\r"
-#define	kString_Network_Reason5			"\pInconnue.\r"
-#define	kString_Network_Client1			"\pInfos serveur reçues:\r    "
-#define	kString_Network_Client2			"\p\r    "
-#define	kString_Network_Client3			"\p\r    Serveur en place "
-#define	kString_Network_Client4			"\p sur "
-#define	kString_Network_Client5			"\pNom du terrain: "
-#define	kString_Network_Client6			"\p\r\rEnvoi des infos du joueur...\r\r"
-#define	kString_Network_Client7			"\pAttente du début du jeu...\r\r"
-#define	kString_Network_Client8			"\pLe jeu a commencé!\r"
-#define	kString_Network_Server1			"\pServeur déconnecté!\r"
-#define	kString_Network_Server2			"\pConnection d'un joueur: "
-#define	kString_Network_Server3			"\p de "
-#define	kString_Network_Server4			"\p a été déconnecté!\r"
-#define	kString_Network_Connecting1		"\pEn cours de connection à "
-#define	kString_Network_Connecting2		"\p... (patientez SVP - 10 secondes maximum)\r"
-#define	kString_Network_Connecting3		"\pImpossible de ce connecter au serveur!\rRaison: "
-#define	kString_Network_Connecting4		"\pServeur inatteignable (adresse IP incorrecte, serveur déconnecté ou trop de joueurs).\r"
-#define	kString_Network_Connecting5		"\pConnection établie.\r\r"
-#define	kString_Network_Connecting6		"\pAttente des infos du serveur...\r"
-#define	kString_Network_Connecting7		"\p(Erreur "
-#define	kString_Network_Hosting1		"\pDémarrage du serveur à "
-#define	kString_Network_Hosting2		"\pImpossible de démarrer le serveur! (Erreur "
-#define	kString_Network_Hosting3		"\pServeur en place.\r"
-#define	kString_Network_Hosting4		"\pAttente des joueurs...\r\r"
-#define	kString_Network_Hosting5		"\pImpossible de connecter le joueur local!\r"
+#define	kString_Network_Disconnected	"\041Déconnection du serveur!\rRaison: "
+#define	kString_Network_Reason1			"\033Version du jeu incorrecte.\r"
+#define	kString_Network_Reason2			"\026Mauvais mot de passe.\r"
+#define	kString_Network_Reason3			"\031Le serveur a été arrêté.\r"
+#define	kString_Network_Reason4			"\071Le jeu a déjà démarré sur le serveur.\rEssayez plus tard.\r"
+#define	kString_Network_Reason5			"\012Inconnue.\r"
+#define	kString_Network_Client1			"\032Infos serveur reçues:\r    "
+#define	kString_Network_Client2			"\005\r    "
+#define	kString_Network_Client3			"\026\r    Serveur en place "
+#define	kString_Network_Client4			"\005 sur "
+#define	kString_Network_Client5			"\020Nom du terrain: "
+#define	kString_Network_Client6			"\040\r\rEnvoi des infos du joueur...\r\r"
+#define	kString_Network_Client7			"\034Attente du début du jeu...\r\r"
+#define	kString_Network_Client8			"\023Le jeu a commencé!\r"
+#define	kString_Network_Server1			"\024Serveur déconnecté!\r"
+#define	kString_Network_Server2			"\030Connection d'un joueur: "
+#define	kString_Network_Server3			"\004 de "
+#define	kString_Network_Server4			"\023 a été déconnecté!\r"
+#define	kString_Network_Connecting1		"\031En cours de connection à "
+#define	kString_Network_Connecting2		"\052... (patientez SVP - 10 secondes maximum)\r"
+#define	kString_Network_Connecting3		"\057Impossible de ce connecter au serveur!\rRaison: "
+#define	kString_Network_Connecting4		"\126Serveur inatteignable (adresse IP incorrecte, serveur déconnecté ou trop de joueurs).\r"
+#define	kString_Network_Connecting5		"\025Connection établie.\r\r"
+#define	kString_Network_Connecting6		"\040Attente des infos du serveur...\r"
+#define	kString_Network_Connecting7		"\010(Erreur "
+#define	kString_Network_Hosting1		"\027Démarrage du serveur à "
+#define	kString_Network_Hosting2		"\053Impossible de démarrer le serveur! (Erreur "
+#define	kString_Network_Hosting3		"\022Serveur en place.\r"
+#define	kString_Network_Hosting4		"\030Attente des joueurs...\r\r"
+#define	kString_Network_Hosting5		"\051Impossible de connecter le joueur local!\r"
 
 
 /****************************************************************/
@@ -349,49 +349,49 @@
 
 #elif __LANGUAGE__ == kLanguage_German
 
-#define	kString_Drop_OffLimit			"\pAUSSER LIMIT!"
-#define	kString_Drop_UpsideDown			"\pUMGEKIPPT!"
-#define	kString_Drop_UnderWater			"\pUNTER WASSER!"
-#define	kString_Drop_Collision			"\pZUSAMMENSTOSS!"
-#define	kString_Drop_Manual				"\pNEUSTART SPIELER!"
+#define	kString_Drop_OffLimit			"\015AUSSER LIMIT!"
+#define	kString_Drop_UpsideDown			"\012UMGEKIPPT!"
+#define	kString_Drop_UnderWater			"\015UNTER WASSER!"
+#define	kString_Drop_Collision			"\016ZUSAMMENSTOSS!"
+#define	kString_Drop_Manual				"\021NEUSTART SPIELER!"
 
-#define	kString_Network_PlayerOffLine	"\pSPIELER OFFLINE!"
-#define	kString_Network_BotLocation		"\pBotland"
-#define	kString_Network_ServerOffLine	"\pSERVER OFFLINE!"
+#define	kString_Network_PlayerOffLine	"\020SPIELER OFFLINE!"
+#define	kString_Network_BotLocation		"\007Botland"
+#define	kString_Network_ServerOffLine	"\017SERVER OFFLINE!"
 
 #if __DISPLAY_CHECK_POINT__
-#define	kString_Driver_CheckPoint		"\pCHECK POINT!"
+#define	kString_Driver_CheckPoint		"\014CHECK POINT!"
 #define	kString_Driver_CheckPoint_L		13
 #endif
 #if __DISPLAY_MISSED_CHECK_POINT__
-#define	kString_Driver_MissedCheckPoint	"\pCHECK POINT VERFEHLT!"
+#define	kString_Driver_MissedCheckPoint	"\025CHECK POINT VERFEHLT!"
 #define	kString_Driver_MissedCheckPoint_L	23
 #endif
-#define	kString_Driver_BestLapTime		"\pBESTZEIT: "
+#define	kString_Driver_BestLapTime		"\012BESTZEIT: "
 #define	kString_Driver_BestLapTime_L	11
-#define	kString_Driver_LapTime			"\pZEIT: "
+#define	kString_Driver_LapTime			"\006ZEIT: "
 #define	kString_Driver_LapTime_L		7
-#define	kString_Driver_TimeExtended		"\pTIME EXTENDED: +"
+#define	kString_Driver_TimeExtended		"\020TIME EXTENDED: +"
 #define	kString_Driver_TimeExtended_L	17
-#define	kString_Driver_FirstPlace		"\pERSTER RANG!"
+#define	kString_Driver_FirstPlace		"\014ERSTER RANG!"
 #define	kString_Driver_FirstPlace_L		13
 #define	kString_Driver_Finished			" IST AM ZIEL!"
 #define	kString_Driver_Finished_L		13
 #if __BOTS_FINISH_RACE__
-#define	kString_Driver_LocalFinish		"\pSIE SIND AM ZIEL!"
-#define	kString_Driver_LocalWon			"\pSIE SIND DER GEWINNER!"
+#define	kString_Driver_LocalFinish		"\021SIE SIND AM ZIEL!"
+#define	kString_Driver_LocalWon			"\026SIE SIND DER GEWINNER!"
 #endif
 #define	kString_Driver_Ready			"BEREIT: x"
 #define	kString_Driver_Ready_L			9
 #define	kString_Driver_Left				"NOCH: x"
 #define	kString_Driver_Left_L			7
 #if __DISPLAY_WRONG_DIRECTION__
-#define	kString_Driver_WrongDirection	"\pFALSCHE RICHTUNG!"
+#define	kString_Driver_WrongDirection	"\021FALSCHE RICHTUNG!"
 #define	kString_Driver_WrongDirection_L	18
 #endif
 #if __AUTOPILOT__
-#define	kString_Driver_AutoPilot		"\pAUTOPILOT!"
-#define	kString_Driver_Finish			"\pDRUECKEN SIE ESC ZUM BEENDEN"
+#define	kString_Driver_AutoPilot		"\012AUTOPILOT!"
+#define	kString_Driver_Finish			"\034DRUECKEN SIE ESC ZUM BEENDEN"
 #endif
 
 #define	kString_WhiteScreen_Escape_1	"DRUECKEN SIE ESC UM"
@@ -421,9 +421,9 @@
 #define	kString_WhiteScreen_AvSpeed		"SCHNITT:"
 #define	kString_WhiteScreen_AvSpeed_L	8
 
-#define	kString_Interface_ManualResolution	"\pDrücken Sie auf die Befehlstaste beim Starten um dieses Fenster wiederum anzuzeigen."
-#define	kString_Interface_NA			"\pN/V"
-#define	kString_Interface_RequiredP		"\pBenötigte Punkte:"
+#define	kString_Interface_ManualResolution	"\124Drücken Sie auf die Befehlstaste beim Starten um dieses Fenster wiederum anzuzeigen."
+#define	kString_Interface_NA			"\003N/V"
+#define	kString_Interface_RequiredP		"\021Benötigte Punkte:"
 #define	kString_Interface_JokerAccess	"JOCKER BENOETIGT!"
 #define	kString_Interface_JokerAccess_L	17
 #define	kString_Interface_JokerRedo		"Sie können ein Jocker verwenden\rum dieses Rennen zu wiederholen."
@@ -432,68 +432,68 @@
 #define	kString_Interface_AccessDenied_L	19
 #define	kString_Interface_JokerNeed		"Sie benötigen einen Jocker \rum dieses Rennen zu wiederholen."
 #define	kString_Interface_JokerNeed_L	59
-#define	kString_Interface_RaceLocation	"\pRennort"
-#define	kString_Interface_Rank			"\pRang"
-#define	kString_Interface_Score			"\pAnzahl punkte"
-#define	kString_Interface_TimeLeft		"\pRestzeit"
-#define	kString_Interface_Level			"\pLevel "
-#define	kString_Interface_GameOver		"\pAus"
-#define	kString_Interface_Champion		"\pChampion"
-#define	kString_Interface_Challenge		"\pChallenge"
+#define	kString_Interface_RaceLocation	"\007Rennort"
+#define	kString_Interface_Rank			"\004Rang"
+#define	kString_Interface_Score			"\015Anzahl punkte"
+#define	kString_Interface_TimeLeft		"\010Restzeit"
+#define	kString_Interface_Level			"\006Level "
+#define	kString_Interface_GameOver		"\003Aus"
+#define	kString_Interface_Champion		"\010Champion"
+#define	kString_Interface_Challenge		"\011Challenge"
 
-#define	kString_Camera_Free				"\pFREIE KAMERA"
-#define	kString_Camera_Follow			"\pVERFOLGUNGS-KAMERA"
-#define	kString_Camera_Head				"\pCOCKPIT-KAMERA"
-#define	kString_Camera_Onboard			"\pONBOARD KAMERA"
-#define	kString_Camera_TV				"\pWATERRACE TV"
-#define	kString_Camera_Chase			"\pVERFOLGUNGS-KAMERA2"
-#define	kString_Camera_From				"\p VON "
-#define	kString_Camera_Of				"\p OF "
-#define	kString_Camera_On				"\p AUF "
-#define	kString_Camera_Replay			"\pWIEDERHOLUNG"
-#define	kString_Camera_Separator		"\p / "
-#define	kString_Camera_Track			"\pSTRECKENKAMERA"
+#define	kString_Camera_Free				"\014FREIE KAMERA"
+#define	kString_Camera_Follow			"\022VERFOLGUNGS-KAMERA"
+#define	kString_Camera_Head				"\016COCKPIT-KAMERA"
+#define	kString_Camera_Onboard			"\016ONBOARD KAMERA"
+#define	kString_Camera_TV				"\014WATERRACE TV"
+#define	kString_Camera_Chase			"\023VERFOLGUNGS-KAMERA2"
+#define	kString_Camera_From				"\005 VON "
+#define	kString_Camera_Of				"\004 OF "
+#define	kString_Camera_On				"\005 AUF "
+#define	kString_Camera_Replay			"\014WIEDERHOLUNG"
+#define	kString_Camera_Separator		"\003 / "
+#define	kString_Camera_Track			"\016STRECKENKAMERA"
 
-#define	kString_Preferences_Name		"\pMein Name"
-#define	kString_Preferences_Location	"\pMein Ort"
-#define	kString_Preferences_Computer	"\pName des Computers"
-#define	kString_Preferences_Welcome		"\pWilkommen in meinem Spiel!"
+#define	kString_Preferences_Name		"\011Mein Name"
+#define	kString_Preferences_Location	"\010Mein Ort"
+#define	kString_Preferences_Computer	"\022Name des Computers"
+#define	kString_Preferences_Welcome		"\032Wilkommen in meinem Spiel!"
 
-#define	kString_Misc_ReplayFileName		"\pRace Replay "
-#define	kString_Misc_Continue			"\pWeiter"
-#define	kString_Misc_Quit				"\pBeenden"
-#define	kString_Misc_ScreenshotFileName	"\pWR Screenshot "
+#define	kString_Misc_ReplayFileName		"\014Race Replay "
+#define	kString_Misc_Continue			"\006Weiter"
+#define	kString_Misc_Quit				"\007Beenden"
+#define	kString_Misc_ScreenshotFileName	"\016WR Screenshot "
 
-#define	kString_Network_Disconnected	"\pVerbindung mit Server unterbrochen!\rGrund: "
-#define	kString_Network_Reason1			"\pFalsche Spielversion.\r"
-#define	kString_Network_Reason2			"\pFalsches Passwort.\r"
-#define	kString_Network_Reason3			"\pServer ausgeschaltet.\r"
-#define	kString_Network_Reason4			"\pSpiel auf dem Server bereits gestartet.\rVersuchen Sie es später nochmals.\r"
-#define	kString_Network_Reason5			"\pUnbekannt.\r"
-#define	kString_Network_Client1			"\pInformationen vom Server:\r    "
-#define	kString_Network_Client2			"\p\r    "
-#define	kString_Network_Client3			"\p\r    Server gestartet "
-#define	kString_Network_Client4			"\p auf "
-#define	kString_Network_Client5			"\pName der Rennstrecke: "
-#define	kString_Network_Client6			"\p\r\rSende Spielerinfo...\r\r"
-#define	kString_Network_Client7			"\pWarte den Spielbeginn ab...\r\r"
-#define	kString_Network_Client8			"\pSpiel bereits begonnen!\r"
-#define	kString_Network_Server1			"\pServer nicht im Netz!\r"
-#define	kString_Network_Server2			"\pSpielereintritt: "
-#define	kString_Network_Server3			"\p von "
-#define	kString_Network_Server4			"\p wurde ausgeschlossen!\r"
-#define	kString_Network_Connecting1		"\pVerbindung mit "
-#define	kString_Network_Connecting2		"\p... (Bitte warten - maximale Verzögerung 10 Sekunden)\r"
-#define	kString_Network_Connecting3		"\pVerbindung mit Server unmöglich!\rGrund: "
-#define	kString_Network_Connecting4		"\pServer nicht verfügbar (falsche IP Adresse, Server nicht im Netz oder zuviele Spieler).\r"
-#define	kString_Network_Connecting5		"\pVerbunden.\r\r"
-#define	kString_Network_Connecting6		"\pErwarte Informationen vom Server...\r"
-#define	kString_Network_Connecting7		"\p(Fehler "
-#define	kString_Network_Hosting1		"\pStarte den Server mit "
-#define	kString_Network_Hosting2		"\pServer konnte nicht gestartet werden! (Fehler "
-#define	kString_Network_Hosting3		"\pServer verbunden.\r"
-#define	kString_Network_Hosting4		"\pWarte auf Mitspieler...\r\r"
-#define	kString_Network_Hosting5		"\pVerbindung mit lokalem Spieler unmöglich!\r"
+#define	kString_Network_Disconnected	"\053Verbindung mit Server unterbrochen!\rGrund: "
+#define	kString_Network_Reason1			"\026Falsche Spielversion.\r"
+#define	kString_Network_Reason2			"\023Falsches Passwort.\r"
+#define	kString_Network_Reason3			"\026Server ausgeschaltet.\r"
+#define	kString_Network_Reason4			"\112Spiel auf dem Server bereits gestartet.\rVersuchen Sie es später nochmals.\r"
+#define	kString_Network_Reason5			"\013Unbekannt.\r"
+#define	kString_Network_Client1			"\036Informationen vom Server:\r    "
+#define	kString_Network_Client2			"\005\r    "
+#define	kString_Network_Client3			"\026\r    Server gestartet "
+#define	kString_Network_Client4			"\005 auf "
+#define	kString_Network_Client5			"\026Name der Rennstrecke: "
+#define	kString_Network_Client6			"\030\r\rSende Spielerinfo...\r\r"
+#define	kString_Network_Client7			"\035Warte den Spielbeginn ab...\r\r"
+#define	kString_Network_Client8			"\030Spiel bereits begonnen!\r"
+#define	kString_Network_Server1			"\026Server nicht im Netz!\r"
+#define	kString_Network_Server2			"\021Spielereintritt: "
+#define	kString_Network_Server3			"\005 von "
+#define	kString_Network_Server4			"\027 wurde ausgeschlossen!\r"
+#define	kString_Network_Connecting1		"\017Verbindung mit "
+#define	kString_Network_Connecting2		"\066... (Bitte warten - maximale Verzögerung 10 Sekunden)\r"
+#define	kString_Network_Connecting3		"\050Verbindung mit Server unmöglich!\rGrund: "
+#define	kString_Network_Connecting4		"\130Server nicht verfügbar (falsche IP Adresse, Server nicht im Netz oder zuviele Spieler).\r"
+#define	kString_Network_Connecting5		"\014Verbunden.\r\r"
+#define	kString_Network_Connecting6		"\044Erwarte Informationen vom Server...\r"
+#define	kString_Network_Connecting7		"\010(Fehler "
+#define	kString_Network_Hosting1		"\026Starte den Server mit "
+#define	kString_Network_Hosting2		"\056Server konnte nicht gestartet werden! (Fehler "
+#define	kString_Network_Hosting3		"\022Server verbunden.\r"
+#define	kString_Network_Hosting4		"\031Warte auf Mitspieler...\r\r"
+#define	kString_Network_Hosting5		"\052Verbindung mit lokalem Spieler unmöglich!\r"
 
 /****************************************************************/
 /*					ITALIAN VERSION								*/
@@ -501,49 +501,49 @@
 
 #elif __LANGUAGE__ == kLanguage_Italian
 
-#define	kString_Drop_OffLimit			"\pFUORI DAI LIMITI!"
-#define	kString_Drop_UpsideDown			"\pUPSIDE-DOWN!"
-#define	kString_Drop_UnderWater			"\pSOTT'ACQUA!"
-#define	kString_Drop_Collision			"\pCOLLISIONE!"
-#define	kString_Drop_Manual				"\pGIOCATORE CADUTO!"
+#define	kString_Drop_OffLimit			"\021FUORI DAI LIMITI!"
+#define	kString_Drop_UpsideDown			"\014UPSIDE-DOWN!"
+#define	kString_Drop_UnderWater			"\013SOTT'ACQUA!"
+#define	kString_Drop_Collision			"\013COLLISIONE!"
+#define	kString_Drop_Manual				"\021GIOCATORE CADUTO!"
 
-#define	kString_Network_PlayerOffLine	"\pGIOCATORE OFFLINE!"
-#define	kString_Network_BotLocation		"\pBotland"
-#define	kString_Network_ServerOffLine	"\pSERVER OFFLINE!"
+#define	kString_Network_PlayerOffLine	"\022GIOCATORE OFFLINE!"
+#define	kString_Network_BotLocation		"\007Botland"
+#define	kString_Network_ServerOffLine	"\017SERVER OFFLINE!"
 
 #if __DISPLAY_CHECK_POINT__
-#define	kString_Driver_CheckPoint		"\pCHECK POINT!"
+#define	kString_Driver_CheckPoint		"\014CHECK POINT!"
 #define	kString_Driver_CheckPoint_L		13
 #endif
 #if __DISPLAY_MISSED_CHECK_POINT__
-#define	kString_Driver_MissedCheckPoint	"\pCHECK POINT MANCATO!"
+#define	kString_Driver_MissedCheckPoint	"\024CHECK POINT MANCATO!"
 #define	kString_Driver_MissedCheckPoint_L	21
 #endif
-#define	kString_Driver_BestLapTime		"\pMIGLIOR TEMPO SU GIRO: "
+#define	kString_Driver_BestLapTime		"\027MIGLIOR TEMPO SU GIRO: "
 #define	kString_Driver_BestLapTime_L	24
-#define	kString_Driver_LapTime			"\pTEMPO SU GIRO: "
+#define	kString_Driver_LapTime			"\017TEMPO SU GIRO: "
 #define	kString_Driver_LapTime_L		16
-#define	kString_Driver_TimeExtended		"\pESTENSIONE TEMPO: +"
+#define	kString_Driver_TimeExtended		"\023ESTENSIONE TEMPO: +"
 #define	kString_Driver_TimeExtended_L	20
-#define	kString_Driver_FirstPlace		"\pPRIMO POSTO!"
+#define	kString_Driver_FirstPlace		"\014PRIMO POSTO!"
 #define	kString_Driver_FirstPlace_L		13
 #define	kString_Driver_Finished			" HA TERMINATO!"
 #define	kString_Driver_Finished_L		14
 #if __BOTS_FINISH_RACE__
-#define	kString_Driver_LocalFinish		"\pHAI TERMINATO!"
-#define	kString_Driver_LocalWon			"\pSEI IL VINCITORE!"
+#define	kString_Driver_LocalFinish		"\016HAI TERMINATO!"
+#define	kString_Driver_LocalWon			"\021SEI IL VINCITORE!"
 #endif
 #define	kString_Driver_Ready			"PRONTO: x"
 #define	kString_Driver_Ready_L			9
 #define	kString_Driver_Left				"RIMANE: x"
 #define	kString_Driver_Left_L			9
 #if __DISPLAY_WRONG_DIRECTION__
-#define	kString_Driver_WrongDirection	"\pDIREZIONE SBAGLIATA!"
+#define	kString_Driver_WrongDirection	"\024DIREZIONE SBAGLIATA!"
 #define	kString_Driver_WrongDirection_L	21
 #endif
 #if __AUTOPILOT__
-#define	kString_Driver_AutoPilot		"\pPILOTA AUTOMATICO!"
-#define	kString_Driver_Finish			"\pPREMI ESC PER TERMINARE"
+#define	kString_Driver_AutoPilot		"\022PILOTA AUTOMATICO!"
+#define	kString_Driver_Finish			"\027PREMI ESC PER TERMINARE"
 #endif
 
 #define	kString_WhiteScreen_Escape_1	"PREMI ESC PER"
@@ -573,9 +573,9 @@
 #define	kString_WhiteScreen_AvSpeed		"VELOCITA' MEDIA:"
 #define	kString_WhiteScreen_AvSpeed_L	16
 
-#define	kString_Interface_ManualResolution	"\pPremi il tasto comando durante l'avvio per mostrare nuovamente questa finestra."
-#define	kString_Interface_NA			"\pN/A"
-#define	kString_Interface_RequiredP		"\pPunti richiesti:"
+#define	kString_Interface_ManualResolution	"\117Premi il tasto comando durante l'avvio per mostrare nuovamente questa finestra."
+#define	kString_Interface_NA			"\003N/A"
+#define	kString_Interface_RequiredP		"\020Punti richiesti:"
 #define	kString_Interface_JokerAccess	"ACCESSO JOLLY!"
 #define	kString_Interface_JokerAccess_L	14
 #define	kString_Interface_JokerRedo		"Puoi usare un jolly per rifare\rquesta corsa."
@@ -584,68 +584,68 @@
 #define	kString_Interface_AccessDenied_L	15
 #define	kString_Interface_JokerNeed		"Hai bisogno di un jolly per rifare\rquesta corsa."
 #define	kString_Interface_JokerNeed_L	49
-#define	kString_Interface_RaceLocation	"\pLocalità"
-#define	kString_Interface_Rank			"\pPosizione"
-#define	kString_Interface_Score			"\pPunteggio"
-#define	kString_Interface_TimeLeft		"\pTempo rimanente"
-#define	kString_Interface_Level			"\pLivello "
-#define	kString_Interface_GameOver		"\pGame over"
-#define	kString_Interface_Champion		"\pCampione"
-#define	kString_Interface_Challenge		"\pSfida"
+#define	kString_Interface_RaceLocation	"\010Località"
+#define	kString_Interface_Rank			"\011Posizione"
+#define	kString_Interface_Score			"\011Punteggio"
+#define	kString_Interface_TimeLeft		"\017Tempo rimanente"
+#define	kString_Interface_Level			"\010Livello "
+#define	kString_Interface_GameOver		"\011Game over"
+#define	kString_Interface_Champion		"\010Campione"
+#define	kString_Interface_Challenge		"\005Sfida"
 
-#define	kString_Camera_Free				"\pRIPRESA LIBERA"
-#define	kString_Camera_Follow			"\pRIPRESA A SEGUIRE"
-#define	kString_Camera_Head				"\pRIPRESA INTERNA"
-#define	kString_Camera_Onboard			"\pCAMERA BOAT"
-#define	kString_Camera_TV				"\pTV WATERRACE"
-#define	kString_Camera_Chase			"\pCHASE CAMERA"
-#define	kString_Camera_From				"\p DA "
-#define	kString_Camera_Of				"\p DI "
-#define	kString_Camera_On				"\p ON "
-#define	kString_Camera_Replay			"\pREPLAY"
-#define	kString_Camera_Separator		"\p / "
-#define	kString_Camera_Track			"\pRIPRESE FERME"
+#define	kString_Camera_Free				"\016RIPRESA LIBERA"
+#define	kString_Camera_Follow			"\021RIPRESA A SEGUIRE"
+#define	kString_Camera_Head				"\017RIPRESA INTERNA"
+#define	kString_Camera_Onboard			"\013CAMERA BOAT"
+#define	kString_Camera_TV				"\014TV WATERRACE"
+#define	kString_Camera_Chase			"\014CHASE CAMERA"
+#define	kString_Camera_From				"\004 DA "
+#define	kString_Camera_Of				"\004 DI "
+#define	kString_Camera_On				"\004 ON "
+#define	kString_Camera_Replay			"\006REPLAY"
+#define	kString_Camera_Separator		"\003 / "
+#define	kString_Camera_Track			"\015RIPRESE FERME"
 
-#define	kString_Preferences_Name		"\pNome mio"
-#define	kString_Preferences_Location	"\pMia località"
-#define	kString_Preferences_Computer	"\pNome Computer"
-#define	kString_Preferences_Welcome		"\pBenvenuto nel mio gioco!"
+#define	kString_Preferences_Name		"\010Nome mio"
+#define	kString_Preferences_Location	"\014Mia località"
+#define	kString_Preferences_Computer	"\015Nome Computer"
+#define	kString_Preferences_Welcome		"\030Benvenuto nel mio gioco!"
 
-#define	kString_Misc_ReplayFileName		"\pReplay Corsa "
-#define	kString_Misc_Continue			"\pContinua"
-#define	kString_Misc_Quit				"\pEsci"
-#define	kString_Misc_ScreenshotFileName	"\pWR Screenshot "
+#define	kString_Misc_ReplayFileName		"\015Replay Corsa "
+#define	kString_Misc_Continue			"\010Continua"
+#define	kString_Misc_Quit				"\004Esci"
+#define	kString_Misc_ScreenshotFileName	"\016WR Screenshot "
 
-#define	kString_Network_Disconnected	"\pDisconnesso dall'host!\rRagione: "
-#define	kString_Network_Reason1			"\pVersione gioco non corretta.\r"
-#define	kString_Network_Reason2			"\pPassword errata.\r"
-#define	kString_Network_Reason3			"\pIl Server è stato staccato.\r"
-#define	kString_Network_Reason4			"\pIl gioco sul Server è già iniziato.\rProva più tardi.\r"
-#define	kString_Network_Reason5			"\pSconosciuta.\r"
-#define	kString_Network_Client1			"\pRicevute info sul Server:\r    "
-#define	kString_Network_Client2			"\p\r    "
-#define	kString_Network_Client3			"\p\r    Server attivo "
-#define	kString_Network_Client4			"\p attivo "
-#define	kString_Network_Client5			"\pNome terreno: "
-#define	kString_Network_Client6			"\p\r\rSpedendo info giocatore...\r\r"
-#define	kString_Network_Client7			"\pAspettando l'avvio del gioco...\r\r"
-#define	kString_Network_Client8			"\pIl gioco ha inizio!\r"
-#define	kString_Network_Server1			"\pServer offline!\r"
-#define	kString_Network_Server2			"\pUn giocatore è entrato: "
-#define	kString_Network_Server3			"\p da "
-#define	kString_Network_Server4			"\p è stato disconnesso!\r"
-#define	kString_Network_Connecting1		"\pCollegando a "
-#define	kString_Network_Connecting2		"\p... (attendere prego - 10 secondi max di ritardo)\r"
-#define	kString_Network_Connecting3		"\pNon posso connettermi all'host!\rRagione: "
-#define	kString_Network_Connecting4		"\pServer non raggiungibile (indirizzo IP errato, il server potrebbe essere caduto o con troppi giocatori).\r"
-#define	kString_Network_Connecting5		"\pStabilita Connessione.\r\r"
-#define	kString_Network_Connecting6		"\pAspettando info dal server...\r"
-#define	kString_Network_Connecting7		"\p(Errore "
-#define	kString_Network_Hosting1		"\pAvviando server "
-#define	kString_Network_Hosting2		"\pImpossibile avviare il server! (Errore "
-#define	kString_Network_Hosting3		"\pServer online.\r"
-#define	kString_Network_Hosting4		"\pAspettando i clients...\r\r"
-#define	kString_Network_Hosting5		"\pImpossibile connettere giocatore locale!\r"
+#define	kString_Network_Disconnected	"\040Disconnesso dall'host!\rRagione: "
+#define	kString_Network_Reason1			"\035Versione gioco non corretta.\r"
+#define	kString_Network_Reason2			"\021Password errata.\r"
+#define	kString_Network_Reason3			"\034Il Server è stato staccato.\r"
+#define	kString_Network_Reason4			"\065Il gioco sul Server è già iniziato.\rProva più tardi.\r"
+#define	kString_Network_Reason5			"\015Sconosciuta.\r"
+#define	kString_Network_Client1			"\036Ricevute info sul Server:\r    "
+#define	kString_Network_Client2			"\005\r    "
+#define	kString_Network_Client3			"\023\r    Server attivo "
+#define	kString_Network_Client4			"\010 attivo "
+#define	kString_Network_Client5			"\016Nome terreno: "
+#define	kString_Network_Client6			"\036\r\rSpedendo info giocatore...\r\r"
+#define	kString_Network_Client7			"\041Aspettando l'avvio del gioco...\r\r"
+#define	kString_Network_Client8			"\024Il gioco ha inizio!\r"
+#define	kString_Network_Server1			"\020Server offline!\r"
+#define	kString_Network_Server2			"\030Un giocatore è entrato: "
+#define	kString_Network_Server3			"\004 da "
+#define	kString_Network_Server4			"\026 è stato disconnesso!\r"
+#define	kString_Network_Connecting1		"\015Collegando a "
+#define	kString_Network_Connecting2		"\062... (attendere prego - 10 secondi max di ritardo)\r"
+#define	kString_Network_Connecting3		"\051Non posso connettermi all'host!\rRagione: "
+#define	kString_Network_Connecting4		"\151Server non raggiungibile (indirizzo IP errato, il server potrebbe essere caduto o con troppi giocatori).\r"
+#define	kString_Network_Connecting5		"\030Stabilita Connessione.\r\r"
+#define	kString_Network_Connecting6		"\036Aspettando info dal server...\r"
+#define	kString_Network_Connecting7		"\010(Errore "
+#define	kString_Network_Hosting1		"\020Avviando server "
+#define	kString_Network_Hosting2		"\047Impossibile avviare il server! (Errore "
+#define	kString_Network_Hosting3		"\017Server online.\r"
+#define	kString_Network_Hosting4		"\031Aspettando i clients...\r\r"
+#define	kString_Network_Hosting5		"\051Impossibile connettere giocatore locale!\r"
 
 #endif
 

@@ -187,13 +187,13 @@ OSErr Preference_Read()
 	
 	New:
 #if __LANGUAGE__ == kLanguage_English
-	if(Display_Agreement(kLicenseTextID, kWaitDelay, "\pAgree", "\pDisagree") == false)
+	if(Display_Agreement(kLicenseTextID, kWaitDelay, "\005Agree", "\010Disagree") == false)
 #elif __LANGUAGE__ == kLanguage_French
-	if(Display_Agreement(kLicenseTextID, kWaitDelay, "\pAccepter", "\pRefuser") == false)
+	if(Display_Agreement(kLicenseTextID, kWaitDelay, "\010Accepter", "\007Refuser") == false)
 #elif __LANGUAGE__ == kLanguage_German
-	if(Display_Agreement(kLicenseTextID, kWaitDelay, "\pAkzeptieren", "\pAblehnen") == false)
+	if(Display_Agreement(kLicenseTextID, kWaitDelay, "\013Akzeptieren", "\010Ablehnen") == false)
 #elif __LANGUAGE__ == kLanguage_Italian
-	if(Display_Agreement(kLicenseTextID, kWaitDelay, "\pAccetto", "\pNon Accetto") == false)
+	if(Display_Agreement(kLicenseTextID, kWaitDelay, "\007Accetto", "\013Non Accetto") == false)
 #else
 #error  __LANGUAGE__ undefined!
 #endif

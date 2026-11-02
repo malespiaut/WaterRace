@@ -63,7 +63,7 @@ long MetaFile_PickModelIndex(MetaFile_ReferencePtr reference, UniversalProcPtr f
 	modelCount = MetaFile_CountTags(reference, kTag_MegaObject);
 	if(modelCount <= 1)
 	return modelCount;
-	ParamText("\pmodel", nil, nil, nil);
+	ParamText("\005model", nil, nil, nil);
 	
 	GetPort(&savePort);
 	theDialog = GetNewDialog(kModelChooserDialogID, nil, (WindowPtr) -1);
@@ -127,7 +127,7 @@ long MetaFile_PickModelTextureSetIndex(MetaFile_ReferencePtr reference, OSType m
 	GetPort(&savePort);
 	theDialog = GetNewDialog(kModelChooserDialogID, nil, (WindowPtr) -1);
 	SetPort(theDialog);
-	ParamText("\ptexture set", nil, nil, nil);
+	ParamText("\013texture set", nil, nil, nil);
 	
 	GetDialogItemAsControl(theDialog, 2, &control);
 	GetListBoxListHandle(control, &screenList);

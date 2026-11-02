@@ -338,7 +338,7 @@ OSErr MetaFile_Read_ExtractTextureSet(MetaFile_ReferencePtr reference, TextureSe
 	return MemError();
 	
 	//Setup texture set
-	BlockMove("\pExtracted texture set", (*set)->name, sizeof(Str63));
+	BlockMove("\025Extracted texture set", (*set)->name, sizeof(Str63));
 	(*set)->id = kNoID;
 	(*set)->flags = 0;
 	(*set)->textureCount = 0;

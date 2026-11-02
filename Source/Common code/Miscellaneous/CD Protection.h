@@ -53,7 +53,7 @@ typedef struct
 csParamDiscStatusRec;
 #pragma pack()
 
-#define			kAppleCDDriverName			"\p.AppleCD"
+#define			kAppleCDDriverName			"\010.AppleCD"
 #define			kIOVRefNumValue				0
 
 inline void ClearMemory(void* ptr, long size)

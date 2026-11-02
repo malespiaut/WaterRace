@@ -30,7 +30,7 @@ RaceTrackPtr Track_New()
 	
 	track = (RaceTrackPtr) NewPtrClear(sizeof(RaceTrack));
 	
-	BlockMove("\pUntitled", track->name, sizeof(Str31));
+	BlockMove("\010Untitled", track->name, sizeof(Str31));
 	track->flags = 0;
 	track->id = kNoID;
 	track->color_r = 1.0;
