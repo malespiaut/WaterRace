@@ -170,7 +170,7 @@ NewListHandle NewList_New(Rect* viewRect, short maxNumRows, WindowPtr window, Bo
 	
 	if(scrollBar) {
 		SetRect(&scrollRect, listPtr->viewRect.right, listPtr->viewRect.top - 1, listPtr->viewRect.right + kScrollBarWidth, listPtr->viewRect.bottom + 1);
-		listPtr->vScroll = NewControl(window, &scrollRect, "\p", drawIt, 0, 0, 0, kControlScrollBarLiveProc, nil);
+		listPtr->vScroll = NewControl(window, &scrollRect, "\000", drawIt, 0, 0, 0, kControlScrollBarLiveProc, nil);
 		SetControlAction(listPtr->vScroll, LiveActionRoutine);
 		SetControlReference(listPtr->vScroll, (long) list);
 	}

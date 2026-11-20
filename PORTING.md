@@ -339,6 +339,20 @@ dialog in `Texture Utils.cp`) after confirming the game doesn't use them.
 `WaterRace Data/`, from the CD extraction or the repo. Run `tools/test_hfs2adf.py` on the
 extracted tree. *Done when:* `GetIndString` and `Get1Resource` work through Pomme.
 
+*P1 status (branch `p1-entry-data`):* done. `Source/WaterRace final/Boot.cp` starts Pomme, opens
+`WaterRace 1.0.1 [English]` and checks `STR# 129` (`WaterRace Data`) and `'STR#' 200` through
+`Get1Resource`. `main()` returns after that check; the Mac boot below it is unreachable until P3.
+`port/stage-data.py OUTDIR --app-rsrc CD_COPY` builds the game root: the repo's `*.rsrc_fork`
+files wrapped as AppleDouble, plus the English app fork from the 1.0.1 CD. Run the binary from
+that root. The root is the folder that holds `WaterRace Data/`, not the Data folder itself,
+because the game finds `WaterRace Data` relative to the app's folder. The `tools/` scripts named
+above are not in the repo; `port/stage-data.py` replaces the extraction step for the repo copy.
+Also in P1: all 405 Pascal literals (`"\pName"`) now carry an explicit length byte (octal
+escape), and Pascal names copied into `FSSpec.cName` go through `CopyPascalToCName`. The
+`link-stubs` generator no longer stubs libc and libm symbols (`memcpy`, `sin`, ...), which P0
+had wrongly stubbed. Left for later: `FSSpec.name` in `#if`-disabled music code (P6),
+`ioNamePtr` in Pilots and Data Files (P4, with the PB calls), and `ParamText` with `cName` (P3).
+
 **P2: Textures (1 wk).** The prep script converts PICTs to PNG (§5.3). Load them with `stb_image`.
 *Done when:* every converted texture is checked by eye against the original.
 

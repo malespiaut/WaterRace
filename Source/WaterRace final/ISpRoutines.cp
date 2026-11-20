@@ -224,7 +224,7 @@ OSErr InputSprocket_Init()
 #if __VR_MODE__
 	//VR Mode
 	need = &theNeeds[kShip_NumNeeds + kHead_Roll];	
-	BlockMove("\pRoll", need->name, sizeof(Str31));
+	BlockMove("\004Roll", need->name, sizeof(Str31));
 	need->iconSuiteResourceId = 0;
 	need->playerNum = 0;
 	need->group = 0;
@@ -236,7 +236,7 @@ OSErr InputSprocket_Init()
 	need->reserved3 = 0;
 	
 	need = &theNeeds[kShip_NumNeeds + kHead_Pitch];	
-	BlockMove("\pPitch", need->name, sizeof(Str31));
+	BlockMove("\005Pitch", need->name, sizeof(Str31));
 	need->iconSuiteResourceId = 0;
 	need->playerNum = 0;
 	need->group = 0;
@@ -248,7 +248,7 @@ OSErr InputSprocket_Init()
 	need->reserved3 = 0;
 	
 	need = &theNeeds[kShip_NumNeeds + kHead_Yaw];	
-	BlockMove("\pYaw", need->name, sizeof(Str31));
+	BlockMove("\003Yaw", need->name, sizeof(Str31));
 	need->iconSuiteResourceId = 0;
 	need->playerNum = 0;
 	need->group = 0;

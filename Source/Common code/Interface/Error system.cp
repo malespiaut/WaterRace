@@ -194,7 +194,7 @@ void Error_Display(short actionID, OSErr errorID, ModalFilterProcPtr eventFilter
 	//Setp buttons
 	params.helpButton = false;
 	if(fatal)
-	params.defaultText = "\pQuit";
+	params.defaultText = "\004Quit";
 	else
 	params.defaultText = (StringPtr) kAlertDefaultOKText;
 	params.cancelText = nil;
@@ -215,9 +215,9 @@ void Error_Display(short actionID, OSErr errorID, ModalFilterProcPtr eventFilter
 	Get_ErrorText(errorID, errorText, solutionText);
 	
 	if(actionText[0] == 0)
-	BlockMove("\pAn error occured.", actionText, sizeof(Str255));
+	BlockMove("\021An error occured.", actionText, sizeof(Str255));
 	if(errorText[0] == 0)
-	BlockMove("\pUnknown error.", errorText, sizeof(Str255));
+	BlockMove("\016Unknown error.", errorText, sizeof(Str255));
 	
 	//Setup text #1
 	++actionText[0];

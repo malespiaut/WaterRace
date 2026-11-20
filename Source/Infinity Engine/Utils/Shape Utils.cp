@@ -158,7 +158,7 @@ ShapePtr Shape_New_Sprite(OSType textureID)
 	shape->dataPtr = (Ptr) data;
 	shape->shading = kShader_Sprite;
 	shape->texture = textureID;
-	BlockMove("\pFX Sprite", shape->name, sizeof(Str31));
+	BlockMove("\011FX Sprite", shape->name, sizeof(Str31));
 	Shape_CalculateBounding(shape);
 	
 	return shape;
@@ -194,7 +194,7 @@ ShapePtr Shape_New_Light()
 	shape->triangleCount = 8;
 	shape->dataPtr = (Ptr) data;
 	shape->shading = kShader_Light;
-	BlockMove("\pFX Light", shape->name, sizeof(Str31));
+	BlockMove("\010FX Light", shape->name, sizeof(Str31));
 	Shape_CalculateBounding(shape);
 	
 	return shape;
@@ -278,7 +278,7 @@ ShapePtr Shape_New_ParticleSystem(OSType textureID, long numParticles)
 	shape->dataPtr = (Ptr) data;
 	shape->shading = kShader_Particle;
 	shape->texture = textureID;
-	BlockMove("\pFX Particle system", shape->name, sizeof(Str31));
+	BlockMove("\022FX Particle system", shape->name, sizeof(Str31));
 	Shape_CalculateBounding(shape);
 	
 	if(Shape_ParticleUpdateNumber(shape, numParticles, nil) != noErr) {
@@ -318,7 +318,7 @@ ShapePtr Shape_New_Lens(OSType textureID)
 	shape->dataPtr = (Ptr) data;
 	shape->texture = textureID;
 	shape->shading = kShader_Lens;
-	BlockMove("\pFX Lens", shape->name, sizeof(Str31));
+	BlockMove("\007FX Lens", shape->name, sizeof(Str31));
 	Shape_CalculateBounding(shape);
 	
 	return shape;
@@ -362,7 +362,7 @@ ShapePtr Shape_New_Audio(Handle sound)
 	//Modify general
 	shape->dataPtr = (Ptr) data;
 	shape->shading = kShader_Audio;
-	BlockMove("\pFX Audio", shape->name, sizeof(Str31));
+	BlockMove("\010FX Audio", shape->name, sizeof(Str31));
 	Shape_CalculateBounding(shape);
 	
 	//Clean up

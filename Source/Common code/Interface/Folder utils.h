@@ -29,5 +29,6 @@ OSErr ScanForFolderAlias(FSSpec* folder);
 OSErr Find_FrenchTouchPreferencesFolder(short* volumeID, long* folderNum);
 short GetStartUpVolume();
 void SetDefaultDirectory(FSSpec* spec);
+void CopyPascalToCName(ConstStr255Param pstr, char* cName); // Pomme: FSSpec.cName is a C string
 
 #endif

@@ -188,7 +188,7 @@ OSErr SL_GetDeviceResolution(GDeviceInfoPtr g, short* width, short* height, shor
 		BackColor(whiteColor);
 		
 		if(message == nil)
-		ParamText("\p", nil, nil, nil);
+		ParamText("\000", nil, nil, nil);
 		else
 		ParamText(message, nil, nil, nil);
 		
@@ -712,7 +712,7 @@ DisplayIDType SL_PickUpScreen(Str255 message)
 		SetPort(theDialog);
 		
 		if(message == nil)
-		ParamText("\p", nil, nil, nil);
+		ParamText("\000", nil, nil, nil);
 		else
 		ParamText(message, nil, nil, nil);
 		

@@ -164,7 +164,7 @@ OSErr Network_Init()
 	//Find our OS
 	Gestalt(gestaltSystemVersion, (long*) &version);
 	
-	BlockMove("\pMacOS ", localOS, sizeof(Str31));
+	BlockMove("\006MacOS ", localOS, sizeof(Str31));
 	NumToString(version.stage, text);
 	BlockMove(&text[1], &localOS[localOS[0] + 1], text[0]);
 	localOS[0] += text[0];
@@ -178,11 +178,11 @@ OSErr Network_Init()
 	response = 0;
 	Gestalt(gestaltNativeCPUtype, &response);
 	switch(response) {
-		case gestaltCPU601: BlockMove("\pPowerPC 601", localProcessor, sizeof(Str31)); break;
-		case gestaltCPU603: case gestaltCPU603e: case gestaltCPU603ev: BlockMove("\pPowerPC 603", localProcessor, sizeof(Str31)); break;
-		case gestaltCPU604: case gestaltCPU604e: case gestaltCPU604ev: BlockMove("\pPowerPC 604", localProcessor, sizeof(Str31)); break;
-		case gestaltCPU750: BlockMove("\pPowerPC G3", localProcessor, sizeof(Str31)); break;
-		default: BlockMove("\pUnknown", localProcessor, sizeof(Str31)); break;
+		case gestaltCPU601: BlockMove("\013PowerPC 601", localProcessor, sizeof(Str31)); break;
+		case gestaltCPU603: case gestaltCPU603e: case gestaltCPU603ev: BlockMove("\013PowerPC 603", localProcessor, sizeof(Str31)); break;
+		case gestaltCPU604: case gestaltCPU604e: case gestaltCPU604ev: BlockMove("\013PowerPC 604", localProcessor, sizeof(Str31)); break;
+		case gestaltCPU750: BlockMove("\012PowerPC G3", localProcessor, sizeof(Str31)); break;
+		default: BlockMove("\007Unknown", localProcessor, sizeof(Str31)); break;
 	}
 	
 	//Append processor speed

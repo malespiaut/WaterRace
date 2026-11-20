@@ -47,7 +47,7 @@ SkeletonPtr Skeleton_New(OSType shapeID, ShapePtr shape)
 	node->rotateZ = 0.0;
 	Matrix_Clear(&node->pos);
 	node->verticeCount = 0;
-	BlockMove("\pRoot node", node->name, sizeof(Str31));
+	BlockMove("\011Root node", node->name, sizeof(Str31));
 	
 	shape->flags |= kFlag_HasSkeleton;
 	
