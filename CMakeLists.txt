@@ -47,3 +47,10 @@ target_include_directories(WaterRace PRIVATE ${INCLUDE_DIRS} port/stubs Pomme/sr
 target_compile_definitions(WaterRace PRIVATE POMME_NO_GRAPHICS POMME_NO_SOUND_MIXER POMME_NO_VIDEO POMME_NO_QD3D)
 target_compile_options(WaterRace PRIVATE -w -include MacHeadersPPC++)
 target_link_libraries(WaterRace PRIVATE Pomme)
+
+# Headless PNG texture loader test (no Pomme, no GL): ctest --test-dir build
+enable_testing()
+add_executable(test-texture-loader port/test-texture-loader.cpp port/TextureLoader.cpp)
+target_compile_definitions(test-texture-loader PRIVATE "WATERRACE_TEXTURES_DIR=\"${CMAKE_SOURCE_DIR}/WaterRace Data/Textures\"")
+target_compile_options(test-texture-loader PRIVATE -Wall -Wno-multichar -Wno-unused-function)
+add_test(NAME texture-loader COMMAND test-texture-loader)
