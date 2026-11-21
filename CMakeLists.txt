@@ -106,3 +106,16 @@ if(XVFB_RUN)
 else()
   add_test(NAME player COMMAND test-player)
 endif()
+
+# FX shaders on GL (#46): sky, sprite, particle bursts, lens, wireframe and Post FX lens flare through the engine's shaders,
+# checked against a software composite of the submitted quads; writes fx-scene.png. Needs a display (xvfb-run).
+add_executable(test-fx port/test-fx.cpp ${PLAYER_TEST_SOURCES} port/TextureLoader.cpp port/link-stubs.cpp)
+target_include_directories(test-fx PRIVATE ${INCLUDE_DIRS} port port/stubs Pomme/src)
+target_compile_definitions(test-fx PRIVATE POMME_NO_SOUND_MIXER POMME_NO_VIDEO POMME_NO_QD3D "WATERRACE_ROOT=\"${CMAKE_SOURCE_DIR}\"")
+target_compile_options(test-fx PRIVATE -w -include MacHeadersPPC++)
+target_link_libraries(test-fx PRIVATE Pomme OpenGL::GL)
+if(XVFB_RUN)
+  add_test(NAME fx COMMAND ${XVFB_RUN} -a $<TARGET_FILE:test-fx>)
+else()
+  add_test(NAME fx COMMAND test-fx)
+endif()
