@@ -146,7 +146,7 @@ enum {kFog_None = 1, kFog_Linear, kFog_Exponential, kFog_ExponentialSquared};
 //STRUCTURES:
 
 typedef struct {
-	OSType			itemID;
+	unsigned long	itemID; //Linux port: Terrain_Resolve stores a SpecialItemPtr here
 	unsigned long	flags;
 	
 	long			visibility;
@@ -161,8 +161,8 @@ typedef struct {
 	OSType			id;
 	unsigned long	flags;
 	
-	OSType			itemType,
-					modelID;
+	OSType			itemType;
+	unsigned long	modelID; //Linux port: Terrain_Resolve stores a MegaObjectPtr here
 	long			itemValue;
 	
 	long			unused;
@@ -183,8 +183,8 @@ typedef KeyFrame_Definition KeyFrame;
 typedef KeyFrame* KeyFramePtr;
 
 typedef struct {
-	OSType			modelID,
-					flyID;
+	unsigned long	modelID; //Linux port: Terrain_Resolve stores a MegaObjectPtr here
+	OSType			flyID;
 	unsigned long	flags;
 	
 	Matrix			pos;
@@ -228,7 +228,7 @@ typedef AmbientSound_Definition* AmbientSoundPtr;
 
 typedef struct {
 	OSType			sourceType;
-	OSType			soundID;
+	unsigned long	soundID; //Linux port: Terrain_Resolve stores an AmbientSoundPtr here
 	Vector			position;
 	float			maxDistance,
 					minDistance;
@@ -254,7 +254,7 @@ typedef Lightning_Definition Lightning;
 typedef Lightning_Definition* LightningPtr;
 
 typedef struct {
-	OSType				id;
+	unsigned long		id; //Linux port: Terrain_Resolve stores a MegaObjectPtr here
 	unsigned long		flags;
 	
 	long				visibility;
