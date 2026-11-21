@@ -72,6 +72,8 @@ static SDL_GLContext	gGLContext = nil;
 static long				gFrameCount = 0;
 static GLuint			gPortTexture = 0;
 static GammaInfo		gOverlay = {0, 0, 0, 0};
+static Boolean			gFrameBegun = false,
+						gScreenshotRequested = false;
 
 //ROUTINES:
 
@@ -216,6 +218,12 @@ OSErr ResolveAliasFile(FSSpec* theSpec, Boolean resolveChains, Boolean* targetIs
 OSErr PBGetCatInfo(CInfoPBRec* paramBlock, Boolean async)
 {
 	return fnfErr;
+}
+
+// Clock.h's time base (OTGetTimeStamp on the Mac): time since start in 1/timeUnit seconds.
+unsigned long GetCurrentAbsoluteTime(long timeUnit)
+{
+	return SDL_GetTicksNS() * timeUnit / SDL_NS_PER_SECOND;
 }
 
 // P1 check: the data-folder name comes out of STR# 129 through Pomme, and a resource read
@@ -383,27 +391,15 @@ static void Boot_DrawQuad(float s, float t)
 	glEnd();
 }
 
-// Composites the frame (PORTING.md sec. 6.3): the interface port letterboxed into the window,
-// then the fade overlay, then presents it. Debug hook: with WATERRACE_SCREENSHOT=path.png, frame
-// WATERRACE_SCREENSHOT_FRAME (default 1) is written to that PNG and the game exits.
-void Boot_PresentFrame()
+// Whole window, 0..1 coordinates with y down, every 3D state off (RAVE contexts may have left it on).
+static void Boot_Set2D()
 {
-	const char*		path = getenv("WATERRACE_SCREENSHOT");
-	const char*		frame = getenv("WATERRACE_SCREENSHOT_FRAME");
-	Rect			interfaceRect = {0, 0, kWindowHeight, kWindowWidth};
-	int				x,
-					y,
-					width,
+	int				width,
 					height;
-
-	Boot_UploadPort();
 
 	SDL_GetWindowSizeInPixels(gSDLWindow, &width, &height);
 	glViewport(0, 0, width, height);
 	glDisable(GL_SCISSOR_TEST);
-	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(0, 1, 1, 0, -1, 1);
@@ -413,7 +409,30 @@ void Boot_PresentFrame()
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_FOG);
 	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_COLOR_SUM);
 	glColor4f(1, 1, 1, 1);
+}
+
+// Starts the frame (PORTING.md sec. 6.3): clears the window and draws the interface port letterboxed into it.
+// Runs once per frame; QARenderStart calls it, so RAVE contexts draw over the interface.
+void Boot_BeginFrame()
+{
+	Rect			interfaceRect = {0, 0, kWindowHeight, kWindowWidth};
+	int				x,
+					y,
+					width,
+					height;
+
+	if(gFrameBegun)
+	return;
+	gFrameBegun = true;
+
+	Boot_UploadPort();
+
+	Boot_Set2D();
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	Boot_InterfaceToWindow(&interfaceRect, &x, &y, &width, &height);
 	glViewport(x, y, width, height);
@@ -422,11 +441,35 @@ void Boot_PresentFrame()
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	Boot_DrawQuad((float) kWindowWidth / kPortTextureWidth, (float) kWindowHeight / kPortTextureHeight);
 	glDisable(GL_TEXTURE_2D);
+}
+
+// Debug hook: the time (1/100 s) of WATERRACE_SCREENSHOT_TIME, or -1. The player shows that time of its
+// animation and calls Boot_RequestScreenshot, so the next presented frame is written (Infinity Player.cp).
+long Boot_ScreenshotTime()
+{
+	const char*		time = getenv("WATERRACE_SCREENSHOT_TIME");
+
+	return getenv("WATERRACE_SCREENSHOT") != nil && time != nil ? atol(time) : -1;
+}
+
+void Boot_RequestScreenshot()
+{
+	gScreenshotRequested = true;
+}
+
+// Ends the frame: the fade overlay over everything, then presents it (QARenderEnd calls it too).
+// Debug hook: with WATERRACE_SCREENSHOT=path.png, frame WATERRACE_SCREENSHOT_FRAME (default 1), or the
+// frame at WATERRACE_SCREENSHOT_TIME, is written to that PNG and the game exits.
+void Boot_PresentFrame()
+{
+	const char*		path = getenv("WATERRACE_SCREENSHOT");
+	const char*		frame = getenv("WATERRACE_SCREENSHOT_FRAME");
+
+	Boot_BeginFrame();
 
 	// The gamma fade covered the whole monitor, so the overlay covers the whole window.
 	if(gOverlay.alpha > 0) {
-		SDL_GetWindowSizeInPixels(gSDLWindow, &width, &height);
-		glViewport(0, 0, width, height);
+		Boot_Set2D();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		glColor4f(gOverlay.red, gOverlay.green, gOverlay.blue, gOverlay.alpha);
@@ -435,7 +478,7 @@ void Boot_PresentFrame()
 	}
 
 	++gFrameCount;
-	if(path != nil && gFrameCount == (frame != nil ? atol(frame) : 1)) {
+	if(path != nil && (Boot_ScreenshotTime() >= 0 ? gScreenshotRequested : gFrameCount == (frame != nil ? atol(frame) : 1))) {
 		Boolean written = Boot_WriteScreenshot(path);
 		fprintf(stderr, "Boot: screenshot of frame %ld %s %s\n", gFrameCount, written ? "written to" : "FAILED for", path);
 		SDL_Quit();
@@ -443,6 +486,7 @@ void Boot_PresentFrame()
 	}
 
 	SDL_GL_SwapWindow(gSDLWindow);
+	gFrameBegun = false;
 }
 
 // Gamma fades (Local ColorGamma.h) as an animated overlay. GDHandle arguments are ignored: one window.

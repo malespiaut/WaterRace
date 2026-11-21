@@ -12,6 +12,7 @@
 #undef main
 
 #include "Infinity Player.h"
+#include "Infinity rendering.h"
 
 static int		gFailures = 0;
 
@@ -100,6 +101,33 @@ int main(int argc, char** argv)
 		++textured;
 	}
 	CHECK(textured > 0);
+
+	// FX shape data unpacked from big-endian (#44): 4 lenses and one particle system with sane values
+	long			lenses = 0,
+					systems = 0;
+	for(unsigned long i = 0; i < mega->object.shapeCount; ++i) {
+		ShapePtr		shape = mega->object.shapeList[i];
+
+		if(shape->shading == kShader_Lens) {
+			ShapeData_LensPtr		lens = (ShapeData_LensPtr) shape->dataPtr;
+
+			printf("  lens %.*s: size %g order %g depth %g flags %lu\n", shape->name[0], (char*) shape->name + 1, lens->size, lens->order, lens->depth, lens->flags);
+			CHECK(lens->size > 0 && lens->size < 10 && std::fabs(lens->order) < 10 && lens->depth > 0 && lens->depth <= 1 && lens->flags < 0x100);
+			++lenses;
+		}
+		else if(shape->shading == kShader_Particle) {
+			ShapeData_ParticlePtr	data = (ShapeData_ParticlePtr) shape->dataPtr;
+			InfinityParticlePtr		particle = (InfinityParticlePtr) shape->pointList;
+
+			printf("  particles %.*s: %ld, flags %lu, init size %g energy %g\n", shape->name[0], (char*) shape->name + 1, data->particleCount, data->flags, data->initSize, data->initEnergy);
+			CHECK(data->particleCount > 0 && data->particleCount * sizeof(InfinityParticle) <= (size_t) GetPtrSize((Ptr) shape->pointList) && data->flags < 0x100);
+			CHECK(std::isfinite(data->initSize) && data->initSize > 0 && std::isfinite(data->initEnergy) && data->initEnergy > 0);
+			for(long p = 0; p < data->particleCount; ++p)
+			CHECK(std::isfinite(particle[p].position.x) && std::fabs(particle[p].position.x) < 1000 && particle[p].sprite.size >= 0);
+			++systems;
+		}
+	}
+	CHECK(lenses == 4 && systems == 1);
 
 	InfinityPlayer_UnloadAnimation();
 	InfinityPlayer_Quit();

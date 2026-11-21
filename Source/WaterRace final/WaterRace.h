@@ -173,6 +173,7 @@ void Sound_PlaySFxHandle(Handle sound);
 OSErr AudioCD_PlayAudioTrack_Wrapper(FSSpec* file);
 
 //File: Boot.cp
+void Boot_BeginFrame();
 void Boot_PresentFrame();
 void Boot_InterfaceToWindow(const Rect* r, int* x, int* y, int* width, int* height);
 

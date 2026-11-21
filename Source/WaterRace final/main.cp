@@ -624,10 +624,14 @@ int Game_Main() // the Mac main(); main() in Boot.cp calls it and catches ExitTo
 	if(getenv("WATERRACE_BOOT_ONLY") != nil)
 	ExitToShell();
 	theError = Demo_Play();
+	fprintf(stderr, "Boot: Demo_Play done (%d)\n", theError);
 	if(theError) {
 		Shut_Down();
 		ExitToShell();
 	}
+	//shortcut: WATERRACE_INTRO_ONLY=1 quits after the intro for port/check-intro.py, until the interface runs (#48)
+	if(getenv("WATERRACE_INTRO_ONLY") != nil)
+	ExitToShell();
 #else
 #if __USE_AUDIO_CD_TRACKS__ || __USE_AUDIO_FILES__
 	GetIndString(musicsFolder.name, MusicFileNameResID, interfaceMusic);

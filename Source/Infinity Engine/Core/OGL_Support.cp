@@ -85,6 +85,8 @@ static TQAEngine		gEngine;
 //ROUTINES:
 
 void Boot_InterfaceToWindow(const Rect* r, int* x, int* y, int* width, int* height); // compositor, Boot.cp
+void Boot_BeginFrame();
+void Boot_PresentFrame();
 
 TQAEngine* QADeviceGetFirstEngine(TQADevice* device)
 {
@@ -294,6 +296,7 @@ TQAError QARenderStart(TQADrawContext* drawContext, const TQARect* dirtyRect, vo
 	TQAVGouraud		origin = {};
 	auto&			background = drawContext->background;
 
+	Boot_BeginFrame();
 	Context_Bind(drawContext);
 	glDepthMask(GL_TRUE);
 	if(drawContext->initializeMethod.bufferNoticeMethod != nil) {
@@ -324,9 +327,11 @@ TQAError QARenderStart(TQADrawContext* drawContext, const TQARect* dirtyRect, vo
 	return kQANoErr;
 }
 
-// Presenting happens once per frame in the compositor (PORTING.md sec. 6.3).
+// On the Mac the finished buffer went to the screen here: the compositor presents the frame (PORTING.md sec. 6.3).
+// shortcut: one present per context; batch them if a screen ever renders two contexts in one frame.
 TQAError QARenderEnd(TQADrawContext* drawContext, void* finalContext)
 {
+	Boot_PresentFrame();
 	return kQANoErr;
 }
 
