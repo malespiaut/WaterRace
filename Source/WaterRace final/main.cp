@@ -290,7 +290,7 @@ static void Boot_Sequence()
 	//Scan for ships & terrains
 	fprintf(stderr, "Boot: Preload_DataFolders\n");
 	theError = Preload_DataFolders();
-	//shortcut: not fatal while MetaFile headers are read unswapped (kError_BadVersion); make it fatal again once MetaFiles load (#42, P4)
+	//shortcut: not fatal until every MetaFile read site is swapped (P4); make it fatal again then
 	if(theError)
 	Wrapper_Error_Display(135, theError, nil, false);
 	
