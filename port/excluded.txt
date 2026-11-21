@@ -5,7 +5,9 @@ Common code/Interface/Navigation Services.cp
 Infinity Engine/MetaFile/MetaFile Write.cp
 # Editor-only texture import/export (PORTING.md §7 P0); no callers outside this file.
 Infinity Engine/Utils/Texture Utils.cp
-# Hardware gamma via GDevice internals (PORTING.md §6.3 replaces it with a fade quad). Fade* symbols are link-time gaps for P3.
+# Hardware gamma via GDevice internals. Boot.cp implements the Fade*/MonitorState calls as a fade overlay (PORTING.md §6.3).
 WaterRace final/Local ColorGamma.cp
+# Generic copy of the same library with older signatures; the game uses Local ColorGamma.h.
+Common code/Screen/ColorGamma.cp
 # Not in the CodeWarrior project (WaterRace.µ); duplicates SL_GetMaxResolution from ScreenLib.cp.
 Common code/Screen/Screen Device.cp

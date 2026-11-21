@@ -172,6 +172,10 @@ void Sound_PlaySFx(short SFxID);
 void Sound_PlaySFxHandle(Handle sound);
 OSErr AudioCD_PlayAudioTrack_Wrapper(FSSpec* file);
 
+//File: Boot.cp
+void Boot_PresentFrame();
+void Boot_InterfaceToWindow(const Rect* r, int* x, int* y, int* width, int* height);
+
 //File: Progress bar.cp
 OSErr Progress_Init(FSSpec* theFile, short location_H, short location_V);
 void Progress_Update(short value, short max);

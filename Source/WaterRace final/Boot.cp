@@ -31,6 +31,7 @@
 #include				<SDL3/SDL_opengl.h>
 
 #include				"PommeInit.h"
+#include				"PommeGraphics.h"
 #include				"WaterRace.h"
 
 #define					STB_IMAGE_WRITE_IMPLEMENTATION
@@ -43,6 +44,22 @@
 #define					kCheckStringListID			200
 #define					kWindowWidth				640
 #define					kWindowHeight				480
+#define					kPortTextureWidth			1024		// power of two: GL 1.4 has no NPOT textures
+#define					kPortTextureHeight			512
+#define					kFadeStepMicroseconds		10000		// one gamma step per 10 ms, as on the Mac
+#define					kTestFadeFrame				10
+
+//STRUCTURES:
+
+// The "monitor state" is the fade overlay: premultiplied colour and alpha (PORTING.md sec. 6.3).
+struct OpaqueGammaInfo
+{
+	float					red,
+							green,
+							blue,
+							alpha;
+};
+typedef struct OpaqueGammaInfo GammaInfo;
 
 //VARIABLES:
 
@@ -51,6 +68,8 @@ extern short			mainResFileID;	// defined in main.cp
 SDL_Window*				gSDLWindow = nil;
 static SDL_GLContext	gGLContext = nil;
 static long				gFrameCount = 0;
+static GLuint			gPortTexture = 0;
+static GammaInfo		gOverlay = {0, 0, 0, 0};
 
 //ROUTINES:
 
@@ -103,7 +122,10 @@ Boolean Boot_InitGL()
 {
 	const char*		version;
 	int				major = 0,
-					minor = 0;
+					minor = 0,
+					width = kWindowWidth,
+					height = kWindowHeight;
+	const char*		size = getenv("WATERRACE_WINDOW_SIZE");	// debug: "WxH", e.g. 1280x720
 	Boolean			ok;
 
 	if(!SDL_Init(SDL_INIT_VIDEO)) {
@@ -111,11 +133,14 @@ Boolean Boot_InitGL()
 		return false;
 	}
 
+	if(size != nil)
+	sscanf(size, "%dx%d", &width, &height);
+
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-	gSDLWindow = SDL_CreateWindow("WaterRace", kWindowWidth, kWindowHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	gSDLWindow = SDL_CreateWindow("WaterRace", width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	if(gSDLWindow == nil || (gGLContext = SDL_GL_CreateContext(gSDLWindow)) == nil) {
 		Boot_Error(SDL_GetError());
 		return false;
@@ -152,12 +177,135 @@ static Boolean Boot_WriteScreenshot(const char* path)
 	return stbi_write_png(path, width, height, 4, pixels.data(), width * 4) != 0;
 }
 
-// Presents the frame. Debug hook: with WATERRACE_SCREENSHOT=path.png, frame
+// Maps a rectangle of the 640x480 interface to the letterboxed window, in GL window pixels
+// (origin bottom-left), ready for glViewport and glScissor.
+void Boot_InterfaceToWindow(const Rect* r, int* x, int* y, int* width, int* height)
+{
+	int				windowWidth,
+					windowHeight;
+	float			scale,
+					left,
+					bottom;
+
+	SDL_GetWindowSizeInPixels(gSDLWindow, &windowWidth, &windowHeight);
+	scale = SDL_min((float) windowWidth / kWindowWidth, (float) windowHeight / kWindowHeight);
+	left = (windowWidth - kWindowWidth * scale) / 2;
+	bottom = (windowHeight - kWindowHeight * scale) / 2;
+
+	*x = SDL_lroundf(left + r->left * scale);
+	*y = SDL_lroundf(bottom + (kWindowHeight - r->bottom) * scale);
+	*width = SDL_lroundf(left + r->right * scale) - *x;
+	*height = SDL_lroundf(bottom + (kWindowHeight - r->top) * scale) - *y;
+}
+
+// Uploads the damaged region of Pomme's screen port (ARGB32, A first in memory) to the port texture.
+static void Boot_UploadPort()
+{
+	CGrafPtr		port = Pomme::Graphics::GetScreenPort();
+	GrafPtr			savePort;
+	Rect			r;
+
+	GetPort(&savePort);
+	SetPort(port);
+
+	if(gPortTexture == 0) {
+		glGenTextures(1, &gPortTexture);
+		glBindTexture(GL_TEXTURE_2D, gPortTexture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, kPortTextureWidth, kPortTextureHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, nil);
+		DamagePortRegion(&port->portRect);
+	}
+
+	if(IsPortDamaged()) {
+		GetPortDamageRegion(&r);
+		r.left = SDL_max(r.left, 0);
+		r.top = SDL_max(r.top, 0);
+		r.right = SDL_min(r.right, kWindowWidth);
+		r.bottom = SDL_min(r.bottom, kWindowHeight);
+		if(r.left < r.right && r.top < r.bottom) {
+			glBindTexture(GL_TEXTURE_2D, gPortTexture);
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, kWindowWidth);
+			glPixelStorei(GL_UNPACK_SKIP_PIXELS, r.left);
+			glPixelStorei(GL_UNPACK_SKIP_ROWS, r.top);
+			// Bytes A,R,G,B read as a native 32-bit word: 8_8_8_8 on little endian, 8_8_8_8_REV on big endian.
+			glTexSubImage2D(GL_TEXTURE_2D, 0, r.left, r.top, r.right - r.left, r.bottom - r.top, GL_BGRA,
+				SDL_BYTEORDER == SDL_LIL_ENDIAN ? GL_UNSIGNED_INT_8_8_8_8 : GL_UNSIGNED_INT_8_8_8_8_REV,
+				GetPixBaseAddr(GetGWorldPixMap(port)));
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+			glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+			glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+		}
+		ClearPortDamage();
+	}
+
+	SetPort(savePort);
+}
+
+// Draws a quad over the current viewport, in 0..1 coordinates with y down, texture coordinates 0..s, 0..t.
+static void Boot_DrawQuad(float s, float t)
+{
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0);	glVertex2f(0, 0);
+	glTexCoord2f(s, 0);	glVertex2f(1, 0);
+	glTexCoord2f(s, t);	glVertex2f(1, 1);
+	glTexCoord2f(0, t);	glVertex2f(0, 1);
+	glEnd();
+}
+
+// Composites the frame (PORTING.md sec. 6.3): the interface port letterboxed into the window,
+// then the fade overlay, then presents it. Debug hook: with WATERRACE_SCREENSHOT=path.png, frame
 // WATERRACE_SCREENSHOT_FRAME (default 1) is written to that PNG and the game exits.
 void Boot_PresentFrame()
 {
 	const char*		path = getenv("WATERRACE_SCREENSHOT");
 	const char*		frame = getenv("WATERRACE_SCREENSHOT_FRAME");
+	Rect			interfaceRect = {0, 0, kWindowHeight, kWindowWidth};
+	int				x,
+					y,
+					width,
+					height;
+
+	Boot_UploadPort();
+
+	SDL_GetWindowSizeInPixels(gSDLWindow, &width, &height);
+	glViewport(0, 0, width, height);
+	glDisable(GL_SCISSOR_TEST);
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, 1, 1, 0, -1, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_FOG);
+	glDisable(GL_BLEND);
+	glColor4f(1, 1, 1, 1);
+
+	Boot_InterfaceToWindow(&interfaceRect, &x, &y, &width, &height);
+	glViewport(x, y, width, height);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, gPortTexture);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	Boot_DrawQuad((float) kWindowWidth / kPortTextureWidth, (float) kWindowHeight / kPortTextureHeight);
+	glDisable(GL_TEXTURE_2D);
+
+	// The gamma fade covered the whole monitor, so the overlay covers the whole window.
+	if(gOverlay.alpha > 0) {
+		SDL_GetWindowSizeInPixels(gSDLWindow, &width, &height);
+		glViewport(0, 0, width, height);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		glColor4f(gOverlay.red, gOverlay.green, gOverlay.blue, gOverlay.alpha);
+		Boot_DrawQuad(0, 0);
+		glDisable(GL_BLEND);
+	}
 
 	++gFrameCount;
 	if(path != nil && gFrameCount == (frame != nil ? atol(frame) : 1)) {
@@ -168,6 +316,163 @@ void Boot_PresentFrame()
 	}
 
 	SDL_GL_SwapWindow(gSDLWindow);
+}
+
+// Gamma fades (Local ColorGamma.h) as an animated overlay. GDHandle arguments are ignored: one window.
+
+static void SetVolume(SndChannelPtr chan, short volume)
+{
+	SndCommand		theCommand;
+
+	theCommand.cmd		= volumeCmd;
+	theCommand.param1	= 0;
+	theCommand.param2	= ((long) volume << 16) + volume;
+	SndDoImmediate(chan, &theCommand);
+}
+
+static short GetVolume(SndChannelPtr chan)
+{
+	SndCommand		theCommand;
+	long			volume = 0;
+
+	theCommand.cmd		= getVolumeCmd;
+	theCommand.param1	= 0;
+	theCommand.param2	= (long) &volume;
+	SndDoImmediate(chan, &theCommand);
+
+	return (volume & 0x0000FFFF);
+}
+
+// Fades the overlay from its current state to "to" in numSteps + 1 presented frames, ramping the
+// channel volume as the Mac version did. Same step curve as XHighLevelFade in Local ColorGamma.cp.
+static OSErr Boot_Fade(const GammaInfo* to, UInt16 numSteps, FadeType typeOfFade, SndChannelPtr chan, short volume)
+{
+	GammaInfo		from = gOverlay;
+	UInt32			i,
+					which = 0,
+					total;
+	float			soundDiff = 0,
+					t;
+	Uint64			startTime,
+					elapsed;
+
+	if(typeOfFade & quadraticFade)
+	while(numSteps > 256)
+	numSteps >>= 1;
+
+	switch(typeOfFade) {
+		case linearFade:			total = numSteps;				break;
+		case quadraticFade:
+		case inverseQuadraticFade:	total = numSteps * numSteps;	break;
+		default:					return invalidFadeType;
+	}
+	if(total == 0)
+	total = 1;
+
+	if(chan != nil)
+	soundDiff = (float) (GetVolume(chan) - volume) / (float) (numSteps + 1);
+
+	for(i = 0; i <= numSteps; ++i) {
+		startTime = SDL_GetTicksNS();
+
+		switch(typeOfFade) {
+			case linearFade:			which = i;											break;
+			case quadraticFade:			which = i * i;										break;
+			case inverseQuadraticFade:	which = total - (numSteps - i) * (numSteps - i);	break;
+		}
+		t = SDL_min((float) which / total, 1.0f);
+		gOverlay.red = from.red + (to->red - from.red) * t;
+		gOverlay.green = from.green + (to->green - from.green) * t;
+		gOverlay.blue = from.blue + (to->blue - from.blue) * t;
+		gOverlay.alpha = from.alpha + (to->alpha - from.alpha) * t;
+
+		if((chan != nil) && (soundDiff != 0.0))
+		SetVolume(chan, volume + soundDiff * (numSteps - i));
+
+		Boot_PresentFrame();
+
+		elapsed = SDL_GetTicksNS() - startTime;
+		if(elapsed < SDL_US_TO_NS(kFadeStepMicroseconds))
+		SDL_DelayNS(SDL_US_TO_NS(kFadeStepMicroseconds) - elapsed);
+	}
+	gOverlay = *to;
+
+	return noErr;
+}
+
+// A nil state is the unfaded screen.
+static GammaInfo Boot_StateOf(GammaRef state)
+{
+	GammaInfo		clear = {0, 0, 0, 0};
+
+	return state != nil ? **state : clear;
+}
+
+pascal OSErr StartFading(GammaRef* returnedInitialState)
+{
+	*returnedInitialState = (GammaRef) NewHandle(sizeof(GammaInfo));
+	if(*returnedInitialState == nil)
+	return memFullErr;
+
+	***returnedInitialState = gOverlay;
+	return noErr;
+}
+
+pascal void StopFading(GammaRef initialState, Boolean restore)
+{
+	if(restore)
+	SetMonitorState(initialState);
+	if(initialState != nil)
+	DisposeHandle((Handle) initialState);
+}
+
+pascal OSErr SetMonitorState(GammaRef state)
+{
+	gOverlay = Boot_StateOf(state);
+	return noErr;
+}
+
+pascal OSErr Set1MonitorState(GDHandle theDevice, GammaRef state)
+{
+	return SetMonitorState(state);
+}
+
+pascal OSErr Fade1ToColor(GDHandle theDevice, const RGBColor* color, UInt16 numSteps, FadeType typeOfFade, SndChannelPtr chan, short volume)
+{
+	GammaInfo		to = {color->red / 65535.0f, color->green / 65535.0f, color->blue / 65535.0f, 1};
+
+	return Boot_Fade(&to, numSteps, typeOfFade, chan, volume);
+}
+
+pascal OSErr Fade1ToGamma(GDHandle theDevice, GammaRef to, UInt16 numSteps, FadeType typeOfFade, SndChannelPtr chan, short volume)
+{
+	GammaInfo		state = Boot_StateOf(to);
+
+	return Boot_Fade(&state, numSteps, typeOfFade, chan, volume);
+}
+
+pascal OSErr Fade1ToBlack(GDHandle theDevice, UInt16 numSteps, FadeType typeOfFade, SndChannelPtr chan, short volume)
+{
+	RGBColor		black = {0, 0, 0};
+
+	return Fade1ToColor(theDevice, &black, numSteps, typeOfFade, chan, volume);
+}
+
+// P3 placeholder screen: QuickDraw paints a known pattern into the screen port, checked by
+// port/check-compositor.py: background, red top-left, green bottom-right and white centre squares.
+static void Boot_DrawTestPattern()
+{
+	RGBColor		background = {32 << 8, 64 << 8, 128 << 8},
+					red = {0xFFFF, 0, 0},
+					green = {0, 0xFFFF, 0},
+					white = {0xFFFF, 0xFFFF, 0xFFFF};
+	Rect			r;
+
+	SetPort(Pomme::Graphics::GetScreenPort());
+	SetRect(&r, 0, 0, kWindowWidth, kWindowHeight);	RGBForeColor(&background);	PaintRect(&r);
+	SetRect(&r, 0, 0, 40, 40);						RGBForeColor(&red);			PaintRect(&r);
+	SetRect(&r, 600, 440, 640, 480);				RGBForeColor(&green);		PaintRect(&r);
+	SetRect(&r, 300, 220, 340, 260);				RGBForeColor(&white);		PaintRect(&r);
 }
 
 // Boot the game on Linux. Returns 0 when the P1 checks pass and the window closes.
@@ -192,16 +497,22 @@ int Boot_Startup()
 	if(!Boot_InitGL())
 	return 1;
 
-	// shortcut: presents cleared frames until the window closes; P3 screens replace this loop.
+	// shortcut: shows the QuickDraw test pattern, fades it to black and back in at frame
+	// kTestFadeFrame, until the window closes; P3 screens replace this loop.
+	Boot_DrawTestPattern();
+	StartFading(&mainGamma);
 	for(;;) {
 		while(SDL_PollEvent(&event))
 		if(event.type == SDL_EVENT_QUIT) {
+			StopFading(mainGamma, true);
 			SDL_Quit();
 			return 0;
 		}
 
-		glClearColor(32 / 255.0f, 64 / 255.0f, 128 / 255.0f, 1.0f);	// distinct from black so the screenshot proves the clear
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Boot_PresentFrame();
+		if(gFrameCount == kTestFadeFrame) {
+			Fade1ToBlack(nil, kGammaSpeed, quadraticFade, nil, 0);
+			Fade1ToGamma(nil, mainGamma, kGammaSpeed, quadraticFade, nil, 0);
+		}
 	}
 }
