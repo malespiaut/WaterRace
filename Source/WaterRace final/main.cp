@@ -175,6 +175,7 @@ static OSErr Screen_Init()
 	
 	//Set up interface window
 	mainWin = (WindowPtr) Pomme::Graphics::GetScreenPort();
+	backgroundWin = mainWin;	//the compositor clears the letterbox around the interface
 	mainWinOffset.h = 0;
 	mainWinOffset.v = 0;
 	SetPort(mainWin);
@@ -359,13 +360,12 @@ static void Shut_Down()
 	//Do clean up
 	SpinningCursor_Quit();
 	TextEngine_Quit();
-	Sound_QuitSFx();
+	//Linux port: no interface sfx and no InputSprocket to quit, Boot_Sequence did not start them (P5)
 	InfinityPlayer_Quit();
 #if !__DEMO_MODE__
 	if(networkAvailable)
 	Network_Quit();
 #endif
-	InputSprocket_Quit();
 	Screen_Quit();
 #if __USE_AUDIO_CD_TRACKS__
 	if(audioCD)
@@ -635,7 +635,7 @@ int Game_Main() // the Mac main(); main() in Boot.cp calls it and catches ExitTo
 		Shut_Down();
 		ExitToShell();
 	}
-	//shortcut: WATERRACE_INTRO_ONLY=1 quits after the intro for port/check-intro.py, until the interface runs (#48)
+	//Linux port debug entry: WATERRACE_INTRO_ONLY=1 quits after the intro for port/check-intro.py, which does not drive the interface
 	if(getenv("WATERRACE_INTRO_ONLY") != nil)
 	ExitToShell();
 #else

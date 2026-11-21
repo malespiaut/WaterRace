@@ -20,5 +20,9 @@ void Port_CopyBits(const PixMap* srcBits, PixMap* dstBits, const Rect* srcRect, 
 #define DrawPicture Port_DrawPicture
 #define CopyBits Port_CopyBits
 
+// Pomme's GetMouse returns window coordinates and doesn't pump events: Boot.cp's maps them to the 640x480 interface.
+void Port_GetMouse(Point* mouseLoc);
+#define GetMouse Port_GetMouse
+
 // Pomme exposes GetIndString as GetIndStringC (same arguments, Str255 out).
 #define GetIndString(s, list, index) GetIndStringC((s), (list), (index))

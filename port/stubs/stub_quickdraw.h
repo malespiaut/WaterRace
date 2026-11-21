@@ -39,7 +39,7 @@ void ClosePicture(void);
 
 // Pixels
 
-void UnlockPixels(PixMapHandle pm);
+static inline void UnlockPixels(PixMapHandle pm) { (void) pm; }	// no-op, as Pomme's LockPixels
 
 // Text
 

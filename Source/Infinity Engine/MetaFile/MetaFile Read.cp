@@ -1012,7 +1012,8 @@ static OSErr Load_Skeleton(MetaFile_ReferencePtr reference, SkeletonPtr* skeleto
 		for(j = 0; j < kSkeleton_MaxVertices; ++j)
 		node->verticeList[j] = UnpackU32BE(diskNode + 96 + 4 * j);
 		BlockMove(diskNode + 608, node->name, sizeof(Str31));
-		if((node->childNodeCount > kSkeleton_MaxChildNodes) || (node->verticeCount > kSkeleton_MaxVertices)) {
+		//Nodes past nodeCount hold garbage on disk (Leah)
+		if((i < (*skeleton)->nodeCount) && ((node->childNodeCount > kSkeleton_MaxChildNodes) || (node->verticeCount > kSkeleton_MaxVertices))) {
 			DisposePtr((Ptr) data);
 			return kError_FatalError;
 		}

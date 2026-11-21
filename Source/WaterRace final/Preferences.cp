@@ -333,6 +333,9 @@ void Preference_Write()
 	Str63		prefName,
 				folderName;
 	
+	//Linux port: no preferences file before P6, as Preference_Read (PORTING.md 6.2)
+	return;
+	
 	theError = Find_FrenchTouchPreferencesFolder(&volumeID, &prefFolderNum);
 	if(theError) {
 		theError = FindFolder(kOnSystemDisk, 'pref', kDontCreateFolder, &volumeID, &prefFolderNum);

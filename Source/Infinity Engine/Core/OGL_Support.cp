@@ -138,6 +138,8 @@ TQAError QADrawContextNew(TQADevice* device, const TQARect* bounds, void* notice
 	context->intTags[kQATag_PerspectiveZ] = kQAPerspectiveZ_Off;
 	context->intTags[kQATag_TextureFilter] = kQATextureFilter_Fast;
 	context->floatTags[kQATag_ColorBG_a] = 1.0;
+	context->floatTags[kQATag_BitmapScale_x] = 1.0;
+	context->floatTags[kQATag_BitmapScale_y] = 1.0;
 
 	*drawContext = context;
 	return kQANoErr;
@@ -169,7 +171,7 @@ long QAGetInt(TQADrawContext* drawContext, long tag)
 	return drawContext->intTags[tag];
 }
 
-// BitmapScale is dropped: the GL viewport does the scaling.
+// The GL viewport scales the context into its display rectangle; BitmapScale scales QADrawBitmap within it.
 TQAError QASetFloat(TQADrawContext* drawContext, long tag, float value)
 {
 	if(tag < 0 || tag >= kTagCount)
@@ -553,12 +555,12 @@ static void Context_BindTexture(TQADrawContext* drawContext, GLuint name, bool m
 	glEnable(GL_COLOR_SUM);
 }
 
-// The bitmap is drawn unscaled with its top-left corner at v (BitmapScale is dropped), without fog.
+// The bitmap is drawn scaled by BitmapScale with its top-left corner at v, without fog.
 void QADrawBitmap(TQADrawContext* drawContext, TQAVGouraud* v, TQABitmap* bitmap)
 {
 	float			w = 1.0f / v->invW,
-					right = v->x + bitmap->width,
-					bottom = v->y + bitmap->height;
+					right = v->x + bitmap->width * drawContext->floatTags[kQATag_BitmapScale_x],
+					bottom = v->y + bitmap->height * drawContext->floatTags[kQATag_BitmapScale_y];
 
 	Context_BindTexture(drawContext, bitmap->name, false, kQATextureFilter_Fast, kQATextureOp_None);
 	glDisable(GL_FOG);

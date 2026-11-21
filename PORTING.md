@@ -296,7 +296,7 @@ window needs a larger one), which keeps the 4:3 vertical FOV. Only full-window c
 ### 6.4 Input
 
 `ISpRoutines.cp` (InputSprocket needs, elements and events) plus `GetKeys`/`Button`/`GetMouse`.
-Pomme already maps `GetKeys`/`Button`/`GetMouse` onto SDL. Rewrite `ISpRoutines.cp` against SDL3
+Pomme already maps `GetKeys`/`Button`/`GetMouse` onto SDL. `GetMouse` is wrapped (`Port_GetMouse`, Boot.cp) to pump events and map the window back to the 640×480 interface. Rewrite `ISpRoutines.cp` against SDL3
 keyboard and `SDL_Gamepad`, keeping its public functions (`InputSprocket_GetShipInput`, …).
 
 ### 6.5 2D code that assumes 16-bit pixels
