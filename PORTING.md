@@ -209,6 +209,7 @@ Other notes:
 - `MetaFile Write.cp` is for the editor tools. Leave it out of the game build.
 - **Preferences, pilot and replay files** (`Preferences.cp:398`, `Pilots.cp:158`, `Replay.cp:144`) write raw structs with `FSWrite`. Give them an explicit field-by-field format in the preferences directory, as CroMagRally did with its generic user-file routines. Old Mac saves can be ignored.
 - `(unsigned long)` pointer stores (`Infinity rendering.cp:694,697`) work on LP64 Linux, since `unsigned long` is 64-bit there. Note them and move on.
+- *Status:* `Data Files.cp` swaps `trds`, `shds` and `chds` with a size check each (their `long`s are `SInt32`); `PBGetCatInfo` (Boot.cp) lists host folders, so Locations/Ships/Characters are scanned; character previews (`imag`, PICT `0x9A`) are decoded by Pomme at preload (#49). Ship and terrain previews stay raw PICT (some are QuickTime JPEG).
 
 ### 5.3 Textures and images: convert once
 

@@ -141,9 +141,10 @@ static void CharacterMenu_DrawCharacter(short num)
 	
 	//Display pilot age
 	TextEngine_Settings_Text(specs[1].fontNum, specs[1].fontSize, specs[1].fontStyle);
-	BlockMove("\014xx years old", theString, sizeof(Str31));
+	BlockMove("\014xx years old", theString, sizeof("\014xx years old")); //Linux port: not sizeof(Str31), past the literal
 	temp = theString[0];
 	NumToString(current->description.age, theString);
+	theString[theString[0] + 1] = ' '; //Linux port: Pomme's NumToString ends the digits with a NUL
 	theString[0] = temp;
 	destPoint.h = 96;
 	destPoint.v = 237;
@@ -334,6 +335,7 @@ static OSErr Introduce_Character(short num)
 	}
 	CharacterMenu_DrawCharacter(num);
 	InfinityPlayer_RunSync(kPlayerFlag_StopOnMouse + kPlayerFlag_DisplayLastFrameOnStop, kPlayer_DefaultMaxFPS);
+	fprintf(stderr, "Interface: character %d loaded\n", num); //port/check-characters.py waits for it
 #if __SHOW_SPINNING_CURSOR__
 	SpinningCursor_Stop();
 #else
@@ -362,6 +364,7 @@ OSErr CharacterMenu_Run(OSType* characterID)
 #if !__SHOW_SPINNING_CURSOR__
 	InitCursor();
 #endif
+	fprintf(stderr, "Interface: character menu ready\n"); //port/check-characters.py waits for it
 	while(run) {
 		if(InfinityPlayer_RunAsync(kPlayer_DefaultMaxFPS))
 		InfinityPlayer_PlayAnimation(GetRandomLoop());

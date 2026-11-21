@@ -24,6 +24,9 @@ void Port_CopyBits(const PixMap* srcBits, PixMap* dstBits, const Rect* srcRect, 
 void Port_GetMouse(Point* mouseLoc);
 #define GetMouse Port_GetMouse
 
+// A Pomme picture (decoded ARGB32) from raw PICT data, as MetaFile 'imag' tags hold; nil if Pomme can't decode it (Boot.cp).
+PicHandle Port_NewPictureFromPICT(Ptr data, long size);
+
 // Pomme exposes GetIndString as GetIndStringC (same arguments, Str255 out).
 #define GetIndString(s, list, index) GetIndStringC((s), (list), (index))
 // The Pascal string, for text the game measures by its length byte (Boot.cp).
