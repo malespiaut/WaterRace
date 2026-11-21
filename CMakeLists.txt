@@ -101,6 +101,21 @@ target_compile_options(test-terrain PRIVATE -w -include MacHeadersPPC++)
 target_link_libraries(test-terrain PRIVATE Pomme)
 add_test(NAME terrain COMMAND test-terrain)
 
+# P4 data check (#70): every MetaFile through the game's loaders under ASan/UBSan, dump diffed against tools/metadump.py
+add_executable(test-datacheck port/test-datacheck.cpp "${CMAKE_SOURCE_DIR}/Source/Infinity Engine/Core/Textures.cp" port/TextureLoader.cpp)
+target_include_directories(test-datacheck PRIVATE ${INCLUDE_DIRS} port port/stubs Pomme/src)
+target_compile_definitions(test-datacheck PRIVATE POMME_NO_SOUND_MIXER POMME_NO_VIDEO POMME_NO_QD3D "WATERRACE_ROOT=\"${CMAKE_SOURCE_DIR}\"")
+target_compile_options(test-datacheck PRIVATE -w -include MacHeadersPPC++ -fsanitize=address,undefined -fno-sanitize-recover=all)
+target_link_options(test-datacheck PRIVATE -fsanitize=address,undefined)
+target_link_libraries(test-datacheck PRIVATE Pomme)
+find_package(Python3 COMPONENTS Interpreter)
+if(Python3_FOUND)
+  add_test(NAME datacheck COMMAND sh -c "\"$1\" tools/metadump.py 'WaterRace Data' > \"$3/metadump.txt\" && \"$2\" > \"$3/datacheck.txt\" && diff \"$3/metadump.txt\" \"$3/datacheck.txt\""
+           sh ${Python3_EXECUTABLE} $<TARGET_FILE:test-datacheck> ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+  # the loaders' callers own what they return; the test keeps it all
+  set_tests_properties(datacheck PROPERTIES ENVIRONMENT "ASAN_OPTIONS=detect_leaks=0")
+endif()
+
 # Logo Intro load test (#43): InfinityPlayer_LoadAnimation with the default texture set, on GL. Every game file but Boot.cp, which the test includes.
 set(PLAYER_TEST_SOURCES ${GAME_SOURCES})
 list(FILTER PLAYER_TEST_SOURCES EXCLUDE REGEX "/WaterRace final/Boot\\.cp$")

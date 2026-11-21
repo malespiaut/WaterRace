@@ -210,6 +210,7 @@ Other notes:
 - **Preferences, pilot and replay files** (`Preferences.cp:398`, `Pilots.cp:158`, `Replay.cp:144`) write raw structs with `FSWrite`. Give them an explicit field-by-field format in the preferences directory, as CroMagRally did with its generic user-file routines. Old Mac saves can be ignored.
 - `(unsigned long)` pointer stores (`Infinity rendering.cp:694,697`) work on LP64 Linux, since `unsigned long` is 64-bit there. Note them and move on.
 - *Status:* `Data Files.cp` swaps `trds`, `shds` and `chds` with a size check each (their `long`s are `SInt32`); `PBGetCatInfo` (Boot.cp) lists host folders, so Locations/Ships/Characters are scanned; character previews (`imag`, PICT `0x9A`) are decoded by Pomme at preload (#49). Ship and terrain previews stay raw PICT (some are QuickTime JPEG).
+- *P4 status (#70):* `port/test-datacheck` (ctest `datacheck`, built with `-fsanitize=address,undefined`) loads all 31 MetaFiles through the game's loaders: every megaobject, the terrain, texture sets and lists, views, camera positions and layout, previews, and the `trds`/`shds`/`chds`/`imag`/`vers` data subtags. Every load returns `noErr`, ASan/UBSan stay silent, and its dump matches `tools/metadump.py` byte for byte. No read site needed a fix. `shpp`, `lcpy` and `snd ` are not loaded by the test.
 
 ### 5.3 Textures and images: convert once
 
@@ -373,6 +374,7 @@ Shape, Vertex, TriFace and normals; TextureSet and CompressedTexture; MegaObject
 Animation, Skeleton and Camera; Terrain, TerrainMesh, SeaMesh, Track, Enclosure, Items and
 AmbientSound; then the `data` subtags. *Done when:* every file in `WaterRace Data/` loads with
 size checks passing, and its counts, bounding boxes and texture sizes match a dump from `tools/metadump.py`.
+*P4 status:* done (#70); ctest `datacheck` runs both dumps and diffs them (§5.2).
 
 **P5: Race (2 wks).** Terrain and sprites on the GL layer, sound on Pomme's mixer (§6.6), the HUD,
 32-bit fixes (§6.5), input (§6.4). Remove the screen-switching code. *Done when:* a Practice race
