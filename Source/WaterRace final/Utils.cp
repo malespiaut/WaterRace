@@ -50,7 +50,7 @@
 
 //MACROS:
 
-#define MacOSTextAliasingAvailable() ((RoutineDescriptorPtr) IsAntiAliasedTextEnabled != (RoutineDescriptorPtr) kUnresolvedCFragSymbolAddress)
+#define MacOSTextAliasingAvailable() false	// port: Text Engine draws its own glyphs, there is no system text smoothing
 
 //VARIABLES:
 
@@ -456,6 +456,10 @@ void Sound_PlaySFx(short SFxID)
 
 void Sound_PlaySFxHandle(Handle sound)
 {
+	//Linux port: Sound_ResLoad loads nothing before P5
+	if(sound == nil)
+	return;
+
 	InfinityAudio_InstallSound_FX(kCreatorType, (ExtSoundHeaderPtr) *sound, kSfxVolume, kInfinityAudio_CenteredPanoramic, kInfinityAudio_NormalPitch, nil);
 }
 

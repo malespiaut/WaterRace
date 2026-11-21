@@ -170,7 +170,7 @@ static OSErr Credits_Start()
 		specs[i].fontNum = fontDef->fontSpecList[i].fontID;
 		specs[i].fontSize = fontDef->fontSpecList[i].fontSize;
 		specs[i].fontStyle = fontDef->fontSpecList[i].fontStyle;
-		specs[i].fontColor = TextEngine_Color32To16(fontDef->fontSpecList[i].colorRed, fontDef->fontSpecList[i].colorGreen, fontDef->fontSpecList[i].colorBlue);
+		specs[i].fontColor = TextEngine_Color32(fontDef->fontSpecList[i].colorRed, fontDef->fontSpecList[i].colorGreen, fontDef->fontSpecList[i].colorBlue);
 	}
 	DisposeHandle(fontSpecHandle);
 	

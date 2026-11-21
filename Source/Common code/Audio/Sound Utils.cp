@@ -72,6 +72,10 @@ OSErr Sound_ResLoad(short resID, Boolean correctLoop, Handle* sound)
 	Handle				theSound;
 	OSErr				theError;
 	
+	//Linux port: no sfx before Pomme's mixer in P5 (Convert_Sound needs SetHandleSize and big-endian headers)
+	*sound = nil;
+	return noErr;
+
 	//Load sound resource
 	theSound = Get1Resource(kSoundResType, resID);
 	if(theSound == nil) {

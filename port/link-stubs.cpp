@@ -206,7 +206,6 @@ asm(".section .rodata\n.Lportstub234: .string \"_Z6OTLooki\"\n.text\n.globl _Z6O
 asm(".section .rodata\n.Lportstub236: .string \"_Z6TEInitv\"\n.text\n.globl _Z6TEInitv\n.type _Z6TEInitv,@function\n_Z6TEInitv: leaq .Lportstub236(%rip), %rdi\n jmp port_todo_fatal_c\n");
 asm(".section .rodata\n.Lportstub237: .string \"_Z7DiffRgnPPcS0_S0_\"\n.text\n.globl _Z7DiffRgnPPcS0_S0_\n.type _Z7DiffRgnPPcS0_S0_,@function\n_Z7DiffRgnPPcS0_S0_: leaq .Lportstub237(%rip), %rdi\n jmp port_todo_fatal_c\n");
 asm(".section .rodata\n.Lportstub238: .string \"_Z7GetClipPPc\"\n.text\n.globl _Z7GetClipPPc\n.type _Z7GetClipPPc,@function\n_Z7GetClipPPc: leaq .Lportstub238(%rip), %rdi\n jmp port_todo_fatal_c\n");
-asm(".section .rodata\n.Lportstub239: .string \"_Z7GetFNumPKcPs\"\n.text\n.globl _Z7GetFNumPKcPs\n.type _Z7GetFNumPKcPs,@function\n_Z7GetFNumPKcPs: leaq .Lportstub239(%rip), %rdi\n jmp port_todo_fatal_c\n");
 asm(".section .rodata\n.Lportstub240: .string \"_Z7GetMenus\"\n.text\n.globl _Z7GetMenus\n.type _Z7GetMenus,@function\n_Z7GetMenus: leaq .Lportstub240(%rip), %rdi\n jmp port_todo_fatal_c\n");
 asm(".section .rodata\n.Lportstub241: .string \"_Z7GetTimeP11DateTimeRec\"\n.text\n.globl _Z7GetTimeP11DateTimeRec\n.type _Z7GetTimeP11DateTimeRec,@function\n_Z7GetTimeP11DateTimeRec: leaq .Lportstub241(%rip), %rdi\n jmp port_todo_fatal_c\n");
 asm(".section .rodata\n.Lportstub242: .string \"_Z7HCreateslPKcjj\"\n.text\n.globl _Z7HCreateslPKcjj\n.type _Z7HCreateslPKcjj,@function\n_Z7HCreateslPKcjj: leaq .Lportstub242(%rip), %rdi\n jmp port_todo_fatal_c\n");

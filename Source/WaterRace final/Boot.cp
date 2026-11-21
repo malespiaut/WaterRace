@@ -127,14 +127,16 @@ static PicHandle Boot_LoadInterfacePNG(SInt16 theID)
 // shortcut: searches every open resource file, not only the current one; upgrade if a second
 // resource file is ever opened at the same time.
 // Interface PICTs come from their converted PNGs (PORTING.md sec. 5.3): Pomme can't decode all of them.
-// 'Btns' (ButtonList, all shorts) is swapped from big-endian here: every caller detaches it right away,
-// so each load is a fresh copy, swapped once.
+// 'Btns' (ButtonList, all shorts) and 'FtDf' (TE_ResFontDefinition) are swapped from big-endian here: every
+// caller detaches them right away, so each load is a fresh copy, swapped once.
 Handle Get1Resource(ResType theType, SInt16 theID)
 {
 	PicHandle		thePic;
 	Handle			theResource;
 	SInt16*			data;
 	long			i;
+	TE_ResFontDefinitionPtr	fontDef;
+	TE_ResFontSpecPtr		spec;
 
 	if(theType == 'PICT' && CurResFile() == interfaceResFileID && (thePic = Boot_LoadInterfacePNG(theID)) != nil)
 	return (Handle) thePic;
@@ -145,6 +147,18 @@ Handle Get1Resource(ResType theType, SInt16 theID)
 		for(i = 0; i < GetHandleSize(theResource) / 2; ++i)
 		data[i] = SDL_Swap16BE(data[i]);
 	}
+	if(theType == kTE_FontResSpecID && theResource != nil) {
+		fontDef = (TE_ResFontDefinitionPtr) *theResource;
+		fontDef->fontSpecCount = SDL_Swap16BE(fontDef->fontSpecCount);
+		for(i = 0; i < fontDef->fontSpecCount; ++i) {
+			spec = &fontDef->fontSpecList[i];
+			spec->fontSize = SDL_Swap16BE(spec->fontSize);
+			spec->fontID = SDL_Swap16BE(spec->fontID);
+			spec->colorRed = SDL_Swap16BE(spec->colorRed);
+			spec->colorGreen = SDL_Swap16BE(spec->colorGreen);
+			spec->colorBlue = SDL_Swap16BE(spec->colorBlue);
+		}
+	}
 
 	return theResource;
 }
@@ -153,6 +167,23 @@ Handle Get1Resource(ResType theType, SInt16 theID)
 CTabHandle GetCTable(short ctID)
 {
 	return (CTabHandle) GetResource('clut', ctID);
+}
+
+// Text Engine draws one built-in font for every font spec: no font is installed, callers fall back to the spec's fontID.
+void GetFNum(ConstStr255Param name, short* familyID)
+{
+	*familyID = 0;
+}
+
+// GetIndString with a Pascal string out: GetIndString is Pomme's GetIndStringC (C string) everywhere else.
+void GetIndStringP(Str255 theString, short strListID, short index)
+{
+	size_t			length;
+
+	GetIndStringC(theString, strListID, index);
+	length = strlen(theString);
+	memmove(theString + 1, theString, length);
+	theString[0] = length;
 }
 
 // QuickDraw's Random: uniform in -32767..32767.
