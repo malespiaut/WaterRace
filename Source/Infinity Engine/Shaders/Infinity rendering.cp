@@ -20,6 +20,7 @@
 
 
 #include				<fp.h>
+#include				<SDL3/SDL_timer.h>
 
 #include				"Infinity Structures.h"
 #include				"Infinity Error Codes.h"
@@ -58,7 +59,7 @@ static long				initializePositionH,
 						initializeSizeV;
 static PixMapHandle		initializePixMapHandle;
 static Boolean			buffersAllocated = false;
-static UnsignedWide		_lastFrameTime = {0,0};
+static Uint64			_lastFrameTime = 0;
 static TQABufferNoticeMethod	BufferClearBackUp = nil;
 
 //ROUTINES:
@@ -451,16 +452,16 @@ long InfinityRendering_AvailableVRAM(TQAEngine* theEngine)
 	return response / 1024;
 }
 
+// Sleeps instead of busy-waiting; vsync (Boot.cp) may already hold the frame rate lower (PORTING.md sec. 6.3).
 void InfinityRendering_MaxFPS(float maxFPS)
 {
-	UnsignedWide	time;
-	float			diffTime = 1000000.0 / maxFPS;
+	Uint64			diffTime = 1000000000.0 / maxFPS,
+					elapsed = SDL_GetTicksNS() - _lastFrameTime;
 	
-	do {
-		Microseconds(&time);
-	} while(time.lo - _lastFrameTime.lo < diffTime);
+	if(elapsed < diffTime)
+	SDL_DelayNS(diffTime - elapsed);
 	
-	_lastFrameTime = time;
+	_lastFrameTime = SDL_GetTicksNS();
 }
 
 void VRAM_Clear(TextureMemoryPtr vram, TQAEngine* engine)
