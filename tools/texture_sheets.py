@@ -2,6 +2,8 @@
 """Contact sheets of converted textures vs. the original PICT rendered independently by ImageMagick.
 
 Usage: texture_sheets.py DATA_DIR SHEET_DIR
+Textures ImageMagick/ffmpeg cannot read (32-bit planar RGB, packType 4) fall back to Pomme's PICT decoder when the
+tools/pomme_pict_ref.cpp binary is named in $POMME_PICT_REF (build line in that file); Pomme is independent of pict2png.py.
 Per MetaFile writes SHEET_DIR/<name>_<n>.png: each cell is original (ImageMagick) | converted PNG on a
 checkerboard, labelled by name; cells whose mean RGB difference exceeds TOL from ImageMagick's are outlined red. Prints a
 summary of RGB mismatches and of textures no independent decoder can read (the original has no alpha, so only RGB is compared) and exits 1 if any.
@@ -39,6 +41,21 @@ def im_render(pict):
         f.flush()
         r = subprocess.run(cmd, capture_output=True)
     return Image.open(io.BytesIO(r.stdout)).convert("RGB") if r.returncode == 0 else None
+
+
+def pomme_render(pict):
+    """Pomme's ReadPICT via tools/pomme_pict_ref.cpp ($POMME_PICT_REF): ARGB bytes, opaque here (the alpha plane is a separate cptx)."""
+    exe = os.environ.get("POMME_PICT_REF")
+    if not exe:
+        return None
+    # Pomme rejects the full-plane clip rect (-32767..32767) these PICTs carry: clip to the picture frame instead
+    pict = pict.replace(b"\x00\x01\x00\x0a\x80\x01\x80\x01\x7f\xff\x7f\xff", b"\x00\x01\x00\x0a" + pict[2:10])
+    r = subprocess.run([exe], input=pict, capture_output=True)
+    if r.returncode:
+        return None
+    hdr, _, px = r.stdout.partition(b"\n")
+    w, h = map(int, hdr.split())
+    return Image.frombytes("RGBA", (w, h), px, "raw", "ARGB").convert("RGB")
 
 
 def checker(size):
@@ -79,7 +96,8 @@ def main(argv):
             cells = []
             for e, ie in ct.textures(entries):
                 name, _fl, w, h, _dp, ad, img = ct.convert(d, e, ie)
-                orig = im_render(d[ie[7]:ie[7] + ie[6]])
+                pict = d[ie[7]:ie[7] + ie[6]]
+                orig = im_render(pict) or pomme_render(pict)
                 total += 1
                 rel = os.path.relpath(os.path.join(root, fn), data)
                 if orig is None:  # neither ImageMagick nor ffmpeg reads it: shown unchecked (grey label), review by eye only
