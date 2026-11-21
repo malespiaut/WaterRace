@@ -94,7 +94,7 @@ typedef struct {
 	unsigned char	description[kMax_DescriptionChars],
 					notes[kMax_DescriptionChars];
 	unsigned char	unused1[5];
-	long			points[3];
+	SInt32			points[3];		//Linux port: 32-bit as on disk
 	
 	OSType			languageCode;
 	
@@ -108,7 +108,7 @@ typedef struct {
 					notes[kMax_DescriptionChars];
 	unsigned char	unused1[258];
 	Str63			musicName;
-	long			points[3],
+	SInt32			points[3],		//Linux port: 32-bit as on disk
 					parTime[3];
 	short			location_H,
 					location_V;

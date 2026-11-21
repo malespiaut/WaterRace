@@ -25,6 +25,10 @@
 #include				"Folder Utils.h"
 #include				"MetaFile Utils.h"
 
+#include				<cstddef>
+#include				<cstring>
+#include				"Utilities/structpack.h"
+
 //VARIABLES:
 
 FSSpec					dataFolder,
@@ -227,6 +231,14 @@ static OSErr Preload_Terrain(FSSpec* file, MetaFile_ReferencePtr reference, Terr
 	theError = MetaFile_Read_Data(reference, &dataType, 1, (Ptr*) &terrainDescription, &dataID);
 	if(theError)
 	return theError;
+	//Linux port: 'trds' is 1396 bytes big-endian (1392 in some files, short of unused2's end)
+	if(GetPtrSize((Ptr) terrainDescription) < offsetof(Data_TerrainDescription, unused2) || GetPtrSize((Ptr) terrainDescription) > sizeof(Data_TerrainDescription)) {
+		DisposePtr((Ptr) terrainDescription);
+		return kError_FatalError;
+	}
+	UnpackIntsBE(4, 6, terrainDescription->points); //points, parTime
+	UnpackIntsBE(2, 3, &terrainDescription->location_H); //location_H, location_V, maxNetworkPlayers
+	UnpackU32BEInPlace(&terrainDescription->languageCode);
 	
 	//Extract terrain preview - enable
 	dataType = kSubTag_Image;
@@ -250,7 +262,8 @@ static OSErr Preload_Terrain(FSSpec* file, MetaFile_ReferencePtr reference, Terr
 	//OK: append terrain to list
 	dataEntry->fileSpec = *file;
 	dataEntry->ID = id;
-	dataEntry->description = *terrainDescription;
+	memset(&dataEntry->description, 0, sizeof(Data_TerrainDescription));
+	BlockMove(terrainDescription, &dataEntry->description, GetPtrSize((Ptr) terrainDescription));
 	theError = PtrToHand(enablePreview, (Handle*) &dataEntry->enablePreview, GetPtrSize((Ptr) enablePreview));
 	if(theError)
 	return theError;
@@ -343,6 +356,13 @@ static OSErr Preload_Ship(FSSpec* file, MetaFile_ReferencePtr reference, ShipPre
 	theError = MetaFile_Read_Data(reference, &dataType, 1, (Ptr*) &shipDescription, &dataID);
 	if(theError)
 	return theError;
+	//Linux port: 'shds' is 1068 bytes big-endian
+	if(GetPtrSize((Ptr) shipDescription) != sizeof(Data_ShipDescription)) {
+		DisposePtr((Ptr) shipDescription);
+		return kError_FatalError;
+	}
+	UnpackIntsBE(4, 3, shipDescription->points);
+	UnpackU32BEInPlace(&shipDescription->languageCode);
 	
 	//Extract ship preview - enable
 	dataType = kSubTag_Image;
@@ -434,6 +454,13 @@ static OSErr Preload_Character(FSSpec* file, MetaFile_ReferencePtr reference, Ch
 	theError = MetaFile_Read_Data(reference, &dataType, 1, (Ptr*) &characterDescription, &dataID);
 	if(theError)
 	return theError;
+	//Linux port: 'chds' is 1136 bytes big-endian
+	if(GetPtrSize((Ptr) characterDescription) != sizeof(Data_CharacterDescription)) {
+		DisposePtr((Ptr) characterDescription);
+		return kError_FatalError;
+	}
+	UnpackIntsBE(4, 3, &characterDescription->terrainID); //terrainID, shipID, textureSetID
+	UnpackU32BEInPlace(&characterDescription->languageCode);
 	
 	//Extract character preview - enable
 	dataType = kSubTag_Image;
@@ -458,12 +485,11 @@ static OSErr Preload_Character(FSSpec* file, MetaFile_ReferencePtr reference, Ch
 	dataEntry->fileSpec = *file;
 	dataEntry->ID = id;
 	dataEntry->description = *characterDescription;
-	theError = PtrToHand(enablePreview, (Handle*) &dataEntry->enablePreview, GetPtrSize((Ptr) enablePreview));
-	if(theError)
-	return theError;
-	theError = PtrToHand(disablePreview, (Handle*) &dataEntry->disablePreview, GetPtrSize((Ptr) disablePreview));
-	if(theError)
-	return theError;
+	//Linux port: the previews are drawn as Pomme pictures, decoded once here
+	dataEntry->enablePreview = Port_NewPictureFromPICT(enablePreview, GetPtrSize((Ptr) enablePreview));
+	dataEntry->disablePreview = Port_NewPictureFromPICT(disablePreview, GetPtrSize((Ptr) disablePreview));
+	if(dataEntry->enablePreview == nil || dataEntry->disablePreview == nil)
+	return kError_TagMissing_Preview;
 	
 	//Clean up
 	DisposePtr((Ptr) enablePreview);

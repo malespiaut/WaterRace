@@ -27,15 +27,21 @@
 #include				<cstdlib>
 #include				<cstring>
 #include				<vector>
+#include				<sstream>
+#include				<map>
+#include				<algorithm>
+#include				<strings.h>
 
 #include				<SDL3/SDL.h>
 #include				<SDL3/SDL_opengl.h>
 
 #include				"PommeInit.h"
 #include				"PommeGraphics.h"
+#include				"PommeFiles.h"
 #include				"WaterRace.h"
 #include				"Data Files.h"
 #include				"Interface.h"
+#include				"Keys.h"
 
 #include				"stb_image.h"	// implementation in port/TextureLoader.cpp
 #define					STB_IMAGE_WRITE_IMPLEMENTATION
@@ -225,6 +231,30 @@ void Port_DrawPicture(PicHandle myPicture, const Rect* dstRect)
 	DamagePortRegion(dstRect);
 }
 
+// Pomme's GetPictureFromStream for a PICT held in memory (no 512-byte file header).
+PicHandle Port_NewPictureFromPICT(Ptr data, long size)
+{
+	std::istringstream				stream(std::string(data, size));
+	Pomme::Graphics::ARGBPixmap		pixmap;
+	PicHandle						thePic;
+
+	try {
+		pixmap = Pomme::Graphics::ReadPICT(stream, false);
+	}
+	catch(const std::exception& e) {
+		fprintf(stderr, "Boot: PICT not decoded (%s)\n", e.what());
+		return nil;
+	}
+
+	thePic = (PicHandle) NewHandle(sizeof(Picture) + pixmap.data.size());
+	(**thePic).picSize = -1;
+	SetRect(&(**thePic).picFrame, 0, 0, pixmap.width, pixmap.height);
+	(**thePic).__pomme_pixelsARGB32 = (Ptr) *thePic + sizeof(Picture);
+	BlockMove(pixmap.data.data(), (**thePic).__pomme_pixelsARGB32, pixmap.data.size());
+
+	return thePic;
+}
+
 // Pomme's CopyBits damages the current port, not the destination: also damage the screen port when
 // it is the destination, so the compositor uploads what was copied to the window.
 #undef CopyBits	// Pomme's from here on
@@ -271,11 +301,64 @@ OSErr ResolveAliasFile(FSSpec* theSpec, Boolean resolveChains, Boolean* targetIs
 	return noErr;
 }
 
-// No catalog index on host folders yet: folder scans (Preload_Folder) find nothing.
-//shortcut: Data Files.cp only loads the core MetaFiles; enumerate host directories here when Locations/Ships/Characters must be scanned
+// Host path of a Pomme directory ID: 0 is the game root; the others are found by walking the root, as
+// ScanForFolderAlias registers a folder (the parent ID of a file inside it).
+static fs::path Port_DirectoryPath(long dirID)
+{
+	static std::map<long, fs::path>		paths;
+	std::error_code						error;
+
+	if(dirID == 0)
+	return fs::current_path();
+	if(paths.count(dirID) == 0)
+	for(auto& entry : fs::recursive_directory_iterator(fs::current_path(), error))
+	if(entry.is_directory())
+	paths[Pomme::Files::HostPathToFSSpec(entry.path() / "_").parID] = entry.path();
+
+	return paths.count(dirID) ? paths[dirID] : fs::path();
+}
+
+// Indexed catalog scan (ioFDirIndex > 0) of a host folder, in the Mac's case-insensitive name order.
+// A folder reports ioFlAttrib 16 and its ID; a file reports type 'Meta' when it starts with the MetaFile
+// version (0x0104), '????' otherwise. Resource forks (NAME.rsrc) are not entries. ioNamePtr gets a C
+// string, as Pomme's FSSpec names: names over 31 characters (the HFS limit, Str31 buffers) are skipped.
 OSErr PBGetCatInfo(CInfoPBRec* paramBlock, Boolean async)
 {
+	HFileInfo*					fpb = &paramBlock->hFileInfo;
+	fs::path					folder = Port_DirectoryPath(fpb->ioDirID);
+	std::vector<std::string>	names;
+	std::error_code				error;
+	unsigned char				header[2] = {0, 0};
+	FILE*						file;
+
+	if(folder.empty() || fpb->ioFDirIndex <= 0)
 	return fnfErr;
+	for(auto& entry : fs::directory_iterator(folder, error)) {
+		std::string name = entry.path().filename().string();
+		if(name[0] != '.' && name.size() <= 31 && entry.path().extension() != ".rsrc" && entry.path().extension() != ".rsrc_fork")
+		names.push_back(name);
+	}
+	if(fpb->ioFDirIndex > (long) names.size())
+	return fnfErr;
+	std::sort(names.begin(), names.end(), [](const std::string& a, const std::string& b) { return strcasecmp(a.c_str(), b.c_str()) < 0; });
+
+	fs::path path = folder / names[fpb->ioFDirIndex - 1];
+	strcpy((char*) fpb->ioNamePtr, names[fpb->ioFDirIndex - 1].c_str());
+	memset(&fpb->ioFlFndrInfo, 0, sizeof(fpb->ioFlFndrInfo));
+	if(fs::is_directory(path)) {
+		fpb->ioFlAttrib = 16;
+		paramBlock->dirInfo.ioDrDirID = Pomme::Files::HostPathToFSSpec(path / "_").parID;
+	}
+	else {
+		fpb->ioFlAttrib = 0;
+		if((file = fopen(path.c_str(), "rb")) != nil) {
+			fread(header, 1, sizeof(header), file);
+			fclose(file);
+		}
+		fpb->ioFlFndrInfo.fdType = (header[0] == 0x01 && header[1] == 0x04) ? kMetaFileType : '????';
+	}
+
+	return noErr;
 }
 
 // Clock.h's time base (OTGetTimeStamp on the Mac): time since start in 1/timeUnit seconds.
@@ -420,8 +503,26 @@ Boolean PtInRect(Point pt, const Rect* r)
 	return pt.h >= r->left && pt.h < r->right && pt.v >= r->top && pt.v < r->bottom;
 }
 
+// Mac virtual key code of the keys the menus test (Keys.h); the event's keyCode byte.
+static UInt32 Port_MacKeyCode(SDL_Scancode scancode)
+{
+	switch(scancode) {
+		case SDL_SCANCODE_RETURN: return keyReturn;
+		case SDL_SCANCODE_KP_ENTER: return keyEnter;
+		case SDL_SCANCODE_ESCAPE: return keyEscape;
+		case SDL_SCANCODE_LEFT: return keyArrowLeft;
+		case SDL_SCANCODE_RIGHT: return keyArrowRight;
+		case SDL_SCANCODE_UP: return keyArrowUp;
+		case SDL_SCANCODE_DOWN: return keyArrowDown;
+		case SDL_SCANCODE_BACKSPACE: return keyBackSpace;
+		case SDL_SCANCODE_TAB: return keyTab;
+		case SDL_SCANCODE_SPACE: return keySpace;
+		default: return 0xFF;
+	}
+}
+
 // Drains the SDL event queue and reports its first key press as a keyDown/autoKey event, with the
-// key's character (SDL keycodes are ASCII for letters). The mask is ignored: the callers pass everyEvent.
+// key's character (SDL keycodes are ASCII for letters) and its Mac key code. The mask is ignored: the callers pass everyEvent.
 // shortcut: removes the events (Pomme's FlushEvents is a no-op, the callers flush right after); peek if a caller ever relies on them staying
 Boolean OSEventAvail(SInt16 mask, EventRecord* theEvent)
 {
@@ -432,7 +533,7 @@ Boolean OSEventAvail(SInt16 mask, EventRecord* theEvent)
 	if(event.type == SDL_EVENT_KEY_DOWN && !found) {
 		found = true;
 		theEvent->what = event.key.repeat ? autoKey : keyDown;
-		theEvent->message = (event.key.key & charCodeMask) | ((event.key.scancode << 8) & keyCodeMask);
+		theEvent->message = (event.key.key & charCodeMask) | (Port_MacKeyCode(event.key.scancode) << 8);
 		theEvent->when = TickCount();
 		Port_GetMouse(&theEvent->where);
 		theEvent->modifiers = 0;
