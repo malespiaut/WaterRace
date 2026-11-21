@@ -50,6 +50,8 @@
 #define				kCollisionBox_DiskSize		220
 #define				kOldCollisionBox_DiskSize	52
 #define				kParticle_DiskSize			80
+#define				kShapeDataSprite_DiskSize	56
+#define				kShapeDataLight_DiskSize	76
 #define				kShapeDataLens_DiskSize		28
 #define				kShapeDataParticle_DiskSize	104
 #define				kView_DiskSize				120
@@ -810,8 +812,26 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 		return theError;
 		
 		//Linux port: unpack the 32-bit big-endian ShapeData_* into the native struct (longs are 8 bytes on LP64)
-		//shortcut: only the Lens and Particle shadings (Logo Intro) are unpacked; Sprite, Light and Audio stay raw until a file uses them
-		if(s->shading == kShader_Lens) {
+		//shortcut: Audio stays raw big-endian; unpack it with the audio work (PORTING.md 6.6)
+		if(s->shading == kShader_Sprite) {
+			ShapeData_SpritePtr		sprite;
+			const unsigned char*	disk = (unsigned char*) (*shape)->dataPtr;
+			
+			if((tagEntry->dataSize != kShapeDataSprite_DiskSize) || ((sprite = (ShapeData_SpritePtr) NewPtr(sizeof(ShapeData_Sprite))) == nil))
+			return kError_FatalError;
+			UnpackFloatsBE(&sprite->sprite.position.x, disk + 0, 9); //sprite position ... hiColor_b
+			UnpackFloatsBE(&sprite->localPosition.x, disk + 36, 4); //localPosition, frontOffset
+			sprite->flags = UnpackU32BE(disk + 52);
+			DisposePtr((*shape)->dataPtr);
+			(*shape)->dataPtr = (Ptr) sprite;
+		}
+		else if(s->shading == kShader_Light) {
+			//19 floats: same layout on disk and on LP64 - swap in place
+			if((tagEntry->dataSize != kShapeDataLight_DiskSize) || (sizeof(ShapeData_Light) != kShapeDataLight_DiskSize))
+			return kError_FatalError;
+			UnpackIntsBE(4, kShapeDataLight_DiskSize / 4, (*shape)->dataPtr);
+		}
+		else if(s->shading == kShader_Lens) {
 			ShapeData_LensPtr		lens;
 			const unsigned char*	disk = (unsigned char*) (*shape)->dataPtr;
 			

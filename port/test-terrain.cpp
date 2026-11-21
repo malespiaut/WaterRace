@@ -219,14 +219,43 @@ int main(int argc, char** argv)
 	}
 
 	// Megaobjects, as Terrain_Load reads them
-	long					modelCount = MetaFile_CountTags(reference, kTag_MegaObject);
+	long					modelCount = MetaFile_CountTags(reference, kTag_MegaObject),
+							sprites = 0,
+							lights = 0;
 	CHECK(modelCount == 37);
 	for(long i = 0; i < modelCount; ++i) {
 		MegaObject		mega = {};
 
 		err = MetaFile_Read_MegaObject_ByIndex(reference, &mega, i + 1, kMetaFile_SkipNone);
 		CHECK(err == noErr && mega.object.shapeCount > 0);
+
+		// Sprite and Light shape data unpacked from big-endian (#46)
+		for(unsigned long j = 0; err == noErr && j < mega.object.shapeCount; ++j) {
+			ShapePtr		shape = mega.object.shapeList[j];
+
+			if(shape->shading == kShader_Sprite) {
+				ShapeData_SpritePtr	s = (ShapeData_SpritePtr) shape->dataPtr;
+
+				printf("  sprite %.*s: size %g transparency %g intensity %g hi %g,%g,%g front %g flags %lu\n", shape->name[0], (char*) shape->name + 1,
+					s->sprite.size, s->sprite.transparency, s->sprite.intensity, s->sprite.hiColor_r, s->sprite.hiColor_g, s->sprite.hiColor_b, s->frontOffset, s->flags);
+				CHECK(s->sprite.size > 0 && s->sprite.size < 100 && s->sprite.transparency >= 0 && s->sprite.transparency <= 1 && s->sprite.intensity >= 0 && s->sprite.intensity <= 1);
+				CHECK(s->sprite.hiColor_r >= 0 && s->sprite.hiColor_r <= 1 && s->sprite.hiColor_b >= 0 && s->sprite.hiColor_b <= 1 && std::isfinite(s->frontOffset) && s->flags < 0x100);
+				CHECK(Finite(s->localPosition) && std::fabs(s->localPosition.x) < 1000);
+				++sprites;
+			}
+			else if(shape->shading == kShader_Light) {
+				ShapeData_LightPtr	l = (ShapeData_LightPtr) shape->dataPtr;
+
+				printf("  light %.*s: bases %g,%g length %g intensity %g color %g,%g,%g\n", shape->name[0], (char*) shape->name + 1,
+					l->topBase, l->bottomBase, l->length, l->intensity, l->color_r, l->color_g, l->color_b);
+				CHECK(Finite(l->matrix.x) && Finite(l->matrix.y) && Finite(l->matrix.z) && Finite(l->matrix.w) && std::fabs(l->matrix.w.x) < 1000);
+				CHECK(l->topBase >= 0 && l->topBase < 100 && l->bottomBase >= 0 && l->bottomBase < 100 && l->length > 0 && l->length < 1000);
+				CHECK(l->intensity >= 0 && l->intensity <= 1 && l->color_r >= 0 && l->color_r <= 1 && l->color_b >= 0 && l->color_b <= 1);
+				++lights;
+			}
+		}
 	}
+	CHECK(sprites == 1 && lights == 2);
 
 	// View
 	CHECK(MetaFile_Read_View_ByIndex(reference, &view, 1) == noErr);
