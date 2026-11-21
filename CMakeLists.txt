@@ -63,8 +63,9 @@ target_compile_options(test-textures PRIVATE -w -include MacHeadersPPC++)
 target_link_libraries(test-textures PRIVATE Pomme)
 add_test(NAME textures COMMAND test-textures)
 
-# OGL_Support.cp test: RAVE Gouraud triangles, meshes and lines on GL, checked per pixel. Needs a display (xvfb-run).
-add_executable(test-ogl-support port/test-ogl-support.cpp "${CMAKE_SOURCE_DIR}/Source/Infinity Engine/Core/OGL_Support.cp")
+# OGL_Support.cp test: RAVE Gouraud triangles, meshes, lines and real textures on GL, checked per pixel. Needs a display (xvfb-run).
+add_executable(test-ogl-support port/test-ogl-support.cpp "${CMAKE_SOURCE_DIR}/Source/Infinity Engine/Core/OGL_Support.cp" port/TextureLoader.cpp)
+target_compile_definitions(test-ogl-support PRIVATE "WATERRACE_TEXTURES_DIR=\"${CMAKE_SOURCE_DIR}/WaterRace Data/Textures\"")
 target_include_directories(test-ogl-support PRIVATE ${INCLUDE_DIRS} port port/stubs Pomme/src)
 target_compile_definitions(test-ogl-support PRIVATE POMME_NO_SOUND_MIXER POMME_NO_VIDEO POMME_NO_QD3D)
 target_compile_options(test-ogl-support PRIVATE -w -include MacHeadersPPC++)

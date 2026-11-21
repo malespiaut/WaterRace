@@ -19,12 +19,14 @@
  *****************************************************************************/
 
 // RAVE on OpenGL 1.4 fixed function (PORTING.md sec. 4.3, 4.4): one engine, draw contexts as
-// viewport + scissor rectangles, state tags, Gouraud triangles, meshes and lines.
+// viewport + scissor rectangles, state tags, Gouraud triangles, meshes and lines, textures and bitmaps.
 // The types, tags and prototypes are in port/stubs/RAVE.h.
 
 #include				<cstring>
 #include				<vector>
 
+#define					GL_GLEXT_PROTOTYPES		// GL 1.4 secondary colour
+#include				<SDL3/SDL_endian.h>
 #include				<SDL3/SDL_opengl.h>
 
 #include				"RAVE.h"
@@ -42,6 +44,19 @@ struct TQAEngine
 	long					unused;
 };
 
+struct TQATexture
+{
+	GLuint					name;
+	bool					mipmap;
+};
+
+struct TQABitmap
+{
+	GLuint					name;
+	long					width,
+							height;
+};
+
 struct TQADrawContext
 {
 	long					width,				// drawing size: vertices are in pixels of this
@@ -54,6 +69,7 @@ struct TQADrawContext
 	TQANoticeMethod			initializeMethod;
 	void*					initializeRefCon;
 	std::vector<GLfloat>	vertices;			// QASubmitVerticesGouraud: X,Y,Z,W clip coordinates then R,G,B,A
+	std::vector<GLfloat>	textureVertices;	// QASubmitVerticesTexture: X,Y,Z,W, S,T, kd R,G,B,A, ks R,G,B
 	std::vector<GLuint>		indices;
 };
 
@@ -112,6 +128,7 @@ TQAError QADrawContextNew(TQADevice* device, const TQARect* bounds, void* notice
 	context->intTags[kQATag_ZFunction] = (flags & kQAContext_NoZBuffer) ? kQAZFunction_None : kQAZFunction_LT;
 	context->intTags[kQATag_Blend] = kQABlend_Interpolate;
 	context->intTags[kQATag_PerspectiveZ] = kQAPerspectiveZ_Off;
+	context->intTags[kQATag_TextureFilter] = kQATextureFilter_Fast;
 	context->floatTags[kQATag_ColorBG_a] = 1.0;
 
 	*drawContext = context;
@@ -205,6 +222,7 @@ static void Context_Bind(TQADrawContext* drawContext)
 	glLoadIdentity();
 
 	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_COLOR_SUM);
 	glDisable(GL_FOG);
 	glDisable(GL_CULL_FACE);
 
@@ -334,5 +352,211 @@ void QADrawTriMeshGouraud(TQADrawContext* drawContext, long nTriangles, TQAIndex
 	glColorPointer(4, GL_FLOAT, 8 * sizeof(GLfloat), vertices + 4);
 	glDrawElements(GL_TRIANGLES, nTriangles * 3, GL_UNSIGNED_INT, drawContext->indices.data());
 	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+// Uploads image (one level, or the chain down to 1x1 with kQATexture_Mipmap) as GL_RGBA8, clamped.
+// ARGB32 images are RGBA8 bytes (Textures.cp); RGB32 ones are Pomme GWorld A,R,G,B bytes, alpha ignored.
+static TQAError Texture_Upload(long flags, long pixelFormat, const TQAImage* image, GLuint* name)
+{
+	long			levels = 1;
+	GLenum			format = GL_RGBA,
+					type = GL_UNSIGNED_BYTE,
+					internalFormat = GL_RGBA8;
+
+	if(pixelFormat == kQAPixel_RGB32) {
+		format = GL_BGRA;
+		type = SDL_BYTEORDER == SDL_LIL_ENDIAN ? GL_UNSIGNED_INT_8_8_8_8 : GL_UNSIGNED_INT_8_8_8_8_REV;
+		internalFormat = GL_RGB8;
+	}
+	else if(pixelFormat != kQAPixel_ARGB32)
+	return paramErr; // Pomme GWorlds and the converted PNGs are always 32 bits
+	if(flags & kQATexture_Mipmap)
+	while((image[0].width >> levels) || (image[0].height >> levels))
+	++levels;
+
+	glGenTextures(1, name);
+	glBindTexture(GL_TEXTURE_2D, *name);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, levels - 1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+	for(long i = 0; i < levels; ++i) {
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, image[i].rowBytes / 4);
+		glTexImage2D(GL_TEXTURE_2D, i, internalFormat, image[i].width, image[i].height, 0, format, type, image[i].pixmap);
+	}
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+
+	return kQANoErr;
+}
+
+TQAError QATextureNew(TQAEngine* engine, long flags, long pixelFormat, const TQAImage* image, TQATexture** texture)
+{
+	TQATexture*		newTexture = new TQATexture();
+	TQAError		theError = Texture_Upload(flags, pixelFormat, image, &newTexture->name);
+
+	if(theError != kQANoErr) {
+		delete newTexture;
+		newTexture = nil;
+	}
+	else
+	newTexture->mipmap = flags & kQATexture_Mipmap;
+
+	*texture = newTexture;
+	return theError;
+}
+
+// GL copies the pixels in glTexImage2D: the caller may free them right away.
+TQAError QATextureDetach(TQAEngine* engine, TQATexture* texture)
+{
+	return kQANoErr;
+}
+
+void QATextureDelete(TQAEngine* engine, TQATexture* texture)
+{
+	glDeleteTextures(1, &texture->name);
+	delete texture;
+}
+
+TQAError QABitmapNew(TQAEngine* engine, long flags, long pixelFormat, const TQAImage* image, TQABitmap** bitmap)
+{
+	TQABitmap*		newBitmap = new TQABitmap();
+	TQAError		theError = Texture_Upload(0, pixelFormat, image, &newBitmap->name);
+
+	if(theError != kQANoErr) {
+		delete newBitmap;
+		newBitmap = nil;
+	}
+	else {
+		newBitmap->width = image->width;
+		newBitmap->height = image->height;
+	}
+
+	*bitmap = newBitmap;
+	return theError;
+}
+
+TQAError QABitmapDetach(TQAEngine* engine, TQABitmap* bitmap)
+{
+	return kQANoErr;
+}
+
+void QABitmapDelete(TQAEngine* engine, TQABitmap* bitmap)
+{
+	glDeleteTextures(1, &bitmap->name);
+	delete bitmap;
+}
+
+// Binds a texture with the context state plus its filter and texture op (PORTING.md sec. 4.3).
+// The primary colour is kd,a and the secondary colour ks. Op None keeps the texel colour but still
+// multiplies its alpha by a; Highlight adds ks after the texture stage.
+static void Context_BindTexture(TQADrawContext* drawContext, GLuint name, bool mipmap, long filter, long textureOp)
+{
+	GLint			minFilter,
+					magFilter = GL_LINEAR;
+
+	Context_Bind(drawContext);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, name);
+
+	switch(filter) {
+		case kQATextureFilter_Fast:	minFilter = magFilter = GL_NEAREST;						break;
+		case kQATextureFilter_Best:	minFilter = mipmap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;	break;
+		default:					minFilter = mipmap ? GL_LINEAR_MIPMAP_NEAREST : GL_LINEAR;	break;
+	}
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+
+	if(textureOp & kQATextureOp_Modulate)
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	else {
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_REPLACE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA, GL_TEXTURE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA, GL_PRIMARY_COLOR);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
+	}
+	if(textureOp & kQATextureOp_Highlight)
+	glEnable(GL_COLOR_SUM);
+}
+
+// The bitmap is drawn unscaled with its top-left corner at v (BitmapScale is dropped).
+void QADrawBitmap(TQADrawContext* drawContext, TQAVGouraud* v, TQABitmap* bitmap)
+{
+	float			w = 1.0f / v->invW,
+					right = v->x + bitmap->width,
+					bottom = v->y + bitmap->height;
+
+	Context_BindTexture(drawContext, bitmap->name, false, kQATextureFilter_Fast, kQATextureOp_None);
+	glColor4f(1, 1, 1, v->a);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0);	glVertex4f(v->x * w, v->y * w, v->z * w, w);
+	glTexCoord2f(1, 0);	glVertex4f(right * w, v->y * w, v->z * w, w);
+	glTexCoord2f(1, 1);	glVertex4f(right * w, bottom * w, v->z * w, w);
+	glTexCoord2f(0, 1);	glVertex4f(v->x * w, bottom * w, v->z * w, w);
+	glEnd();
+}
+
+// GL interpolates s,t perspective correctly from the clip w, so they are uOverW·w and 1 - vOverW·w:
+// RAVE's v runs up from the bottom of the image, GL's t down from its first (top) row.
+void QASubmitVerticesTexture(TQADrawContext* drawContext, long nVertices, TQAVTexture* vertices)
+{
+	GLfloat*		dest;
+	float			w;
+
+	drawContext->textureVertices.resize(nVertices * 13);
+	dest = drawContext->textureVertices.data();
+	for(long i = 0; i < nVertices; ++i, ++vertices) {
+		w = 1.0f / vertices->invW;
+		*dest++ = vertices->x * w;
+		*dest++ = vertices->y * w;
+		*dest++ = vertices->z * w;
+		*dest++ = w;
+		*dest++ = vertices->uOverW * w;
+		*dest++ = 1.0f - vertices->vOverW * w;
+		*dest++ = vertices->kd_r;
+		*dest++ = vertices->kd_g;
+		*dest++ = vertices->kd_b;
+		*dest++ = vertices->a;
+		*dest++ = vertices->ks_r;
+		*dest++ = vertices->ks_g;
+		*dest++ = vertices->ks_b;
+	}
+}
+
+void QADrawTriMeshTexture(TQADrawContext* drawContext, long nTriangles, TQAIndexedTriangle* triangles)
+{
+	GLfloat*		vertices = drawContext->textureVertices.data();
+	TQATexture*		texture = (TQATexture*) drawContext->texture;
+
+	if(texture == nil)
+	return;
+
+	drawContext->indices.resize(nTriangles * 3);
+	for(long i = 0; i < nTriangles; ++i) {
+		drawContext->indices[i * 3 + 0] = triangles[i].vertices[0];
+		drawContext->indices[i * 3 + 1] = triangles[i].vertices[1];
+		drawContext->indices[i * 3 + 2] = triangles[i].vertices[2];
+	}
+
+	Context_BindTexture(drawContext, texture->name, texture->mipmap, drawContext->intTags[kQATag_TextureFilter], drawContext->intTags[kQATag_TextureOp]);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_SECONDARY_COLOR_ARRAY);
+	glVertexPointer(4, GL_FLOAT, 13 * sizeof(GLfloat), vertices);
+	glTexCoordPointer(2, GL_FLOAT, 13 * sizeof(GLfloat), vertices + 4);
+	glColorPointer(4, GL_FLOAT, 13 * sizeof(GLfloat), vertices + 6);
+	glSecondaryColorPointer(3, GL_FLOAT, 13 * sizeof(GLfloat), vertices + 10);
+	glDrawElements(GL_TRIANGLES, nTriangles * 3, GL_UNSIGNED_INT, drawContext->indices.data());
+	glDisableClientState(GL_SECONDARY_COLOR_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 }

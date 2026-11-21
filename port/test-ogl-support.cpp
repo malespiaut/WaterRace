@@ -1,6 +1,8 @@
 // OGL_Support.cp test (needs a display: ctest runs it under xvfb-run). Draws pre-projected Gouraud
 // triangles, meshes and lines through the RAVE calls into a 640x480 window and checks pixels for
 // colour interpolation, depth test, blend modes, scissor and the ImageBufferInitialize notice method.
+// Then real converted textures (WaterRace Data/Textures) are drawn with each texture op and filter,
+// as bitmaps, and checked against their texels.
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -9,6 +11,7 @@
 #include <SDL3/SDL_opengl.h>
 
 #include "RAVE.h"
+#include "TextureLoader.h"
 
 static int gFailures = 0;
 #define CHECK(c) do { if(!(c)) { std::fprintf(stderr, "FAIL %s:%d: %s\n", __FILE__, __LINE__, #c); ++gFailures; } } while(0)
@@ -61,6 +64,178 @@ static int gNoticeCalls = 0;
 static void Notice(const TQADrawContext*, const TQADevice*, const TQARect*, void* refCon)
 {
 	gNoticeCalls += (refCon == &gNoticeCalls);
+}
+
+// Texel (x, y) of a level, 0..1.
+static void Texel(const TextureLevel& l, int x, int y, float t[4])
+{
+	for(int i = 0; i < 4; ++i)
+		t[i] = l.pixels[(y * l.width + x) * 4 + i] / 255.0f;
+}
+
+static TQAVTexture VT(float x, float y, float invW, float u, float v, float a)
+{
+	TQAVTexture t = {};
+	t.x = x; t.y = y; t.z = 0.5; t.invW = invW;
+	t.uOverW = u * invW; t.vOverW = v * invW;
+	t.kd_r = 1; t.kd_g = 0.5; t.kd_b = 0.25; t.a = a;
+	t.ks_r = 0.25; t.ks_g = 0.125; t.ks_b = 0.5;
+	return t;
+}
+
+// Textured quad (l,t)-(r,b) showing the whole texture, RAVE v = 1 at the top; invW per left and right edge.
+static void TexQuad(TQADrawContext* c, float l, float t, float r, float b, float invWL, float invWR, float a)
+{
+	TQAVTexture			v[4] = {VT(l, t, invWL, 0, 1, a), VT(r, t, invWR, 1, 1, a), VT(r, b, invWR, 1, 0, a), VT(l, b, invWL, 0, 0, a)};
+	TQAIndexedTriangle	tris[2] = {{{0, 1, 2}, 0}, {{2, 3, 0}, 0}};
+
+	QASubmitVerticesTexture(c, 4, v);
+	QADrawTriMeshTexture(c, 2, tris);
+}
+
+static bool LoadImages(const char* png, long flags, std::vector<TextureLevel>& levels, TQAImage image[16])
+{
+	if(!Texture_LoadPNG(std::string(WATERRACE_TEXTURES_DIR "/") + png, 0, 8, flags, levels) || levels.size() > 16)
+		return false;
+	for(size_t i = 0; i < levels.size(); ++i) {
+		image[i].width = levels[i].width;
+		image[i].height = levels[i].height;
+		image[i].rowBytes = levels[i].width * 4;
+		image[i].pixmap = (Ptr) levels[i].pixels.data();
+	}
+	return true;
+}
+
+static void TestTextures(TQAEngine* engine, TQADrawContext* c)
+{
+	std::vector<TextureLevel>	venice, flare;
+	TQAImage					veniceImage[16], flareImage[16];
+	TQATexture					*vto1, *flr2, *bad;
+	TQABitmap					*bitmap, *gworld;
+	float						t[4];
+	const int					kForceMipMap = 1 << 5;
+
+	// Venice 'Vto1' (256x256, transparent windows, mip chain of 9) and Arctic 'Tsmk' (64x64 smoke, 8-bit alpha).
+	CHECK(LoadImages("Locations/Venice/Vto1.png", kForceMipMap, venice, veniceImage) && venice.size() == 9);
+	CHECK(LoadImages("Locations/Arctic/Tsmk.png", 0, flare, flareImage) && flare.size() == 1);
+	if(gFailures)
+		return;
+	CHECK(QATextureNew(engine, kQATexture_NoCompression | kQATexture_Mipmap, kQAPixel_ARGB32, veniceImage, &vto1) == kQANoErr && QATextureDetach(engine, vto1) == kQANoErr);
+	CHECK(QATextureNew(engine, kQATexture_NoCompression, kQAPixel_ARGB32, flareImage, &flr2) == kQANoErr && QATextureDetach(engine, flr2) == kQANoErr);
+	CHECK(QATextureNew(engine, 0, kQAPixel_RGB16, flareImage, &bad) == paramErr && bad == nullptr);
+
+	QASetInt(c, kQATag_ZFunction, kQAZFunction_None);
+	QASetFloat(c, kQATag_ColorBG_r, 0);
+	QASetFloat(c, kQATag_ColorBG_g, 0);
+	QASetFloat(c, kQATag_ColorBG_b, 1);
+	QARenderStart(c, nullptr, nullptr);
+	QASetPtr(c, kQATag_Texture, vto1);
+	CHECK(QAGetInt(c, kQATag_TextureFilter) == kQATextureFilter_Fast);
+
+	// One texel per pixel, w = 2 everywhere: None shows the texel, Modulate texel * kd, Highlight adds ks.
+	// The points are on opaque texels of levels 0 and 2.
+	static const int kPoints[][2] = {{3, 5}, {40, 47}, {100, 100}, {120, 90}, {204, 120}, {250, 230}};
+	for(auto& p : kPoints) {
+		Texel(venice[0], p[0], p[1], t);
+		CHECK(t[3] > 0.99f);
+		Texel(venice[2], p[0] / 4, p[1] / 4, t);
+		CHECK(t[3] > 0.99f);
+	}
+	for(long op : {0L, 1L, 3L}) {	// None, Modulate, Modulate + Highlight {
+		QASetInt(c, kQATag_TextureOp, op);
+		TexQuad(c, 0, 0, 256, 256, 0.5, 0.5, 1);
+		for(auto& p : kPoints) {
+			Texel(venice[0], p[0], p[1], t);
+			if(op & kQATextureOp_Modulate) { t[0] *= 1; t[1] *= 0.5; t[2] *= 0.25; }
+			if(op & kQATextureOp_Highlight) { t[0] = std::fmin(1, t[0] + 0.25f); t[1] = std::fmin(1, t[1] + 0.125f); t[2] = std::fmin(1, t[2] + 0.5f); }
+			CHECK_PIXEL(p[0], p[1], t[0], t[1], t[2]);
+		}
+	}
+
+	// Perspective: w 1 on the left edge, 4 on the right. In the top-right triangle, at screen fractions
+	// (s, y) with y < s, 1/w = 1 - 3s/4, so u = (s/4) / (1 - 3s/4) and t = 1 - v = (y/4) / (1 - 3s/4).
+	QASetInt(c, kQATag_TextureOp, kQATextureOp_None);
+	TexQuad(c, 0, 0, 256, 256, 1, 0.25, 1);
+	// Only opaque texels whose centre is within a quarter texel of the sample point are checked.
+	int checked = 0;
+	for(int y = 4; y < 240; y += 8)
+		for(int x = y + 4; x < 256; x += 8) {
+			float s = (x + 0.5f) / 256, iw = 1 - 0.75f * s, u = (s * 0.25f / iw) * 256, v = ((y + 0.5f) / 256 * 0.25f / iw) * 256;
+			if(std::fabs(u - (int) u - 0.5f) > 0.25f || std::fabs(v - (int) v - 0.5f) > 0.25f)
+				continue;
+			Texel(venice[0], (int) u, (int) v, t);
+			if(t[3] < 0.99f)
+				continue;
+			CHECK_PIXEL(x, y, t[0], t[1], t[2]);
+			++checked;
+		}
+	CHECK(checked > 50);
+
+	// Filters, Vto1 magnified 3x (texel k centred on pixel 3k+1): Fast is the nearest texel, Mid
+	// interpolates. Then Vto1 shown at quarter size: Best samples mip level 2 (bilinear on level 0 would not).
+	QARenderStart(c, nullptr, nullptr);
+	TexQuad(c, 0, 0, 768, 768, 1, 1, 1);
+	Texel(venice[0], 32, 33, t);
+	CHECK_PIXEL(32 * 3 + 2, 33 * 3 + 1, t[0], t[1], t[2]);	// nearest, though off the texel centre
+	QASetInt(c, kQATag_TextureFilter, kQATextureFilter_Mid);
+	TexQuad(c, 0, 0, 768, 768, 1, 1, 1);
+	{
+		// Pixel centre 98.5 is texel coordinate 32.833: 2/3 of texel 32 and 1/3 of texel 33 (row 33).
+		float a[4], b[4];
+		Texel(venice[0], 32, 33, a);
+		Texel(venice[0], 33, 33, b);
+		CHECK(a[3] > 0.99f && b[3] > 0.99f);
+		CHECK(std::fabs(a[0] - b[0]) + std::fabs(a[1] - b[1]) + std::fabs(a[2] - b[2]) > 0.05f);	// distinguishes Mid from Fast
+		CHECK_PIXEL(32 * 3 + 2, 33 * 3 + 1, (a[0] * 2 + b[0]) / 3, (a[1] * 2 + b[1]) / 3, (a[2] * 2 + b[2]) / 3);
+	}
+	QASetInt(c, kQATag_TextureFilter, kQATextureFilter_Best);
+	TexQuad(c, 0, 0, 64, 64, 1, 1, 1);
+	for(auto& p : kPoints) {
+		Texel(venice[2], p[0] / 4, p[1] / 4, t);
+		CHECK_PIXEL(p[0] / 4, p[1] / 4, t[0], t[1], t[2]);
+	}
+
+	// Alpha blend over the blue background: texel alpha times vertex a, with op None and Modulate.
+	QARenderStart(c, nullptr, nullptr);
+	QASetPtr(c, kQATag_Texture, flr2);
+	QASetInt(c, kQATag_TextureFilter, kQATextureFilter_Fast);
+	int ax = -1, ay = -1;
+	for(int y = 0; y < 64 && ax < 0; ++y)
+		for(int x = 0; x < 64 && ax < 0; ++x) {
+			Texel(flare[0], x, y, t);
+			if(t[3] > 0.3f && t[3] < 0.7f) { ax = x; ay = y; }
+		}
+	CHECK(ax >= 0);
+	Texel(flare[0], ax, ay, t);
+	for(long op : {(long) kQATextureOp_None, (long) kQATextureOp_Modulate}) {
+		QARenderStart(c, nullptr, nullptr);
+		QASetInt(c, kQATag_TextureOp, op);
+		TexQuad(c, 0, 0, 64, 64, 1, 1, 0.5);
+		float a = t[3] * 0.5f, g = (op == kQATextureOp_Modulate) ? 0.5f : 1, b = (op == kQATextureOp_Modulate) ? 0.25f : 1;
+		CHECK_PIXEL(ax, ay, t[0] * a, t[1] * g * a, t[2] * b * a + (1 - a));
+	}
+
+	// Bitmaps: Tsmk at (100, 20) unscaled, blended by its alpha; a Pomme-style A,R,G,B GWorld (RGB32, alpha ignored).
+	unsigned char		argb[2 * 4] = {0x00, 0xFF, 0x00, 0x00,  0x00, 0x00, 0x80, 0xFF};
+	TQAImage			gworldImage = {2, 1, 8, (Ptr) argb};
+	TQAVGouraud			bv = V(100, 20, 0.5, 1, 1, 1, 1, 1);
+	CHECK(QABitmapNew(engine, kQABitmap_NoCompression, kQAPixel_ARGB32, flareImage, &bitmap) == kQANoErr && QABitmapDetach(engine, bitmap) == kQANoErr);
+	CHECK(QABitmapNew(engine, kQABitmap_None, kQAPixel_RGB32, &gworldImage, &gworld) == kQANoErr);
+	QARenderStart(c, nullptr, nullptr);
+	QADrawBitmap(c, &bv, bitmap);
+	CHECK_PIXEL(100 + ax, 20 + ay, t[0] * t[3], t[1] * t[3], t[2] * t[3] + (1 - t[3]));
+	CHECK_PIXEL(100 + 64, 20 + 33, 0, 0, 1);	// right of the bitmap
+	bv.x = 10; bv.y = 200;
+	QADrawBitmap(c, &bv, gworld);
+	CHECK_PIXEL(10, 200, 1, 0, 0);
+	CHECK_PIXEL(11, 200, 0, 0x80 / 255.0f, 1);
+	QARenderEnd(c, nullptr);
+
+	QASetInt(c, kQATag_ZFunction, kQAZFunction_LT);
+	QABitmapDelete(engine, gworld);
+	QABitmapDelete(engine, bitmap);
+	QATextureDelete(engine, flr2);
+	QATextureDelete(engine, vto1);
 }
 
 int main()
@@ -174,6 +349,12 @@ int main()
 	CHECK_PIXEL(kWidth / 2 - 5, kHeight / 2 - 5, 0, 0, 0);
 	QARenderEnd(s, nullptr);
 	QADrawContextDelete(s);
+
+	// Textures on a fresh context, without the notice method.
+	TQADrawContext* tc;
+	CHECK(QADrawContextNew(nullptr, &bounds, nullptr, engine, 0, &tc) == kQANoErr);
+	TestTextures(engine, tc);
+	QADrawContextDelete(tc);
 
 	CHECK(glGetError() == GL_NO_ERROR);
 	QADrawContextDelete(c);
