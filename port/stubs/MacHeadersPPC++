@@ -26,3 +26,5 @@ void Port_GetMouse(Point* mouseLoc);
 
 // Pomme exposes GetIndString as GetIndStringC (same arguments, Str255 out).
 #define GetIndString(s, list, index) GetIndStringC((s), (list), (index))
+// The Pascal string, for text the game measures by its length byte (Boot.cp).
+void GetIndStringP(Str255 theString, short strListID, short index);

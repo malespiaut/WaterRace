@@ -21,24 +21,35 @@
 
 #include		"WaterRace.h"
 #include		"Text Engine.h"
+#include		"Graphics/SysFont.h"
+
+#include		<algorithm>
+#include		<cstring>
 
 //CONSTANTES:
 
 #define			kZoomFactor			3
 #define			kSpace				1
+#define			kSysFontSize		12		// Pomme's SysFont (Chicago-like) is drawn at 12 points
 
 enum {kLeft, kCentered, kRight};
 
 //MACROS:
 
-#define Mask16(s, m) ( ((((s) & 0x001F) * (m) / 255) & 0x001F) \
-						+ ((((s) & 0x03E0) * (m) / 255) & 0x03E0) \
-						+ ((((s) & 0x7C00) * (m) / 255) & 0x7C00) )
+// Blends a 0x00RRGGBB color over an ARGB32 pixel (A,R,G,B in memory), keeping its alpha
+#define Mask32(d, c, m) { (d)[1] = ((((c) >> 16) & 0xFF) * (m) + (d)[1] * (0xFF - (m))) / 255; \
+						(d)[2] = ((((c) >> 8) & 0xFF) * (m) + (d)[2] * (0xFF - (m))) / 255; \
+						(d)[3] = (((c) & 0xFF) * (m) + (d)[3] * (0xFF - (m))) / 255; }
 
 //VARIABLES:
 
-static GWorldPtr				fontGWorld = nil;
-static Rect						worldRect;
+// Port: the text buffer is 8-bit coverage (0 = background, 0xFF = ink) drawn here with Pomme's SysFont
+// scaled to the font size; the Mac drew Charcoal with QuickDraw into an 8-bit GWorld (PORTING.md 6.5).
+//shortcut: one font for every font spec and no bold/italic, upgrade with a TTF rasterizer if Charcoal's look matters
+static unsigned char*			fontBuffer = nil;
+static long						bufferWidth,
+								bufferHeight,
+								zoomedSize;
 static long						maxHeight,
 								fontAscent,
 								vSpace;
@@ -52,40 +63,46 @@ static long						correction = 0,
 
 OSErr TextEngine_Init(short maxFontSize, short maxBufferWidth)
 {
-	OSErr				theError;
-	GWorldPtr			oldGWorld;
-	GDHandle			oldGDHandle;
-	
-	SetRect(&worldRect, 0, 0, maxBufferWidth * (kZoomFactor + 1), maxFontSize * (kZoomFactor + 1));
-	theError = NewGWorld(&fontGWorld, 8, &worldRect, nil, nil, 0L);
-	if(theError)
-	return theError;
-	NoPurgePixels(GetGWorldPixMap(fontGWorld));
-	LockPixels(GetGWorldPixMap(fontGWorld));
-	GetGWorld(&oldGWorld, &oldGDHandle);
-	SetGWorld(fontGWorld, nil);
-	BackColor(whiteColor);
-	ForeColor(blackColor);
-	
-	SetGWorld(oldGWorld, oldGDHandle);
-	
+	bufferWidth = maxBufferWidth * (kZoomFactor + 1);
+	bufferHeight = maxFontSize * (kZoomFactor + 1);
+	fontBuffer = (unsigned char*) NewPtrClear(bufferWidth * bufferHeight);
+	if(fontBuffer == nil)
+	return memFullErr;
+
 	return noErr;
+}
+
+// Draws a line of text in the cleared text buffer, its top-left at (left, top) in buffer pixels. Returns its width.
+static long Font_DrawText(const unsigned char* text, long length, long left, long top)
+{
+	long				pen = 0,
+						x,
+						y,
+						glyphLeft;
+
+	memset(fontBuffer, 0, bufferWidth * bufferHeight);
+	for(long i = 0; i < length; ++i) {
+		const Pomme::SysFont::Glyph& glyph = Pomme::SysFont::GetGlyph(text[i]);
+		glyphLeft = left + (pen - Pomme::SysFont::leftMargin) * zoomedSize / kSysFontSize;
+		for(y = std::max(top, 0L); y < std::min(top + Pomme::SysFont::rows * zoomedSize / kSysFontSize, bufferHeight); ++y)
+		for(x = std::max(glyphLeft, 0L); x < std::min(glyphLeft + Pomme::SysFont::widthBits * zoomedSize / kSysFontSize, bufferWidth); ++x)
+		if(glyph.bits[(y - top) * kSysFontSize / zoomedSize] & (1 << ((x - glyphLeft) * kSysFontSize / zoomedSize)))
+		fontBuffer[y * bufferWidth + x] = 0xFF;
+		pen += glyph.width + Pomme::SysFont::charSpacing;
+	}
+
+	return length ? (pen - Pomme::SysFont::charSpacing) * zoomedSize / kSysFontSize : 0;
 }
 
 void TextEngine_Settings_Text(short fontNum, short fontSize, Style fontStyle)
 {
-	GWorldPtr			oldGWorld;
-	GDHandle			oldGDHandle;
 	FontInfo			info;
-	
-	GetGWorld(&oldGWorld, &oldGDHandle);
-	SetGWorld(fontGWorld, nil);
-	
-	TextFont(fontNum);
-	TextSize(fontSize * kZoomFactor);
-	TextFace(fontStyle);
-	
-	GetFontInfo(&info);
+
+	zoomedSize = fontSize * kZoomFactor;
+	info.ascent = Pomme::SysFont::ascend * zoomedSize / kSysFontSize;
+	info.descent = Pomme::SysFont::descend * zoomedSize / kSysFontSize;
+	info.leading = 0;
+	info.widMax = Pomme::SysFont::widthBits * zoomedSize / kSysFontSize;
 	maxHeight = (info.ascent + info.descent) / kZoomFactor;
 	fontAscent = info.ascent;
 	vSpace = (info.ascent + info.descent + info.leading) / kZoomFactor;
@@ -98,8 +115,6 @@ void TextEngine_Settings_Text(short fontNum, short fontSize, Style fontStyle)
 #else
 	correction = (float) info.widMax * 0.1;
 #endif
-	
-	SetGWorld(oldGWorld, oldGDHandle);
 }
 
 void TextEngine_Settings_Clipping(short topClip, short bottomClip)
@@ -119,9 +134,9 @@ short TextEngine_GetInterline()
 	return vSpace;
 }
 
-inline void Draw_TextLine_Clipped(long textWidth, unsigned short color, PixMapPtr thePixMapPtr, Point destPoint)
+inline void Draw_TextLine_Clipped(long textWidth, UInt32 color, PixMapPtr thePixMapPtr, Point destPoint)
 {
-	unsigned short		*dest;
+	unsigned char		*dest;
 	unsigned char		*source;
 	Ptr					srcAddress,
 						destAddress;
@@ -131,10 +146,10 @@ inline void Draw_TextLine_Clipped(long textWidth, unsigned short color, PixMapPt
 						v,
 						size;
 						
-	srcRowBytes = (**(GetGWorldPixMap(fontGWorld))).rowBytes & 0x3FFF;
-	srcAddress = GetPixBaseAddr(GetGWorldPixMap(fontGWorld)) + srcRowBytes + 1;
+	srcRowBytes = bufferWidth;
+	srcAddress = (Ptr) fontBuffer + srcRowBytes + 1;
 	destRowBytes = thePixMapPtr->rowBytes & 0x3FFF;
-	destAddress = GetPixBaseAddr(&thePixMapPtr) + destRowBytes * destPoint.v + destPoint.h * 2;
+	destAddress = GetPixBaseAddr(&thePixMapPtr) + destRowBytes * destPoint.v + destPoint.h * 4;
 	for(v = 0; v < maxHeight; ++v) {
 		//Do we need to clip?
 		if(destPoint.v + v < localTopClip) {
@@ -147,31 +162,27 @@ inline void Draw_TextLine_Clipped(long textWidth, unsigned short color, PixMapPt
 		
 		//Plot line
 		source = (unsigned char*) srcAddress;
-		dest = (unsigned short*) destAddress;
+		dest = (unsigned char*) destAddress;
 		for(h = 0; h < textWidth; ++h) {
 			size = (*(source - srcRowBytes - 1) + *(source - srcRowBytes) + *(source - srcRowBytes + 1)
 					+ *(source - 1) + *source + *(source + 1)
 					+ *(source + srcRowBytes - 1) + *(source + srcRowBytes) + *(source + srcRowBytes + 1)
 					) / 9;
 			
-			if(size >= 0xFF)
-			*dest = color;
-			else if(size == 0x00)
-			;
-			else
-			*dest = Mask16(color, size) + Mask16(*dest, 0xFF - size);
-			
+			if(size)
+			Mask32(dest, color, size);
+
 			source += 3;
-			++dest;
+			dest += 4;
 		}
 		srcAddress += kZoomFactor * srcRowBytes;
 		destAddress += destRowBytes;
 	}
 }
 
-inline void Draw_TextLine_Clipped_WithFade(long textWidth, unsigned short color, PixMapPtr thePixMapPtr, Point destPoint, long fadeHeight)
+inline void Draw_TextLine_Clipped_WithFade(long textWidth, UInt32 color, PixMapPtr thePixMapPtr, Point destPoint, long fadeHeight)
 {
-	unsigned short		*dest;
+	unsigned char		*dest;
 	unsigned char		*source;
 	Ptr					srcAddress,
 						destAddress;
@@ -181,10 +192,10 @@ inline void Draw_TextLine_Clipped_WithFade(long textWidth, unsigned short color,
 						v,
 						size;
 						
-	srcRowBytes = (**(GetGWorldPixMap(fontGWorld))).rowBytes & 0x3FFF;
-	srcAddress = GetPixBaseAddr(GetGWorldPixMap(fontGWorld)) + srcRowBytes + 1;
+	srcRowBytes = bufferWidth;
+	srcAddress = (Ptr) fontBuffer + srcRowBytes + 1;
 	destRowBytes = thePixMapPtr->rowBytes & 0x3FFF;
-	destAddress = GetPixBaseAddr(&thePixMapPtr) + destRowBytes * destPoint.v + destPoint.h * 2;
+	destAddress = GetPixBaseAddr(&thePixMapPtr) + destRowBytes * destPoint.v + destPoint.h * 4;
 	for(v = 0; v < maxHeight; ++v) {
 		//Do we need to clip?
 		if(destPoint.v + v < localTopClip) {
@@ -197,7 +208,7 @@ inline void Draw_TextLine_Clipped_WithFade(long textWidth, unsigned short color,
 		
 		//Do we need to fade
 		source = (unsigned char*) srcAddress;
-		dest = (unsigned short*) destAddress;
+		dest = (unsigned char*) destAddress;
 		if(destPoint.v + v < localBottomClip - fadeHeight) {
 			//Plot line
 			for(h = 0; h < textWidth; ++h) {
@@ -206,15 +217,11 @@ inline void Draw_TextLine_Clipped_WithFade(long textWidth, unsigned short color,
 						+ *(source + srcRowBytes - 1) + *(source + srcRowBytes) + *(source + srcRowBytes + 1)
 						) / 9;
 				
-				if(size >= 0xFF)
-				*dest = color;
-				else if(size == 0x00)
-				;
-				else
-				*dest = Mask16(color, size) + Mask16(*dest, 0xFF - size);
-				
+				if(size)
+				Mask32(dest, color, size);
+
 				source += 3;
-				++dest;
+				dest += 4;
 			}
 		}
 		else {
@@ -227,10 +234,10 @@ inline void Draw_TextLine_Clipped_WithFade(long textWidth, unsigned short color,
 						) / 9;
 				
 				if(size)
-				*dest = Mask16(color, (long) (size * factor)) + Mask16(*dest, 0xFF - (long) (size * factor));
-				
+				Mask32(dest, color, (long) (size * factor));
+
 				source += 3;
-				++dest;
+				dest += 4;
 			}
 		}
 		srcAddress += kZoomFactor * srcRowBytes;
@@ -238,40 +245,24 @@ inline void Draw_TextLine_Clipped_WithFade(long textWidth, unsigned short color,
 	}
 }
 
-void TextEngine_DrawLine_Left(Ptr textPtr, short textLength, unsigned short color, PixMapPtr thePixMapPtr, Point destPoint)
+void TextEngine_DrawLine_Left(Ptr textPtr, short textLength, UInt32 color, PixMapPtr thePixMapPtr, Point destPoint)
 {
-	GWorldPtr			oldGWorld;
-	GDHandle			oldGDHandle;
 	long				textWidth;
-						
+
 	//Draw text in text buffer
-	GetGWorld(&oldGWorld, &oldGDHandle);
-	SetGWorld(fontGWorld, nil);
-	EraseRect(&worldRect);
-	MoveTo(kZoomFactor * kSpace, kZoomFactor * kSpace + fontAscent);
-	DrawText(textPtr, 0, textLength);
-	textWidth = (TextWidth(textPtr, 0, textLength) + correction) / kZoomFactor;
-	SetGWorld(oldGWorld, oldGDHandle);
-	
+	textWidth = (Font_DrawText((unsigned char*) textPtr, textLength, kZoomFactor * kSpace, kZoomFactor * kSpace) + correction) / kZoomFactor;
+
 	//Copy and anti-alias text to buffer
 	Draw_TextLine_Clipped(textWidth, color, thePixMapPtr, destPoint);
 }
 
-void TextEngine_DrawLine_Centered(Ptr textPtr, short textLength, unsigned short color, PixMapPtr thePixMapPtr, Point destPoint)
+void TextEngine_DrawLine_Centered(Ptr textPtr, short textLength, UInt32 color, PixMapPtr thePixMapPtr, Point destPoint)
 {
-	GWorldPtr			oldGWorld;
-	GDHandle			oldGDHandle;
 	long				textWidth;
-						
+
 	//Draw text in text buffer
-	GetGWorld(&oldGWorld, &oldGDHandle);
-	SetGWorld(fontGWorld, nil);
-	EraseRect(&worldRect);
-	MoveTo(kZoomFactor * kSpace, kZoomFactor * kSpace + fontAscent);
-	DrawText(textPtr, 0, textLength);
-	textWidth = (TextWidth(textPtr, 0, textLength) + correction) / kZoomFactor;
-	SetGWorld(oldGWorld, oldGDHandle);
-	
+	textWidth = (Font_DrawText((unsigned char*) textPtr, textLength, kZoomFactor * kSpace, kZoomFactor * kSpace) + correction) / kZoomFactor;
+
 	//Adjust text position
 	destPoint.h -= textWidth / 2;
 	
@@ -279,21 +270,13 @@ void TextEngine_DrawLine_Centered(Ptr textPtr, short textLength, unsigned short 
 	Draw_TextLine_Clipped(textWidth, color, thePixMapPtr, destPoint);
 }
 
-void TextEngine_DrawLine_Right(Ptr textPtr, short textLength, unsigned short color, PixMapPtr thePixMapPtr, Point destPoint)
+void TextEngine_DrawLine_Right(Ptr textPtr, short textLength, UInt32 color, PixMapPtr thePixMapPtr, Point destPoint)
 {
-	GWorldPtr			oldGWorld;
-	GDHandle			oldGDHandle;
 	long				textWidth;
-						
+
 	//Draw text in text buffer
-	GetGWorld(&oldGWorld, &oldGDHandle);
-	SetGWorld(fontGWorld, nil);
-	EraseRect(&worldRect);
-	MoveTo(kZoomFactor * kSpace, kZoomFactor * kSpace + fontAscent);
-	DrawText(textPtr, 0, textLength);
-	textWidth = (TextWidth(textPtr, 0, textLength) + correction) / kZoomFactor;
-	SetGWorld(oldGWorld, oldGDHandle);
-	
+	textWidth = (Font_DrawText((unsigned char*) textPtr, textLength, kZoomFactor * kSpace, kZoomFactor * kSpace) + correction) / kZoomFactor;
+
 	//Adjust text position
 	destPoint.h -= textWidth;
 	
@@ -301,7 +284,7 @@ void TextEngine_DrawLine_Right(Ptr textPtr, short textLength, unsigned short col
 	Draw_TextLine_Clipped(textWidth, color, thePixMapPtr, destPoint);
 }
 
-void TextEngine_DrawText_Left(Ptr textPtr, short textLength, unsigned short color, PixMapPtr thePixMapPtr, Point destPoint)
+void TextEngine_DrawText_Left(Ptr textPtr, short textLength, UInt32 color, PixMapPtr thePixMapPtr, Point destPoint)
 {
 	unsigned char			*thePtr = (unsigned char*) textPtr,
 							*tempPtr;
@@ -330,16 +313,11 @@ void TextEngine_DrawFormattedText(Ptr textPtr, short textLength, TE_FontSpec fon
 							*tempPtr;
 	long					numCharsLeft = textLength,
 							numChars;
-	unsigned short			curColor = 0xFFFF;
+	UInt32					curColor = 0xFFFFFF;
 	long					curAlign = kLeft,
 							specNum;
-	GWorldPtr				oldGWorld;
-	GDHandle				oldGDHandle;
 	long					textWidth;
-							
-	GetGWorld(&oldGWorld, &oldGDHandle);
-	SetGWorld(fontGWorld, nil);
-	
+
 	while(numCharsLeft > 0) {
 		//Check for tag
 		if(*thePtr == '<') {
@@ -372,10 +350,7 @@ void TextEngine_DrawFormattedText(Ptr textPtr, short textLength, TE_FontSpec fon
 		//Draw line of text
 		if((destPoint.v > -maxHeight) && (destPoint.v < localBottomClip)) {
 			//Draw text in text buffer
-			EraseRect(&worldRect);
-			MoveTo(kZoomFactor * kSpace, kZoomFactor * kSpace + fontAscent);
-			DrawText((Ptr) thePtr, 0, numChars);
-			textWidth = (TextWidth((Ptr) thePtr, 0, numChars) + correction) / kZoomFactor;
+			textWidth = (Font_DrawText(thePtr, numChars, kZoomFactor * kSpace, kZoomFactor * kSpace) + correction) / kZoomFactor;
 			
 			//Calculate text position
 			switch(curAlign) {
@@ -392,8 +367,6 @@ void TextEngine_DrawFormattedText(Ptr textPtr, short textLength, TE_FontSpec fon
 		thePtr += numChars + 1;
 		numCharsLeft -= numChars + 1;
 	}
-	
-	SetGWorld(oldGWorld, oldGDHandle);
 }
 
 void TextEngine_DrawFormattedText_WithFade(Ptr textPtr, short textLength, TE_FontSpec fontSpecs[], PixMapPtr thePixMapPtr, Point destPoint, long fadeHeight)
@@ -402,16 +375,11 @@ void TextEngine_DrawFormattedText_WithFade(Ptr textPtr, short textLength, TE_Fon
 							*tempPtr;
 	long					numCharsLeft = textLength,
 							numChars;
-	unsigned short			curColor = 0xFFFF;
+	UInt32					curColor = 0xFFFFFF;
 	long					curAlign = kLeft,
 							specNum;
-	GWorldPtr				oldGWorld;
-	GDHandle				oldGDHandle;
 	long					textWidth;
-							
-	GetGWorld(&oldGWorld, &oldGDHandle);
-	SetGWorld(fontGWorld, nil);
-	
+
 	while(numCharsLeft > 0) {
 		//Check for tag
 		if(*thePtr == '<') {
@@ -444,10 +412,7 @@ void TextEngine_DrawFormattedText_WithFade(Ptr textPtr, short textLength, TE_Fon
 		//Draw line of text
 		if((destPoint.v > -maxHeight) && (destPoint.v < localBottomClip)) {
 			//Draw text in text buffer
-			EraseRect(&worldRect);
-			MoveTo(kZoomFactor * kSpace, kZoomFactor * kSpace + fontAscent);
-			DrawText((Ptr) thePtr, 0, numChars);
-			textWidth = (TextWidth((Ptr) thePtr, 0, numChars) + correction) / kZoomFactor;
+			textWidth = (Font_DrawText(thePtr, numChars, kZoomFactor * kSpace, kZoomFactor * kSpace) + correction) / kZoomFactor;
 			
 			//Calculate text position
 			switch(curAlign) {
@@ -467,17 +432,15 @@ void TextEngine_DrawFormattedText_WithFade(Ptr textPtr, short textLength, TE_Fon
 		thePtr += numChars + 1;
 		numCharsLeft -= numChars + 1;
 	}
-	
-	SetGWorld(oldGWorld, oldGDHandle);
 }
 
 OSErr TextEngine_Quit()
 {
-	if(fontGWorld == nil)
+	if(fontBuffer == nil)
 	return noErr;
-	
-	UnlockPixels(GetGWorldPixMap(fontGWorld));
-	DisposeGWorld(fontGWorld);
+
+	DisposePtr((Ptr) fontBuffer);
+	fontBuffer = nil;
 
 	return noErr;
 }

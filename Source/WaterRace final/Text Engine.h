@@ -28,8 +28,7 @@
 
 //MACROS:
 
-#define TextEngine_Color16(r,g,b) ((b) + (g << 5) + (r << 10))
-#define TextEngine_Color32To16(r,g,b) TextEngine_Color16((r >> 3), (g >> 3), (b >> 3))
+#define TextEngine_Color32(r,g,b) (((UInt32) (r) << 16) + ((g) << 8) + (b))
 
 //ROUTINES:
 
@@ -37,7 +36,7 @@ typedef struct TextEngine_FontSpec {
 	short						fontNum,
 								fontSize;
 	Style						fontStyle;
-	short						fontColor;
+	UInt32						fontColor;
 };
 typedef TextEngine_FontSpec TE_FontSpec;
 typedef TextEngine_FontSpec* TE_FontSpecPtr;
@@ -72,11 +71,11 @@ void TextEngine_Settings_Margings(short leftMargin, short rightMargin);
 
 short TextEngine_GetInterline();
 
-void TextEngine_DrawLine_Left(Ptr textPtr, short textLength, unsigned short color, PixMapPtr thePixMapPtr, Point destPoint);
-void TextEngine_DrawLine_Centered(Ptr textPtr, short textLength, unsigned short color, PixMapPtr thePixMapPtr, Point destPoint);
-void TextEngine_DrawLine_Right(Ptr textPtr, short textLength, unsigned short color, PixMapPtr thePixMapPtr, Point destPoint);
+void TextEngine_DrawLine_Left(Ptr textPtr, short textLength, UInt32 color, PixMapPtr thePixMapPtr, Point destPoint);
+void TextEngine_DrawLine_Centered(Ptr textPtr, short textLength, UInt32 color, PixMapPtr thePixMapPtr, Point destPoint);
+void TextEngine_DrawLine_Right(Ptr textPtr, short textLength, UInt32 color, PixMapPtr thePixMapPtr, Point destPoint);
 
-void TextEngine_DrawText_Left(Ptr textPtr, short textLength, unsigned short color, PixMapPtr thePixMapPtr, Point destPoint);
+void TextEngine_DrawText_Left(Ptr textPtr, short textLength, UInt32 color, PixMapPtr thePixMapPtr, Point destPoint);
 void TextEngine_DrawFormattedText(Ptr textPtr, short textLength, TE_FontSpec fontSpecs[], PixMapPtr thePixMapPtr, Point destPoint);
 void TextEngine_DrawFormattedText_WithFade(Ptr textPtr, short textLength, TE_FontSpec fontSpecs[], PixMapPtr thePixMapPtr, Point destPoint, long fadeHeight);
 

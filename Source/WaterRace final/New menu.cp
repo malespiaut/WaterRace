@@ -140,14 +140,14 @@ static void NewMenu_DrawDisplay(Str31 name, OSType mode, short difficulty, PixMa
 	destPoint.h = hOffset + 194;
 	destPoint.v = 161;
 	if(NameAlreadyInUse(name))
-	TextEngine_DrawLine_Centered((Ptr) &name[1], name[0], TextEngine_Color16(255,0,0), pixmap, destPoint);
+	TextEngine_DrawLine_Centered((Ptr) &name[1], name[0], TextEngine_Color32(255,0,0), pixmap, destPoint);
 	else
 	TextEngine_DrawLine_Centered((Ptr) &name[1], name[0], specs[0].fontColor, pixmap, destPoint);
 	
 	TextEngine_Settings_Text(specs[1].fontNum, specs[1].fontSize, specs[1].fontStyle);
 	
 	//Draw difficulty
-	GetIndString(text, kDifficultyStringID, difficulty);
+	GetIndStringP(text, kDifficultyStringID, difficulty);
 	destPoint.h = hOffset + 194;
 	destPoint.v = 191;
 	TextEngine_DrawLine_Centered((Ptr) &text[1], text[0], specs[1].fontColor, pixmap, destPoint);
@@ -303,7 +303,7 @@ OSErr NewMenu_Start()
 		specs[i].fontNum = fontDef->fontSpecList[i].fontID;
 		specs[i].fontSize = fontDef->fontSpecList[i].fontSize;
 		specs[i].fontStyle = fontDef->fontSpecList[i].fontStyle;
-		specs[i].fontColor = TextEngine_Color32To16(fontDef->fontSpecList[i].colorRed, fontDef->fontSpecList[i].colorGreen, fontDef->fontSpecList[i].colorBlue);
+		specs[i].fontColor = TextEngine_Color32(fontDef->fontSpecList[i].colorRed, fontDef->fontSpecList[i].colorGreen, fontDef->fontSpecList[i].colorBlue);
 	}
 	DisposeHandle(fontSpecHandle);
 	
@@ -312,7 +312,7 @@ OSErr NewMenu_Start()
 	TextEngine_Settings_Clipping(0, kInterface_Height);
 	
 	//Draw default text
-	GetIndString(defaultName, kDefaultNameStringID, 1);
+	GetIndStringP(defaultName, kDefaultNameStringID, 1);
 #if __DEMO_MODE__
 	NewMenu_DrawDisplay(defaultName, kPilotType_FreePlay, kDifficulty_Easy, *GetGWorldPixMap(bufferGWorld2), kButtonImageOffset);
 #else
@@ -428,8 +428,9 @@ short NewMenu_Run(Str31 name, OSType* mode, short* difficulty)
 	InfinityPlayer_PlayAnimation(GetRandomLoop());
 	InfinityPlayer_RunAsync(kPlayer_DefaultMaxFPS);
 	
-	GetIndString(name, kDefaultNameStringID, 1);
+	GetIndStringP(name, kDefaultNameStringID, 1);
 	NewMenu_UpdateDisplay(name, *mode, *difficulty);
+	fprintf(stderr, "Interface: new pilot ready\n"); //port/check-new-pilot.py waits for it
 	SetPort(mainWin);
 	FlushEvents(everyEvent, 0);
 	startBlinkTime = TickCount() + kBlickTimeStartDelay;

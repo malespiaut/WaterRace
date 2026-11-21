@@ -40,11 +40,11 @@
 void PlayMode_GetName(OSType mode, Str31 name)
 {
 	switch(mode) {
-		case kPilotType_Tournament: GetIndString(name, kModeStringID, 1); break;
-		case kPilotType_TimeRace: GetIndString(name, kModeStringID, 2); break;
-		case kPilotType_Duel: GetIndString(name, kModeStringID, 3); break;
-		case kPilotType_FreePlay: GetIndString(name, kModeStringID, 4); break;
-		case kPilotType_AddOns: GetIndString(name, kModeStringID, 5); break;
+		case kPilotType_Tournament: GetIndStringP(name, kModeStringID, 1); break;
+		case kPilotType_TimeRace: GetIndStringP(name, kModeStringID, 2); break;
+		case kPilotType_Duel: GetIndStringP(name, kModeStringID, 3); break;
+		case kPilotType_FreePlay: GetIndStringP(name, kModeStringID, 4); break;
+		case kPilotType_AddOns: GetIndStringP(name, kModeStringID, 5); break;
 		default: name[0] = 0; break;
 	}
 }

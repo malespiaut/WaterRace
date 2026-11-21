@@ -304,6 +304,8 @@ keyboard and `SDL_Gamepad`, keeping its public functions (`InputSprocket_GetShip
 `Text Engine.cp` (custom text rasterizer, `unsigned short color`), `WaterRace final/Utils.cp`,
 `Texture Utils.cp`, `Infinity rendering.cp` (buffer copy), `Infinity Player.cp` and
 `Screen Capture.cp` write pixels directly. Move them to 32-bit.
+*Status:* `Text Engine.cp` draws on 32-bit ARGB in a 32-bit colour (`TextEngine_Color32`), with Pomme's
+Chicago-like SysFont scaled to each `FtDf` size in place of Charcoal (#64).
 
 ### 6.6 Audio
 

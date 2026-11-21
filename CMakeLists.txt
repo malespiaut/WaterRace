@@ -85,6 +85,14 @@ target_compile_options(test-metafile PRIVATE -w -include MacHeadersPPC++)
 target_link_libraries(test-metafile PRIVATE Pomme)
 add_test(NAME metafile COMMAND test-metafile)
 
+# Text Engine.cp test (#64): text lines on 32-bit pixels in a 32-bit colour, checked per pixel
+add_executable(test-text-engine port/test-text-engine.cpp "${CMAKE_SOURCE_DIR}/Source/WaterRace final/Text Engine.cp")
+target_include_directories(test-text-engine PRIVATE ${INCLUDE_DIRS} port port/stubs Pomme/src)
+target_compile_definitions(test-text-engine PRIVATE POMME_NO_SOUND_MIXER POMME_NO_VIDEO POMME_NO_QD3D)
+target_compile_options(test-text-engine PRIVATE -w -include MacHeadersPPC++)
+target_link_libraries(test-text-engine PRIVATE Pomme)
+add_test(NAME text-engine COMMAND test-text-engine)
+
 # Practice Zone load test (#45): Terrain, TerrainMesh, SeaMesh, View and the texture lists read from the big-endian layout
 add_executable(test-terrain port/test-terrain.cpp "${CMAKE_SOURCE_DIR}/Source/Infinity Engine/Core/Textures.cp" port/TextureLoader.cpp)
 target_include_directories(test-terrain PRIVATE ${INCLUDE_DIRS} port port/stubs Pomme/src)
