@@ -372,7 +372,7 @@ screenshots from the original game.
 Shape, Vertex, TriFace and normals; TextureSet and CompressedTexture; MegaObject, Script,
 Animation, Skeleton and Camera; Terrain, TerrainMesh, SeaMesh, Track, Enclosure, Items and
 AmbientSound; then the `data` subtags. *Done when:* every file in `WaterRace Data/` loads with
-size checks passing, and its counts, bounding boxes and texture sizes match a dump from `metadump.py` (planned, not yet written).
+size checks passing, and its counts, bounding boxes and texture sizes match a dump from `tools/metadump.py`.
 
 **P5: Race (2 wks).** Terrain and sprites on the GL layer, sound on Pomme's mixer (§6.6), the HUD,
 32-bit fixes (§6.5), input (§6.4). Remove the screen-switching code. *Done when:* a Practice race
@@ -394,7 +394,7 @@ licence), README. Add-Ons (`.sit`) can come later, if they use the same MetaFile
 ## 8. Verification
 
 - **Reference:** run the original `Builds/WaterRace_1.0.3.sit` under SheepShaver or QEMU-PPC with Mac OS 9 (it has a RAVE software renderer) to capture reference screenshots of each track and menu.
-- **Data check:** a headless mode that loads every file in `WaterRace Data/` and reports the counts, bounding boxes and texture sizes, compared with a Python dump of the same files (the `metadump.py` idea, in `tools/`).
+- **Data check:** a headless mode that loads every file in `WaterRace Data/` and reports the counts, bounding boxes and texture sizes, compared with a Python dump of the same files (`tools/metadump.py`, one record per line).
 - **Render checks:** fixed-camera screenshots of each `Locations/*` file through `glReadPixels`, compared by eye with the reference. Exact pixel matches aren't expected, since RAVE's software rasterizer differs from GL.
 - **Determinism:** physics and AI use `RClock` time steps. A recorded replay should finish with the same ranking every run; use this as a regression test once replays work (P6).
 - Build with `-fsanitize=address,undefined` during P3–P5. Mis-sized reads show up as out-of-bounds accesses.
