@@ -140,14 +140,8 @@ enum {
 	XTI_RCVLOWAT = 0x1004
 };
 
-// --- Alert and RAVE draw context -------------------------------------------
+// --- Alert -------------------------------------------
 
 enum {
 	kAlertCautionAlert = 2
-};
-
-// RAVE only exposes the version field (drawContext->version in main.cp); full layout comes with P3.
-struct TQADrawContext
-{
-	unsigned long	version;
 };

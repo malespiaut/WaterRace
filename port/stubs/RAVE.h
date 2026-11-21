@@ -1,6 +1,6 @@
 #pragma once
-// P0 stub: RAVE declarations for the subset the engine uses. Declarations only,
-// no behaviour; the GL implementation comes in P3 (PORTING.md §4.2, §4.3).
+// RAVE declarations for the subset the engine uses. The GL implementation is
+// Source/Infinity Engine/Core/OGL_Support.cp (PORTING.md §4.2, §4.3).
 // Not Apple's RAVE.h: names and signatures are taken from the game's call sites.
 #include "Pomme.h"
 
