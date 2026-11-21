@@ -1,11 +1,11 @@
 export const meta = {
   name: 'finish-port',
   description: 'Advance the WaterRace Linux port by one step of the lowest open phase (P1-P8): plan tasks, implement, review, merge, verify',
-  whenToUse: 'Run repeatedly (e.g. under /loop) until it returns status "done" or "halt".',
+  whenToUse: 'Run repeatedly (e.g. under /loop) until it returns status "done" or "halt". On status "merge-ready", the main session runs gh pr merge <pr> --squash --delete-branch (if conflicting: rebase on origin/master, force-push with lease, merge), confirms the issue closed, pulls master, then runs the workflow again.',
   phases: [
     { title: 'Status', detail: 'sync, find lowest open phase issue' },
     { title: 'Plan', detail: 'decompose phase into PR-sized task issues' },
-    { title: 'Build', detail: 'implement -> review -> fix -> merge, one task at a time' },
+    { title: 'Build', detail: 'implement -> review -> fix, then hand the approved PR to the main session to merge' },
     { title: 'Verify', detail: 'check the phase "Done when" with evidence' },
   ],
 }
@@ -134,10 +134,8 @@ Check out the branch in your own worktree, fix, rebuild, re-run checks, push to 
   }
 
   if (review && review.approve) {
-    const m = await agent(`cd ${REPO}; gh pr merge ${res.pr} --squash --delete-branch. If it is not mergeable (conflict), rebase the branch on origin/master in a temporary worktree, rebuild, force-push with lease, then merge. Confirm issue #${t.number} is closed (close it if not). Return merged=true only if gh pr view ${res.pr} reports state MERGED.`,
-      { label: `merge #${res.pr}`, phase: 'Build', effort: 'low', schema: { type: 'object', properties: { merged: { type: 'boolean' }, detail: { type: 'string' } }, required: ['merged', 'detail'] } })
-    if (!m || !m.merged) return { status: 'halt', reason: `PR #${res.pr} approved but merge failed: ${m ? m.detail : 'merge agent failed'}`, merged, blocked }
-    merged.push(t.number)
+    // Merge runs in the main session (subagents get blocked by the auto-mode classifier); stop here so the next task builds on it.
+    return { status: 'merge-ready', pr: res.pr, issue: t.number, merged, blocked }
   } else {
     blocked.push(t.number)
     await agent(`cd ${REPO}; gh pr edit ${res.pr} --add-label port-blocked; gh issue edit ${t.number} --add-label port-blocked; gh pr comment ${res.pr} --body "Automated review did not approve after ${MAX_FIX_ROUNDS} fix rounds. Needs a human."`,
