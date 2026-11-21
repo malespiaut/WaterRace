@@ -22,6 +22,7 @@
 #include				<Appearance.h>
 #include				<QD3DAcceleration.h>
 #include				<InputSprocket.h>
+#include				"PommeGraphics.h"
 
 #include				"WaterRace.h"
 #include				"Strings.h"
@@ -50,19 +51,6 @@
 #endif
 
 //CONSTANTES:
-
-#define					kATI_MinimalVersion			0x00000041 //4.1
-#define					kATI_MinimalVersion128		0x00000027 //2.7
-#define					kATI_EngineID				4
-#define					kATI_EngineID128			5
-#define					kATI_EngineIDRadeon			6
-
-#define					kATI_FogBugVersion128		0x0000005F //5.9.5
-#define					kATI_FogBugVersionRadeon	0x0000000A //6.6.10
-
-#define					k3Dfx_MinimalVersion		0x00000113 //1.1.3
-
-#define					kAEWaitDelay				6
 
 #if __PATCH_PREFERENCES__
 #if __PATCH_PREFERENCES__ == 1
@@ -97,11 +85,6 @@
 #if __SECURE_CRASH__
 #define ExitToShell() { properlyQuit = true; ExitToShell(); }
 #endif
-
-//PROTOTYPES:
-
-void Hide_MenuBar();
-void Show_MenuBar();
 
 //VARIABLES:
 
@@ -140,122 +123,27 @@ static Boolean			properlyQuit = false,
 
 //ROUTINES:
 
-static void Init_Toolbox()
-{
-	long		i;
-	
-	InitGraf(&qd.thePort);
-	InitFonts();
-	FlushEvents(everyEvent, 0);
-	InitWindows();
-	InitMenus();
-	TEInit();
-	InitDialogs(0L);
-	InitCursor();
-	MaxApplZone();
-	
-	for(i = 0; i < 16; ++i)
-	MoreMasters();
-}
-
+//Linux port: Boot_InitGL (Boot.cp) opened the window; the interface draws into Pomme's 640x480 screen port,
+//which the compositor presents. No display picker, resolution switch, menu bar or background window (PORTING.md 6.1, 6.2).
 static OSErr Screen_Init()
 {
 	OSErr				theError;
-	short				realWidth = kInterface_Width,
-						realHeight = kInterface_Height;
-	VDSwitchInfoRec*	switchInfoPtr;
-	VDSwitchInfoRec		switchInfo;
 	Rect				winBounds = {0,0,kInterface_Height,kInterface_Width};
 	PixMapHandle		pictPix = NULL;
 	CGrafPtr			savePort = NULL;
 	GDHandle			saveDevice = NULL;
-	Rect				desktopRect;
-	
-	//Do we already have a screen resolution and is it still available?
-	if(!redefineScreens && (thePrefs.interfaceScreen.csMode != 0) && (SL_ModeAvailable(mainGDHandle, &thePrefs.interfaceScreen)))
-	BlockMove(&thePrefs.interfaceScreen, &switchInfo, sizeof(VDSwitchInfoRec));
-	else {
-		//User want to choose refresh rate
-		if(redefineScreens) {
-			//Gather informations about this screen
-			theError = SL_ScanGDevice(mainGDHandle, &screenInfo);
-			if(theError) {
-				Wrapper_Error_Display(129, theError, nil, false);
-				return theError;
-			}
-			
-			//Ask the user a refresh rate
-			SpinningCursor_Stop();
-			theError = SL_GetDeviceResolution(screenInfo, &realWidth, &realHeight, kInterface_Depth, &switchInfoPtr, kString_Interface_ManualResolution);
-			if(theError) {
-				Wrapper_Error_Display(130, theError, nil, false);
-				return theError;
-			}
-			BlockMove(switchInfoPtr, &switchInfo, sizeof(VDSwitchInfoRec));
-			SpinningCursor_Start();
-		}
-		else { //automatic choice
-			theError = SL_LookForResolution(mainGDHandle, &realWidth, &realHeight, kInterface_Depth, &switchInfo);
-			if(theError) {
-				Wrapper_Error_Display(130, theError, nil, false);
-				return theError;
-			}
-		}
-		
-		//Save the switch info
-		BlockMove(&switchInfo, &thePrefs.interfaceScreen, sizeof(VDSwitchInfoRec));
-	}
 	
 	SpinningCursor_Stop();
 	HideCursor();
-	
-	//Save screen state
-	theError = SL_GetCurrent(mainGDHandle, &oldScreenSwitchInfo);
-	if(theError) {
-		Wrapper_Error_Display(131, theError, nil, false);
-		return theError;
-	}
 	
 #if __SCREEN_FADES__
 	//Init fading
 	StartFading(&mainGamma);
 	
 	//Fade in...
-#if __FADE_ALL_SCREENS_ON_STARTUP__
-	FadeToBlack(2 * kGammaSpeed, quadraticFade);
-#else
 	Fade1ToBlack(mainGDHandle, 2 * kGammaSpeed, quadraticFade, nil, 0);
 #endif
-#endif
 	
-	//Hide menubar
-	Hide_MenuBar();
-	
-	//Start configuring displays
-	DMBeginConfigureDisplays(&theDisplayState);
-	
-	//Set up black background window
-	backgroundWin = GetNewCWindow(128, nil, (WindowPtr) -1L);
-	desktopRect = (**LMGetGrayRgn()).rgnBBox;
-#if __MACOS_X_CLASSIC__
-	MoveWindow(backgroundWin, desktopRect.left, desktopRect.top, false);
-	SizeWindow(backgroundWin, desktopRect.right - desktopRect.left, desktopRect.bottom - desktopRect.top, true);
-#else	
-	MoveWindow(backgroundWin, -16000, -16000, false);
-	SizeWindow(backgroundWin, 32000, 32000, true);
-#endif
-	SetPort(backgroundWin);
-	BackColor(whiteColor);
-	ForeColor(blackColor);
-	ShowHide(backgroundWin, true);
-	
-	//Set our screen
-	theError = SL_Switch(mainGDHandle, &switchInfo);
-	if(theError) {
-		Wrapper_Error_Display(132, theError, nil, false);
-		return theError;
-	}
-		
 #if __SECURE_CRASH__
 	screenInited = true;
 #endif
@@ -286,53 +174,27 @@ static OSErr Screen_Init()
 	SetGWorld(savePort, saveDevice);
 	
 	//Set up interface window
-	mainWin = GetNewCWindow(129, nil, (WindowPtr) -1L);
-	mainWinOffset.h = (GetMainGDRect().right - GetMainGDRect().left - kInterface_Width) / 2;
-	mainWinOffset.v = (GetMainGDRect().bottom - GetMainGDRect().top - kInterface_Height) / 2;
-	MoveWindow(mainWin, mainWinOffset.h + GetMainGDRect().left, mainWinOffset.v + GetMainGDRect().top, false);
-	SizeWindow(mainWin, kInterface_Width, kInterface_Height, true);
+	mainWin = (WindowPtr) Pomme::Graphics::GetScreenPort();
+	mainWinOffset.h = 0;
+	mainWinOffset.v = 0;
 	SetPort(mainWin);
 	BackColor(whiteColor);
 	ForeColor(blackColor);
-	ShowHide(mainWin, true);
 	
 	return noErr;
 }
 
 static OSErr Screen_Quit()
 {
-	OSErr						theError;
-	
-	//Kill windows
-	DisposeWindow(backgroundWin);
-	DisposeWindow(mainWin);
-	
 	//Kill GWorlds
 	UnlockPixels(GetGWorldPixMap(bufferGWorld));
 	DisposeGWorld(bufferGWorld);
 	UnlockPixels(GetGWorldPixMap(bufferGWorld2));
 	DisposeGWorld(bufferGWorld2);
 	
-	//Restore screen state
-	theError = SL_Switch(mainGDHandle, &oldScreenSwitchInfo);
-	
-	//End configuring displays
-	DMEndConfigureDisplays(theDisplayState);
-	
-	//Show menubar
-	Show_MenuBar();
-	
-	//Restore
-	if(screenInfo != nil)
-	SL_DisposeGDeviceInfo(screenInfo);
-	
 #if __SCREEN_FADES__
 	//Fade out...
-#if __FADE_ALL_SCREENS_ON_STARTUP__
-	FadeToGamma(mainGamma, kGammaSpeed, quadraticFade);
-#else
 	Fade1ToGamma(mainGDHandle, mainGamma, kGammaSpeed, quadraticFade, nil, 0);
-#endif
 	
 	//Clean up
 	StopFading(mainGamma, true);
@@ -341,405 +203,14 @@ static OSErr Screen_Quit()
 	return noErr;
 }
 
-static Boolean Init_Appeareance()
-{
-	OSErr					theError;
-	long					response;
-	
-	//Do we have Appeareance Manager installed?
-	theError = Gestalt(gestaltAppearanceAttr,&response);
-	if((theError == noErr) && (BitTst(&response,31 - gestaltAppearanceExists))) {
-    	theError = RegisterAppearanceClient();
-    	if(theError == noErr)
-    	return true;
-	}
-	
-	//Display error alert
-	Alert(128, nil);
-	
-	return false;
-}
-
-#if __CHECK_FOR_RAVE_1_6__
-static void Check_Rave_1_6()
-{
-	TQAEngine*				theEngine;
-	TQADevice				raveDevice;
-	TQARect 				boundsRect;
-	TQADrawContext*			drawContext;
-	AlertStdAlertParamRec	params;
-	short					outItemHit;
-	Str255					text1,
-							text2;
-	Boolean					installed = false;
-	
-	//Let's find the Apple software engine
-	if(Get_SoftwareEngine(&theEngine) == noErr) {
-		//Create a dummy context
-		raveDevice.deviceType = kQADeviceGDevice;
-		raveDevice.device.gDevice = GetMainDevice();
-		boundsRect.left = 0;
-		boundsRect.top = 0;
-		boundsRect.right = 16;
-		boundsRect.bottom = 16;
-		if(QADrawContextNew(&raveDevice, &boundsRect, nil, theEngine, kQAContext_NoZBuffer, &drawContext) == noErr) {
-			//Check Rave version
-			if(drawContext->version >= kQAVersion_1_6)
-			installed = true;
-			QADrawContextDelete(drawContext);
-		}
-	}
-		
-	if(!installed) {
-		params.movable = true;
-		params.helpButton = false;
-		params.filterProc = nil;
-		params.defaultText = kString_Misc_Continue;
-		params.cancelText = nil;
-		params.otherText = nil;
-		params.defaultButton = kAlertStdAlertOKButton;
-		params.cancelButton = 0;
-		params.position = kWindowDefaultPosition;
-		
-		UseResFile(mainResFileID);
-		GetIndString(text1, 200, 1);
-		GetIndString(text2, 200, 2);
-		StandardAlert(kAlertStopAlert, text1, text2, &params, &outItemHit);
-	}
-}
-#endif
-
-#if __CHECK_FOR_ATI_DRIVERS__
-static void Check_ATIDrivers()
-{
-	TQAEngine*				theEngine;
-	TQADevice				raveDevice;
-	long					engineID,
-							version;
-	Boolean					installed = true;
-	AlertStdAlertParamRec	params;
-	short					outItemHit;
-	Str255					text1,
-							text2;
-							
-	//Let's find the ATI engine
-	raveDevice.deviceType = kQADeviceGDevice;
-	raveDevice.device.gDevice = mainGDHandle;
-	theEngine = QADeviceGetFirstEngine(&raveDevice);
-	while(theEngine != nil) {
-		if(IsATIKnownEngine(theEngine))
-		break;
-		
-		theEngine = QADeviceGetNextEngine(&raveDevice, theEngine);
-	}
-	if(theEngine == nil)
-	return;
-	
-	//Check its version
-	if(QAEngineGestalt(theEngine, kQAGestalt_EngineID, &engineID))
-	return;
-	if(QAEngineGestalt(theEngine, kQAGestalt_Revision, &version))
-	return;
-	
-	//Setup alert
-	params.movable = true;
-	params.helpButton = false;
-	params.filterProc = nil;
-	params.defaultText = kString_Misc_Continue;
-	params.cancelText = nil;
-	params.otherText = nil;
-	params.defaultButton = kAlertStdAlertOKButton;
-	params.cancelButton = 0;
-	params.position = kWindowDefaultPosition;
-	UseResFile(mainResFileID);
-	
-	//Check versions
-	if(((engineID == kATI_EngineID) && (version < kATI_MinimalVersion))
-	 || ((engineID == kATI_EngineID128) && (version < kATI_MinimalVersion128))) {
-	 	GetIndString(text1, 200, 7);
-		GetIndString(text2, 200, 8);
-		SpinningCursor_Stop();
-		StandardAlert(kAlertCautionAlert, text1, text2, &params, &outItemHit);
-		SpinningCursor_Start();
-	}
-	
-	//Check for fog bug (Rage 128 & Radeon only)
-	if(((engineID == kATI_EngineID128) && (version == kATI_FogBugVersion128))
-		|| ((engineID == kATI_EngineIDRadeon) && (version == kATI_FogBugVersionRadeon))) {
-	 	GetIndString(text1, 200, 15);
-		GetIndString(text2, 200, 16);
-		SpinningCursor_Stop();
-		StandardAlert(kAlertCautionAlert, text1, text2, &params, &outItemHit);
-		SpinningCursor_Start();
-	}
-}
-#endif
-
-#if __CHECK_FOR_3Dfx_DRIVERS__
-static void Check_3DfxDrivers()
-{
-	TQAEngine*				theEngine;
-	TQADevice				raveDevice;
-	long					version;
-	Boolean					installed = true;
-	AlertStdAlertParamRec	params;
-	short					outItemHit;
-	Str255					text1,
-							text2;
-							
-	//Let's find the 3Dfx engine
-	raveDevice.deviceType = kQADeviceGDevice;
-	raveDevice.device.gDevice = mainGDHandle;
-	theEngine = QADeviceGetFirstEngine(&raveDevice);
-	while(theEngine != nil) {
-		if(Is3DfxKnownEngine(theEngine))
-		break;
-		
-		theEngine = QADeviceGetNextEngine(&raveDevice, theEngine);
-	}
-	if(theEngine == nil)
-	return;
-	
-	//Check its version
-	if(QAEngineGestalt(theEngine, kQAGestalt_Revision, &version))
-	return;
-	if(version >= k3Dfx_MinimalVersion)
-	return;
-	
-	params.movable = true;
-	params.helpButton = false;
-	params.filterProc = nil;
-	params.defaultText = kString_Misc_Continue;
-	params.cancelText = nil;
-	params.otherText = nil;
-	params.defaultButton = kAlertStdAlertOKButton;
-	params.cancelButton = 0;
-	params.position = kWindowDefaultPosition;
-	
-	UseResFile(mainResFileID);
-	GetIndString(text1, 200, 13);
-	GetIndString(text2, 200, 14);
-	SpinningCursor_Stop();
-	StandardAlert(kAlertCautionAlert, text1, text2, &params, &outItemHit);
-	SpinningCursor_Start();
-}
-#endif
-
-static Boolean Rave_Available()
-{
-	AlertStdAlertParamRec	params;
-	short					outItemHit;
-	Str255					text1,
-							text2;
-	
-	//Is Rave installed
-	if((RoutineDescriptorPtr) QADrawContextNew == (RoutineDescriptorPtr) kUnresolvedCFragSymbolAddress) {
-		params.movable = true;
-		params.helpButton = false;
-		params.filterProc = nil;
-		params.defaultText = kString_Misc_Quit;
-		params.cancelText = nil;
-		params.otherText = nil;
-		params.defaultButton = kAlertStdAlertOKButton;
-		params.cancelButton = 0;
-		params.position = kWindowDefaultPosition;
-		
-		UseResFile(mainResFileID);
-		GetIndString(text1, 200, 11);
-		GetIndString(text2, 200, 12);
-		StandardAlert(kAlertStopAlert, text1, text2, &params, &outItemHit);
-		
-		return false;
-	}
-	
-#if __CHECK_FOR_RAVE_1_6__
-	//Is Rave 1.6 installed?
-	Check_Rave_1_6();
-#endif
-
-	return true;
-}
-
-static Boolean QT3_Available()
-{
-	AlertStdAlertParamRec	params;
-	short					outItemHit;
-	Str255					text1,
-							text2;
-	OSErr					theError;
-	NumVersion				version;
-	
-	theError = Gestalt(gestaltQuickTimeVersion, (long*) &version);
-    if((theError != noErr) || (version.majorRev < 0x03)) {
-		params.movable = true;
-		params.helpButton = false;
-		params.filterProc = nil;
-		params.defaultText = kString_Misc_Quit;
-		params.cancelText = nil;
-		params.otherText = nil;
-		params.defaultButton = kAlertStdAlertOKButton;
-		params.cancelButton = 0;
-		params.position = kWindowDefaultPosition;
-		
-		UseResFile(mainResFileID);
-		GetIndString(text1, 200, 3);
-		GetIndString(text2, 200, 4);
-		StandardAlert(kAlertStopAlert, text1, text2, &params, &outItemHit);
-		
-		return false;
-	}
-	
-	return true;
-}
-
-static Boolean SoundManager3_3_Available()
-{
-	AlertStdAlertParamRec	params;
-	short					outItemHit;
-	Str255					text1,
-							text2;
-	NumVersionVariant		version;
-	
-	version.parts = SndSoundManagerVersion();
-	if(version.whole < 0x03300000) {
-		params.movable = true;
-		params.helpButton = false;
-		params.filterProc = nil;
-		params.defaultText = kString_Misc_Quit;
-		params.cancelText = nil;
-		params.otherText = nil;
-		params.defaultButton = kAlertStdAlertOKButton;
-		params.cancelButton = 0;
-		params.position = kWindowDefaultPosition;
-		
-		UseResFile(mainResFileID);
-		GetIndString(text1, 200, 5);
-		GetIndString(text2, 200, 6);
-		StandardAlert(kAlertStopAlert, text1, text2, &params, &outItemHit);
-		
-		return false;
-	}
-	
-	return true;
-}
-
-static Boolean InputSprocket_Available()
-{
-	AlertStdAlertParamRec	params;
-	short					outItemHit;
-	Str255					text1,
-							text2;
-	NumVersion				ispVersion;
-	Boolean					ok = true;
-	
-	//Make sure ISp 1.3 or later is installed
-	if((RoutineDescriptorPtr) ISpGetVersion == (RoutineDescriptorPtr) kUnresolvedCFragSymbolAddress)
-	ok = false;
-	else {
-		ispVersion = ISpGetVersion();
-		if((ispVersion.majorRev < 1) || ((ispVersion.majorRev == 1) && ((ispVersion.minorAndBugRev < 0x30))))
-		ok = false;
-	}
-	
-	if(!ok) {
-		params.movable = true;
-		params.helpButton = false;
-		params.filterProc = nil;
-		params.defaultText = kString_Misc_Quit;
-		params.cancelText = nil;
-		params.otherText = nil;
-		params.defaultButton = kAlertStdAlertOKButton;
-		params.cancelButton = 0;
-		params.position = kWindowDefaultPosition;
-		
-		UseResFile(mainResFileID);
-		GetIndString(text1, 200, 9);
-		GetIndString(text2, 200, 10);
-		StandardAlert(kAlertStopAlert, text1, text2, &params, &outItemHit);
-		
-		return false;
-	}
-	
-	return true;
-}
-
-static GDHandle Get_Screen()
-{
-	GDHandle			screenDevice = nil;
-	
-	if(redefineScreens || (thePrefs.screenID == kInvalidDisplayID)) {
-		SpinningCursor_Stop();
-		thePrefs.screenID = SL_PickUpScreen(kString_Interface_ManualResolution);
-		SpinningCursor_Start();
-	}
-	
-	DMGetGDeviceByDisplayID(thePrefs.screenID, &screenDevice, true); //On error return main screen
-	
-	return screenDevice;
-}
-
-static Boolean CommandKeyDown()
-{
-	KeyMap			theKeys;
-	long			value;
-	
-	GetKeys(theKeys);
-	value = IsKeyDown(theKeys, keyCommand);
-	if(value)
-	return true;
-	else
-	return false;
-}
-
 static void Boot_Sequence()
 {
 	OSErr				theError;
 	
-	//Init ToolBox
-	Init_Toolbox();
-	mainResFileID = CurResFile();
-	if(!Init_Appeareance())
-	ExitToShell();
-	
-	//Is the command key down?
-	redefineScreens = CommandKeyDown();
-	
-	//Check for Rave
-	if(!Rave_Available())
-	ExitToShell();
-	//Check for QuickTime 3
-	if(!QT3_Available())
-	ExitToShell();
-	//Check for Sound Manager 3.3
-	if(!SoundManager3_3_Available())
-	ExitToShell();
-	//Check for Input Sprocket 1.2
-	if(!InputSprocket_Available())
-	ExitToShell();
-	
-#if __SECURE_CRASH__
-	fontAliased = MacOSTextAliasing_IsEnabled();
-#endif
-
-#if	__CD_PROTECTION__
-
-/*
-Arktis CD release 1: "\022WaterRace - German", 13, 60, 37
-FT CD release 1: "\031WaterRace - International", 13, 60, 37
-Softline CD release 1: "\024WaterRace - Softline", 13, 60, 37
-*/
-
-	short driverRefNum = XCheckForCD("\014WaterRace - ", 13, 60, 37);
-	if(!driverRefNum) {
-#if __NETWORK_ONLY_IF_CD_FAILURE__
-		Wrapper_Error_Display(177, kError_WaterRaceCDNotFound, nil, false);
-		networkOnly = true;
-#else
-		properlyQuit = true;
-		Wrapper_Error_Display(176, kError_WaterRaceCDNotFound, nil, true);
-#endif
-	}
-#endif
+	//Linux port: Boot_Startup (Boot.cp) replaces Init_Toolbox and the Appearance, RAVE, QuickTime,
+	//Sound Manager and InputSprocket checks; the CD protection is gone (PORTING.md 6.1)
+	fprintf(stderr, "Boot: Boot_Sequence\n");
+	redefineScreens = false;
 	
 #if __USE_AUDIO_CD_TRACKS__
 	//Init audio CD driver
@@ -769,6 +240,7 @@ Softline CD release 1: "\024WaterRace - Softline", 13, 60, 37
 #endif
 	
 	//Read preferences
+	fprintf(stderr, "Boot: Preference_Read\n");
 	if(Preference_Read())
 	ExitToShell();
 #if __PATCH_PREFERENCES__
@@ -807,6 +279,7 @@ Softline CD release 1: "\024WaterRace - Softline", 13, 60, 37
 	SpinningCursor_Start();
 	
 	//Find data folders
+	fprintf(stderr, "Boot: Resolve_DataFolders\n");
 	theError = Resolve_DataFolders();
 	if(theError) {
 		SpinningCursor_Quit();
@@ -815,62 +288,48 @@ Softline CD release 1: "\024WaterRace - Softline", 13, 60, 37
 	}
 	
 	//Scan for ships & terrains
+	fprintf(stderr, "Boot: Preload_DataFolders\n");
 	theError = Preload_DataFolders();
-	if(theError) {
-		SpinningCursor_Quit();
-		properlyQuit = true;
-		Wrapper_Error_Display(135, theError, nil, true);
-	}
+	//shortcut: not fatal while MetaFile headers are read unswapped (kError_BadVersion); make it fatal again once MetaFiles load (#42, P4)
+	if(theError)
+	Wrapper_Error_Display(135, theError, nil, false);
 	
 	//Open data files
+	fprintf(stderr, "Boot: Open_DataFiles\n");
 	if(Open_DataFiles()) {
 		SpinningCursor_Quit();
 		ExitToShell();
 	}
 	
 #if !__DEMO_MODE__
-	//Init network
-	theError = Network_Init();
-	if(theError == noErr)
-	networkAvailable = true;
-	else {
-		Wrapper_Error_Display(173, theError, nil, false);
-		networkAvailable = false;
-	}
+	//Init network - Linux port: no sockets backend before P7
+	networkAvailable = false;
 #endif
 	
-	//Init ISp
+	//Init ISp - Linux port: SDL input replaces InputSprocket in P5 (PORTING.md 6.4)
 	UseResFile(mainResFileID);
-	theError = InputSprocket_Init();
-	if(theError)
-	Wrapper_Error_Display(137, theError, nil, true);
 	
-	//Pick up our screen
-	mainGDHandle = Get_Screen();
-	
-	//Check drivers versions
-#if __CHECK_FOR_ATI_DRIVERS__
-	Check_ATIDrivers();
-#endif
-#if __CHECK_FOR_3Dfx_DRIVERS__
-	Check_3DfxDrivers();
-#endif
+	//One window: no screen to pick, no driver to check
+	mainGDHandle = nil;
 	
 	//Set screen... - this hides the cursor and stops spinning
+	fprintf(stderr, "Boot: Screen_Init\n");
 	if(Screen_Init() != noErr) {
 		SpinningCursor_Quit();
 		ExitToShell();
 	}
 	
 	//Init Text Engine
+	fprintf(stderr, "Boot: TextEngine_Init\n");
 	theError = TextEngine_Init(32, kInterface_Width);
 	if(theError) {
 		SpinningCursor_Quit();
 		Wrapper_Error_Display(138, theError, nil, true);
 	}
 	
-	//Create 3D rendering buffers & Init audio engine
-	theError = InfinityPlayer_Init(true);
+	//Create 3D rendering buffers & Init audio engine - Linux port: no audio engine before Pomme's mixer in P5 (PORTING.md 6.6)
+	fprintf(stderr, "Boot: InfinityPlayer_Init\n");
+	theError = InfinityPlayer_Init(false);
 	if(theError) {
 		SpinningCursor_Quit();
 		Wrapper_Error_Display(139, theError, nil, true);
@@ -878,13 +337,9 @@ Softline CD release 1: "\024WaterRace - Softline", 13, 60, 37
 	InfinityAudio_SetMatrix(&worldCamera.camera);
 	InfinityAudio_Volume(thePrefs.soundFXVolume);
 	
-	//Load interface sfx
-	theError = Sound_InitSFx();
-	if(theError) {
-		SpinningCursor_Quit();
-		Wrapper_Error_Display(136, theError, nil, true);
-	}
+	//Load interface sfx - Linux port: sound comes with Pomme's mixer in P5 (PORTING.md 6.6)
 	UseResFile(mainResFileID);
+	fprintf(stderr, "Boot: Boot_Sequence done\n");
 }
 
 static void Shut_Down()
@@ -1019,65 +474,10 @@ static long InitFile_ReadCommand(Ptr buffer, long size, Str31 command, void* res
 #endif
 
 #if __RECORD_RACE__ && __REPLAY_AWARE__
-static pascal OSErr ODOC_Handler(const AppleEvent* theAppleEvent, AppleEvent* reply, long handlerRefCon)
-{	
-	AEDescList		docList;
-	AEKeyword		keyword;
-	DescType		returnedType;
-	FSSpec			theFSSpec;
-	Size			actualSize;
-	FInfo			fileInfo;
-	long			nbItems;
-	OSErr			theError;
-	FSSpec*			file = (FSSpec*) handlerRefCon;
-	
-	theError = AEGetParamDesc(theAppleEvent, keyDirectObject, typeAEList, &docList);
-	if(theError)
-	return theError;
-	theError = AECountItems(&docList, &nbItems);
-	if(theError)
-	return theError;
-	
-	theError = AEGetNthPtr(&docList, 1, typeFSS, &keyword, &returnedType, (Ptr) &theFSSpec, sizeof(FSSpec), &actualSize);
-	if(theError)
-	return theError;
-	
-	theError = FSpGetFInfo(&theFSSpec, &fileInfo);
-	if(theError)
-	return theError;
-		
-	if(fileInfo.fdType == kReplayFileType)
-	*file = theFSSpec;
-	
-	AEDisposeDesc(&docList);
-	
-	return nil;
-}
-
+//Linux port: no Apple Events, so no replay file opened from the Finder; a replay argument can come with P6 (PORTING.md 6.2)
 static Boolean Check_ForReplay()
 {
-	UniversalProcPtr		ODOC_Handler_Routine;
-	FSSpec					startUpReplayFile;
-	EventRecord				event;
-	unsigned long			startTime;
-	
-	ODOC_Handler_Routine = NewAEEventHandlerProc(ODOC_Handler);
-	startUpReplayFile.cName[0] = 0; // Pomme: FSSpec.name is cName
-	AEInstallEventHandler(kCoreEventClass, kAEOpenDocuments, ODOC_Handler_Routine, (long) &startUpReplayFile, false);
-	startTime = TickCount();
-	while(TickCount() < startTime + kAEWaitDelay)
-	if(WaitNextEvent(highLevelEventMask, &event, (long) 0, 0)) {
-		if((OSType) event.message == typeAppleEvent)
-		AEProcessAppleEvent(&event);
-	}
-	AERemoveEventHandler(kCoreEventClass, kAEOpenDocuments, ODOC_Handler_Routine, false);
-	if(startUpReplayFile.cName[0] == 0)
 	return false;
-	
-	Replay_SetupGame(&startUpReplayFile);
-	Game_New();
-	
-	return true;
 }
 #endif
 
@@ -1110,13 +510,13 @@ static Boolean Request_Replay()
 
 int Boot_Startup(); // Boot.cp
 
-int main() // CodeWarrior allowed void main; C++ requires int (PORTING.md 6.8)
+int Game_Main() // the Mac main(); main() in Boot.cp calls it and catches ExitToShell
 {
 	OSErr			theError;
 
-	//P1: Pomme boot and resource checks only (Boot.cp). shortcut: the Mac boot below and the game
-	//loop are unreachable until P3 brings up the screens; remove this return then.
-	return Boot_Startup();
+	//Pomme, resources and the GL window (Boot.cp)
+	if(Boot_Startup())
+	return 1;
 
 	//Boot...
 	Boot_Sequence();
@@ -1219,6 +619,10 @@ int main() // CodeWarrior allowed void main; C++ requires int (PORTING.md 6.8)
 
 #if __PLAY_DEMO__
 	//Play intro
+	fprintf(stderr, "Boot: Demo_Play\n");
+	//shortcut: WATERRACE_BOOT_ONLY=1 quits here for port/check-boot.py; keep it as a boot check once Demo_Play runs (#38, #44)
+	if(getenv("WATERRACE_BOOT_ONLY") != nil)
+	ExitToShell();
 	theError = Demo_Play();
 	if(theError) {
 		Shut_Down();

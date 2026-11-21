@@ -81,10 +81,13 @@ static pascal void Cursor_Callback(TMTaskPtr myTask)
 OSErr SpinningCursor_Init()
 {
 	long			i;
-	
+
+	//Linux port: no spinning cursor (PORTING.md 6.8); with cursors left nil, Start, Stop and Quit do nothing
+	return noErr;
+
 	if(cursors != nil)
 	return noErr;
-	
+
 	//Load resource
 	cursors = (acurResourceHandle) GetResource(kCursorAnimResType, kCursorAnimResID);
 	if(cursors == nil)

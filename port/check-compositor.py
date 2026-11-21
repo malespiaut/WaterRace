@@ -18,7 +18,7 @@ RED, GREEN, WHITE, BLACK = (255, 0, 0), (0, 255, 0), (255, 255, 255), (0, 0, 0)
 
 def shot(binary, root, frame, size, out):
     env = dict(os.environ, WATERRACE_SCREENSHOT=out, WATERRACE_SCREENSHOT_FRAME=str(frame),
-               WATERRACE_WINDOW_SIZE=size)
+               WATERRACE_WINDOW_SIZE=size, WATERRACE_TEST_PATTERN="1")
     subprocess.run(["xvfb-run", "-a", "-s", "-screen 0 1920x1080x24", os.path.abspath(binary)],
                    cwd=root, env=env, check=True, timeout=120)
     return Image.open(out).convert("RGB")

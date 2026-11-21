@@ -54,29 +54,15 @@ CharacterPreloadedData	leahCharacterData;
 
 OSErr Resolve_DataFolders()
 {
-	CInfoPBRec				cipbr;
-	HFileInfo				*fpb = (HFileInfo*) &cipbr;
 	OSErr					theError;
-	Boolean					targetIsFolder,
-							wasAliased;
-	//Find data folder
-	GetIndString(dataFolder.cName, folderFileNameResID, 1); // Pomme: FSSpec.cName is a C string, not a Pascal name
-	HGetVol(nil, &dataFolder.vRefNum, &dataFolder.parID);
-	theError = ResolveAliasFile(&dataFolder, true, &targetIsFolder, &wasAliased);
-	if(theError)
-	return theError;
-	if(!targetIsFolder)
-	return kError_IncorrectAlias;
 	
-	//Get data folder parID
-	fpb->ioVRefNum = dataFolder.vRefNum;
-	fpb->ioNamePtr = dataFolder.cName;
-	fpb->ioDirID = dataFolder.parID;
-	fpb->ioFDirIndex = 0;
-	theError = PBGetCatInfo(&cipbr, false);
+	//Find data folder - Linux port: in the game root, Pomme's volume 0 directory 0 (Boot.cp)
+	GetIndString(dataFolder.cName, folderFileNameResID, 1); // Pomme: FSSpec.cName is a C string, not a Pascal name
+	dataFolder.vRefNum = 0;
+	dataFolder.parID = 0;
+	theError = ScanForFolderAlias(&dataFolder);
 	if(theError)
 	return theError;
-	dataFolder.parID = fpb->ioDirID;
 	
 	//Get ships folder
 	shipsFolder = dataFolder;

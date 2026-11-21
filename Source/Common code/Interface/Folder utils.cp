@@ -54,51 +54,21 @@ OSErr ScanForFolder(short volumeID, long parentFolderID, Str63 folderName, long*
 	return kError_FolderNotFound;
 }
 
+//Linux port: Pomme has no PBGetCatInfo or alias files. The folder is looked up by name (case-insensitive)
+//and its directory ID is the parent ID Pomme gives a (missing) file inside it.
 OSErr ScanForFolderAlias(FSSpec* folder)
 {
-	short			idx;
-	CInfoPBRec		cipbr,
-					cipbr2;
-	HFileInfo		*fpb = (HFileInfo*) &cipbr,
-					*fpb2 = (HFileInfo*) &cipbr2;
-	Boolean			targetIsFolder,
-					wasAliased;
-	FSSpec			destFolder;
-	OSErr			theError;
-						
-	destFolder.vRefNum = folder->vRefNum;
-	destFolder.parID = folder->parID;
-	fpb->ioVRefNum = folder->vRefNum;
-	fpb->ioNamePtr = destFolder.cName;
-	for(idx = 1; true; ++idx) {
-		fpb->ioDirID = folder->parID;
-		fpb->ioFDirIndex = idx;
-		if(PBGetCatInfo(&cipbr, false))
-		break;
-		
-		if(EqualString(destFolder.cName, folder->cName, false, false)) {
-			theError = ResolveAliasFile(&destFolder, true, &targetIsFolder, &wasAliased);
-			if(theError)
-			return theError;
-		
-			if(targetIsFolder) {
-				fpb2->ioVRefNum = destFolder.vRefNum;
-				fpb2->ioNamePtr = destFolder.cName;
-				fpb2->ioDirID = destFolder.parID;
-				fpb2->ioFDirIndex = 0;
-				theError = PBGetCatInfo(&cipbr2, false);
-				if(theError)
-				return theError;
-				
-				destFolder.parID = fpb2->ioDirID;
-				*folder = destFolder;
-				
-				return noErr;
-			}
-		}
-	}
-	
+	FSSpec			child;
+	char			path[sizeof(folder->cName) + 4];
+
+	if(FSMakeFSSpec(folder->vRefNum, folder->parID, folder->cName, &child) != noErr)
 	return kError_FolderNotFound;
+
+	snprintf(path, sizeof(path), ":%s:_", child.cName);
+	FSMakeFSSpec(folder->vRefNum, folder->parID, path, &child);
+	folder->parID = child.parID;
+
+	return noErr;
 }
 
 OSErr Find_FrenchTouchPreferencesFolder(short* volumeID, long* folderNum)
