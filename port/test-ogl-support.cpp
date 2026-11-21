@@ -3,7 +3,8 @@
 // colour interpolation, depth test, blend modes, scissor and the ImageBufferInitialize notice method.
 // Then real converted textures (WaterRace Data/Textures) are drawn with each texture op and filter,
 // as bitmaps, and checked against their texels. Fog is checked against the RAVE formulas over w, and the
-// BufferCopy initialise method against an interface PNG (screenshot: ogl-support-buffercopy.png).
+// BufferCopy initialise method against an interface PNG (screenshot: ogl-support-buffercopy.png),
+// and an alpha-0 effect texture drawn with PreMultiply (ogl-support-premultiply.png).
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -370,6 +371,54 @@ static void TestBufferCopy(TQADrawContext* c)
 	stbi_image_free(rgb);
 }
 
+// Fx05 (G-Boat wake) has an all-zero alpha plane, faithful to the data: with PreMultiply it adds its RGB
+// over a dark background, with Interpolate it is invisible (screenshot: ogl-support-premultiply.png).
+static void TestPreMultiply(TQAEngine* engine, TQADrawContext* c)
+{
+	std::vector<TextureLevel>	fx;
+	TQAImage					image[16];
+	TQATexture*					fx05;
+	float						t[4], maxRGB = 0;
+	int							lit = 0;
+
+	CHECK(LoadImages("Core/G-Boat/Fx05.png", 0, fx, image) && fx.size() == 1 && fx[0].width == 64);
+	if(gFailures)
+		return;
+	CHECK(QATextureNew(engine, kQATexture_NoCompression, kQAPixel_ARGB32, image, &fx05) == kQANoErr);
+
+	QASetInt(c, kQATag_ZFunction, kQAZFunction_None);
+	QASetFloat(c, kQATag_ColorBG_r, 0);
+	QASetFloat(c, kQATag_ColorBG_g, 0);
+	QASetFloat(c, kQATag_ColorBG_b, 0.1);
+	QARenderStart(c, nullptr, nullptr);
+	CHECK(!glIsEnabled(GL_ALPHA_TEST));
+	QASetPtr(c, kQATag_Texture, fx05);
+	QASetInt(c, kQATag_TextureOp, kQATextureOp_None);
+	QASetInt(c, kQATag_TextureFilter, kQATextureFilter_Fast);
+	QASetInt(c, kQATag_Blend, kQABlend_PreMultiply);
+	TexQuad(c, 0, 0, 128, 128, 1, 1, 1);		// texel k at pixels 2k, 2k+1
+	QASetInt(c, kQATag_Blend, kQABlend_Interpolate);
+	TexQuad(c, 160, 0, 288, 128, 1, 1, 1);
+	for(int y = 0; y < 64; y += 3)
+		for(int x = 0; x < 64; x += 3) {
+			Texel(fx[0], x, y, t);
+			CHECK(t[3] == 0);
+			CHECK_PIXEL(x * 2, y * 2, t[0], t[1], std::fmin(1, t[2] + 0.1f));	// src + dst
+			CHECK_PIXEL(160 + x * 2, y * 2, 0, 0, 0.1);						// alpha 0: nothing
+			maxRGB = std::fmax(maxRGB, t[0] + t[1] + t[2]);
+			lit += (t[0] + t[1] + t[2] > 0.1f);
+		}
+	CHECK(maxRGB > 0.5f && lit > 20);	// the texture is not black
+	QARenderEnd(c, nullptr);
+
+	std::vector<unsigned char>	shot(640 * 480 * 4);
+	glReadPixels(0, 0, 640, 480, GL_RGBA, GL_UNSIGNED_BYTE, shot.data());
+	stbi_flip_vertically_on_write(1);
+	CHECK(stbi_write_png("ogl-support-premultiply.png", 640, 480, 4, shot.data(), 640 * 4));
+	QASetInt(c, kQATag_ZFunction, kQAZFunction_LT);
+	QATextureDelete(engine, fx05);
+}
+
 int main()
 {
 	TQAEngine*			engine;
@@ -487,6 +536,7 @@ int main()
 	CHECK(QADrawContextNew(nullptr, &bounds, nullptr, engine, 0, &tc) == kQANoErr);
 	TestTextures(engine, tc);
 	TestFog(tc);
+	TestPreMultiply(engine, tc);
 	TestBufferCopy(tc);
 	QADrawContextDelete(tc);
 
