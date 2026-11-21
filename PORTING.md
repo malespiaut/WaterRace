@@ -288,8 +288,10 @@ Gamma fades (`Fade1ToBlack`, `Fade1ToColor`) become a full-screen colour quad wi
 `InfinityRendering_MaxFPS` busy-waits on `Microseconds`; replace it with vsync and `SDL_DelayNS`.
 
 Widescreen: `pixelConversion = (-viewWidth/2)/zoom` fixes the *horizontal* FOV, so a 16:9 window
-shows less vertically. For a better default, scale `zoom` by `(4/3)/aspect` in
-`InfinityRendering_UpdateStateParams`, which keeps the 4:3 vertical FOV.
+shows less vertically. For a better default, scale `zoom` by `aspect/(4/3)` in
+`InfinityRendering_UpdateStateParams` (`zoom` is the half-width of the view at unit depth, so a wider
+window needs a larger one), which keeps the 4:3 vertical FOV. Only full-window contexts get it
+(`kInfinityRenderingFlag_FullWindow`); the letterboxed and interface contexts keep their Mac framing.
 
 ### 6.4 Input
 

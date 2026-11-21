@@ -189,5 +189,6 @@ OSErr PubFusion_Display();
 
 //File: Demo.cp
 OSErr Demo_Play();
+OSErr Demo_PracticeFlyThrough();
 
 #endif

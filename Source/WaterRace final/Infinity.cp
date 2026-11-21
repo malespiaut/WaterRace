@@ -67,11 +67,13 @@ TQAEngine* Get_InterfaceEngine()
 	return Get_GameEngine();
 }
 
-OSErr Infinity_GameInit(TQAEngine* theEngine, StatePtr* state, Point size, Point offset)
+OSErr Infinity_GameInit(TQAEngine* theEngine, StatePtr* state, Point size, Point offset, Boolean fullWindow)
 {	
 	unsigned long		contextFlags = kInfinityRenderingFlag_NonLinearZBuffer;
 	OSErr				theError;
 	
+	if(fullWindow)
+	contextFlags |= kInfinityRenderingFlag_FullWindow;
 	if(thePrefs.engineFlags & kPref_EngineFlagTriFiltering)
 	contextFlags |= kInfinityRenderingFlag_TriFiltering;
 	else if(thePrefs.engineFlags & kPref_EngineFlagFiltering)

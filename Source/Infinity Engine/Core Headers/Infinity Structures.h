@@ -333,6 +333,7 @@ typedef struct {
 	Boolean			linearZBuffer;
 	unsigned long	frameTime,
 					lastFrameTime;
+	Boolean			fullWindow; //Linux port: kInfinityRenderingFlag_FullWindow
 } State;
 typedef State* StatePtr;
 

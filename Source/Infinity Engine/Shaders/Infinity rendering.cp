@@ -228,6 +228,8 @@ static OSErr Setup_DrawContext(GDHandle screenDevice, StatePtr state, Point size
 	flags += kQAContext_NoZBuffer;
 	if(aliasing || lowRes)
 	flags += kQAContext_Scale;
+	if(state->fullWindow)
+	flags += kQAContext_FullWindow;
 	
 	//Should we enable 32Bits Z-Buffer?
 	err = QAEngineGestalt(state->engine, kQAGestalt_OptionalFeatures, &response);
@@ -284,9 +286,12 @@ void InfinityRendering_SetLight(StatePtr state, float ambient, float sun, float 
 
 void InfinityRendering_UpdateStateParams(StatePtr state)
 {
-	state->h = state->d * state->zoom;
+	//Linux port: zoom sets the horizontal FOV; a window wider than 4:3 widens it to keep the 4:3 vertical FOV (PORTING.md 6.3)
+	float			zoom = state->fullWindow ? state->zoom * (state->viewWidth / state->viewHeight) * 3.0 / 4.0 : state->zoom;
+	
+	state->h = state->d * zoom;
 	state->c = YonDistance2HideDistance(state->f);
-	state->pixelConversion = (-state->viewWidth / 2.0) / state->zoom;
+	state->pixelConversion = (-state->viewWidth / 2.0) / zoom;
 	state->p1 = state->f / (state->f - state->d);
 	state->p2 = state->d * state->p1;
 	
@@ -368,6 +373,8 @@ OSErr InfinityRendering_CreateContext(GDHandle screenDevice, TQAEngine* theEngin
 	aliasing = true;
 	if(contextFlags & kInfinityRenderingFlag_LowResolution)
 	lowRes = true;
+	if(contextFlags & kInfinityRenderingFlag_FullWindow)
+	localState->fullWindow = true;
 	theError = Setup_DrawContext(screenDevice, localState, size, position, deepZ, aliasing, lowRes);
 	if(theError) {
 		DisposePtr((Ptr) *state);

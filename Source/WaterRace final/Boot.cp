@@ -312,6 +312,12 @@ static Boolean Boot_WriteScreenshot(const char* path)
 	return stbi_write_png(path, width, height, 4, pixels.data(), width * 4) != 0;
 }
 
+// The window's drawable size in pixels: the size of a kInfinityRenderingFlag_FullWindow context.
+void Boot_GetWindowSize(int* width, int* height)
+{
+	SDL_GetWindowSizeInPixels(gSDLWindow, width, height);
+}
+
 // Maps a rectangle of the 640x480 interface to the letterboxed window, in GL window pixels
 // (origin bottom-left), ready for glViewport and glScissor.
 void Boot_InterfaceToWindow(const Rect* r, int* x, int* y, int* width, int* height)
