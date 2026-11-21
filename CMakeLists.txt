@@ -84,3 +84,17 @@ target_compile_definitions(test-metafile PRIVATE POMME_NO_SOUND_MIXER POMME_NO_V
 target_compile_options(test-metafile PRIVATE -w -include MacHeadersPPC++)
 target_link_libraries(test-metafile PRIVATE Pomme)
 add_test(NAME metafile COMMAND test-metafile)
+
+# Logo Intro load test (#43): InfinityPlayer_LoadAnimation with the default texture set, on GL. Every game file but Boot.cp, which the test includes.
+set(PLAYER_TEST_SOURCES ${GAME_SOURCES})
+list(FILTER PLAYER_TEST_SOURCES EXCLUDE REGEX "/WaterRace final/Boot\\.cp$")
+add_executable(test-player port/test-player.cpp ${PLAYER_TEST_SOURCES} port/TextureLoader.cpp port/link-stubs.cpp)
+target_include_directories(test-player PRIVATE ${INCLUDE_DIRS} port port/stubs Pomme/src)
+target_compile_definitions(test-player PRIVATE POMME_NO_SOUND_MIXER POMME_NO_VIDEO POMME_NO_QD3D "WATERRACE_ROOT=\"${CMAKE_SOURCE_DIR}\"")
+target_compile_options(test-player PRIVATE -w -include MacHeadersPPC++)
+target_link_libraries(test-player PRIVATE Pomme OpenGL::GL)
+if(XVFB_RUN)
+  add_test(NAME player COMMAND ${XVFB_RUN} -a $<TARGET_FILE:test-player>)
+else()
+  add_test(NAME player COMMAND test-player)
+endif()
