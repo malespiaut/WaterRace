@@ -112,7 +112,7 @@ Implement task issue #${t.number} "${t.title}" (phase #${st.phaseIssue}).
     // The summary is agent-written text: pass it through a file, never inline it into a shell command.
     await agent(`cd ${REPO}; gh issue edit ${t.number} --add-label port-blocked. Then write the comment text between the markers below, verbatim, to a temp file with your Write tool and post it with gh issue comment ${t.number} --body-file <that file>. Do not put the text on a command line.
 <<<COMMENT
-Automated port workflow could not implement this: ${res && res.summary || 'implementer failed'}
+Automated port workflow could not implement this: ${(res && res.summary || 'implementer failed').replace(/<<<COMMENT|COMMENT>>>/g, '')}
 COMMENT>>>`,
       { label: `block #${t.number}`, phase: 'Build', effort: 'low' })
     continue
