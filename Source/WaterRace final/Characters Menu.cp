@@ -141,7 +141,7 @@ static void CharacterMenu_DrawCharacter(short num)
 	
 	//Display pilot age
 	TextEngine_Settings_Text(specs[1].fontNum, specs[1].fontSize, specs[1].fontStyle);
-	BlockMove("\pxx years old", theString, sizeof(Str31));
+	BlockMove("\014xx years old", theString, sizeof(Str31));
 	temp = theString[0];
 	NumToString(current->description.age, theString);
 	theString[0] = temp;

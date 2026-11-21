@@ -21,6 +21,7 @@
 
 #include					"WaterRace.h"
 #include					"Data Files.h"
+#include					"Folder Utils.h"
 #include					"Interface.h"
 #include					"Play Modes.h"
 
@@ -123,7 +124,7 @@ OSErr Pilot_Save(PilotPtr pilot)
 	Boolean		newFile = false;
 #endif
 	
-	BlockMove(pilot->name, destFile.cName, sizeof(Str31)); // Pomme: FSSpec.name is cName (C string); Pascal-to-C conversion for P1
+	CopyPascalToCName(pilot->name, destFile.cName);
 	
 	theError = FSpOpenDF(&destFile, fsRdWrPerm, &fileID);
 	if(theError) {
@@ -150,7 +151,7 @@ OSErr Pilot_Save(PilotPtr pilot)
 #endif
 
 #if __CD_PROTECTION__
-	if(!networkOnly && !XCheckForCD("\pWaterRace -", 13, 60, 37))
+	if(!networkOnly && !XCheckForCD("\013WaterRace -", 13, 60, 37))
 	theError = noErr;
 	else
 #endif
@@ -168,7 +169,7 @@ OSErr Pilot_Load(Str63 name, PilotPtr pilot)
 	FSSpec		destFile = pilotsFolder;
 	long		bytesNumber;
 	
-	BlockMove(name, destFile.cName, sizeof(Str63));
+	CopyPascalToCName(name, destFile.cName);
 	theError = FSpOpenDF(&destFile, fsRdPerm, &fileID);
 	if(theError)
 	return theError;
@@ -198,7 +199,7 @@ OSErr Pilot_Delete(Str63 name)
 	FSSpec		sourceFile = pilotsFolder,
 				destFile;
 	
-	BlockMove(name, sourceFile.cName, sizeof(Str63));
+	CopyPascalToCName(name, sourceFile.cName);
 	destFile.cName[0] = 0;
 	theError = FindFolder(pilotsFolder.vRefNum, kTrashFolderType, kCreateFolder, &destFile.vRefNum, &destFile.parID);
 	if(theError)
@@ -218,8 +219,8 @@ OSErr Pilot_Delete(Str63 name)
 	long		bytesNumber;
 #endif
 		
-	BlockMove(name, sourceFile.cName, sizeof(Str63));
-	BlockMove(name, destFile.cName, sizeof(Str63));
+	CopyPascalToCName(name, sourceFile.cName);
+	CopyPascalToCName(name, destFile.cName);
 	
 	theError = FindFolder(pilotsFolder.vRefNum, kTrashFolderType, kCreateFolder, &destFile.vRefNum, &destFile.parID);
 	if(theError)
@@ -261,7 +262,7 @@ OSErr Pilot_Delete(Str63 name)
 {
 	FSSpec		destFile = pilotsFolder;
 	
-	BlockMove(name, destFile.cName, sizeof(Str63));
+	CopyPascalToCName(name, destFile.cName);
 	
 	return FSpDelete(&destFile);
 }

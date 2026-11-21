@@ -30,7 +30,7 @@ CameraPtr Camera_New(float zoom)
 	
 	camera = (CameraPtr) NewPtrClear(sizeof(Camera));
 	
-	BlockMove("\pUntitled", camera->name, sizeof(Str31));
+	BlockMove("\010Untitled", camera->name, sizeof(Str31));
 	camera->visibility = 0;
 	camera->flags = 0;
 	camera->id = kNoID;

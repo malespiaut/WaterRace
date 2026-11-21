@@ -190,7 +190,7 @@ OSErr NetworkMenu_Display()
 	HiliteControl(items[0], 255);
 	HiliteControl(items[1], 255);
 #endif
-	SetDialogItemText((Handle) items[2], "\p128.128.128.128");
+	SetDialogItemText((Handle) items[2], "\017128.128.128.128");
 	if(thePrefs.lastNetworkServerIP[0])
 	SetDialogItemText((Handle) items[2], thePrefs.lastNetworkServerIP);
 	if(thePrefs.lastPort)
@@ -265,10 +265,10 @@ OSErr NetworkMenu_Display()
 				}
 				Terminal_AppendText(terminal, kString_Network_Client5);
 				Terminal_AppendText(terminal, info->terrainName);
-				Terminal_AppendText(terminal, "\p (");
+				Terminal_AppendText(terminal, "\002 (");
 				GetIndString(text, kDifficultyStringID, info->terrainDifficulty);
 				Terminal_AppendText(terminal, text);
-				Terminal_AppendText(terminal, "\p)");
+				Terminal_AppendText(terminal, "\001)");
 				Terminal_AppendText(terminal, kString_Network_Client6);
 				Terminal_AppendText(terminal, kString_Network_Client7);
 				DrawDialog(theDialog);
@@ -306,10 +306,10 @@ OSErr NetworkMenu_Display()
 					Terminal_AppendText(terminal, info->playerName);
 					Terminal_AppendText(terminal, kString_Network_Server3);
 					Terminal_AppendText(terminal,info->playerLocation);
-					Terminal_AppendText(terminal, "\p (");
+					Terminal_AppendText(terminal, "\002 (");
 					Server_GetClientIP(info, text);
 					Terminal_AppendText(terminal, text);
-					Terminal_AppendText(terminal, "\p)\r");
+					Terminal_AppendText(terminal, "\002)\r");
 					DrawDialog(theDialog);
 				}
 				break;
@@ -397,7 +397,7 @@ OSErr NetworkMenu_Display()
 							Terminal_AppendText(terminal, kString_Network_Connecting7);
 							NumToString(theError, text);
 							Terminal_AppendText(terminal, text);
-							Terminal_AppendText(terminal, "\p)\r\r");
+							Terminal_AppendText(terminal, "\003)\r\r");
 							break;
 						}
 						HiliteControl(okButton, 0);
@@ -424,7 +424,7 @@ OSErr NetworkMenu_Display()
 					Terminal_AppendText(terminal, kString_Network_Hosting1);
 					Network_GetComputerIPString(text);
 					Terminal_AppendText(terminal, text);
-					Terminal_AppendText(terminal, "\p...\r");
+					Terminal_AppendText(terminal, "\004...\r");
 					
 					//Attempt to start server
 					theError = Server_Start(thePrefs.lastPort, thePrefs.hostName, thePrefs.playerLocation, thePrefs.hostPassword, thePrefs.hostMessage, currentLocationID, currentDifficulty);
@@ -432,7 +432,7 @@ OSErr NetworkMenu_Display()
 						Terminal_AppendText(terminal, kString_Network_Hosting2);
 						NumToString(theError, text);
 						Terminal_AppendText(terminal, text);
-						Terminal_AppendText(terminal, "\p)\r\r");
+						Terminal_AppendText(terminal, "\003)\r\r");
 					}
 					else {
 						Terminal_AppendText(terminal, kString_Network_Hosting3);
@@ -468,7 +468,7 @@ OSErr NetworkMenu_Display()
 			SetControlValue(items[1], 0);
 			SetDialogItemText((Handle) items[2], thePrefs.lastNetworkServerIP);
 			HiliteControl(items[2], 0);
-			SetDialogItemText(theDialog, 7, "\p");
+			SetDialogItemText(theDialog, 7, "\000");
 			HiliteControl(items[4], 0);
 			HiliteControl(items[5], 255);
 			HiliteControl(items[6], 255);

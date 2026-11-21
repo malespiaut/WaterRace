@@ -70,12 +70,12 @@ Boolean Display_Agreement(short textID, long waitingTime, Str255 okButton, Str25
 	if(okButton != nil)
 	SetControlTitle(okItem, okButton);
 	else
-	SetControlTitle(okItem, "\pAgree");
+	SetControlTitle(okItem, "\005Agree");
 	
 	if(cancelButton != nil)
 	SetControlTitle(cancelItem, cancelButton);
 	else
-	SetControlTitle(cancelItem, "\pDisagree");
+	SetControlTitle(cancelItem, "\010Disagree");
 	
 	//Get waiting box and disable buttons
 	if(waitingTime) {
@@ -124,11 +124,11 @@ Boolean Display_Agreement(short textID, long waitingTime, Str255 okButton, Str25
 			if((TickCount() - startTime) / 60 > waitingTime) {
 				HiliteControl(okItem, 0);
 				waitingTime = 0;
-				SetDialogItemText(waitItem, "\p");
+				SetDialogItemText(waitItem, "\000");
 			}
 			else if((TickCount() - startTime) / 60 != lastTime) {
 				Str31			time,
-								timeString = "\pSeconds to wait: ";
+								timeString = "\021Seconds to wait: ";
 								
 				NumToString(waitingTime - (TickCount() - startTime) / 60, time);
 				BlockMove(&time[1], &timeString[timeString[0] + 1], time[0]);

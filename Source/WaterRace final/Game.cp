@@ -1568,7 +1568,7 @@ OSErr Game_New()
 	
 #if __CD_PROTECTION__
 	if(!networkOnly) {
-		if(!XCheckForCD("\pWaterRace", 13, 60, 37))
+		if(!XCheckForCD("\011WaterRace", 13, 60, 37))
 		*((long*) -1) = 0x0239;
 	}
 #endif	

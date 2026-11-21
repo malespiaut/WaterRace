@@ -724,12 +724,12 @@ static void Boot_Sequence()
 #if	__CD_PROTECTION__
 
 /*
-Arktis CD release 1: "\pWaterRace - German", 13, 60, 37
-FT CD release 1: "\pWaterRace - International", 13, 60, 37
-Softline CD release 1: "\pWaterRace - Softline", 13, 60, 37
+Arktis CD release 1: "\022WaterRace - German", 13, 60, 37
+FT CD release 1: "\031WaterRace - International", 13, 60, 37
+Softline CD release 1: "\024WaterRace - Softline", 13, 60, 37
 */
 
-	short driverRefNum = XCheckForCD("\pWaterRace - ", 13, 60, 37);
+	short driverRefNum = XCheckForCD("\014WaterRace - ", 13, 60, 37);
 	if(!driverRefNum) {
 #if __NETWORK_ONLY_IF_CD_FAILURE__
 		Wrapper_Error_Display(177, kError_WaterRaceCDNotFound, nil, false);
@@ -935,13 +935,13 @@ static void Shut_Down()
 #if __USE_INI__
 #include	"Numeric Utils.h"
 
-#define	kInitFileName				"\pWaterRace.ini"
-#define	kCommand_GameMode			"\pGameMode"
-#define	kCommand_TerrainID			"\pTerrainID"
-#define	kCommand_ShipID				"\pShipID"
-#define	kCommand_PilotID			"\pPilotID"
-#define	kCommand_PlayerName			"\pPlayerName"
-#define	kCommand_TerrainDifficulty	"\pTerrainDifficulty"
+#define	kInitFileName				"\015WaterRace.ini"
+#define	kCommand_GameMode			"\010GameMode"
+#define	kCommand_TerrainID			"\011TerrainID"
+#define	kCommand_ShipID				"\006ShipID"
+#define	kCommand_PilotID			"\007PilotID"
+#define	kCommand_PlayerName			"\012PlayerName"
+#define	kCommand_TerrainDifficulty	"\021TerrainDifficulty"
 #define	kEndOfLineChar				'\r'
 #define	kOrderChar					'='
 #define	kOrderIsDigitChar			'#'
@@ -1095,7 +1095,7 @@ static Boolean Request_Replay()
 	if(!theReply.sfGood)
 	return false;
 	
-	StandardPutFile("\pSelect where to save the screenshots", "\pTemp", &theReply2);
+	StandardPutFile("\044Select where to save the screenshots", "\004Temp", &theReply2);
 	if(!theReply.sfGood)
 	return false;
 	destFolder = theReply2.sfFile;
@@ -1108,10 +1108,16 @@ static Boolean Request_Replay()
 }
 #endif
 
+int Boot_Startup(); // Boot.cp
+
 int main() // CodeWarrior allowed void main; C++ requires int (PORTING.md 6.8)
 {
 	OSErr			theError;
-	
+
+	//P1: Pomme boot and resource checks only (Boot.cp). shortcut: the Mac boot below and the game
+	//loop are unreachable until P3 brings up the screens; remove this return then.
+	return Boot_Startup();
+
 	//Boot...
 	Boot_Sequence();
 
@@ -1206,7 +1212,7 @@ int main() // CodeWarrior allowed void main; C++ requires int (PORTING.md 6.8)
 	{
 		Pilot		thePilot;
 		
-		Pilot_New(&thePilot, "\pPlayer", kExpo_PilotSet, kExpo_PilotMode, kExpo_PilotDifficulty);
+		Pilot_New(&thePilot, "\006Player", kExpo_PilotSet, kExpo_PilotMode, kExpo_PilotDifficulty);
 		Interface_RunLocalGame(&thePilot);
 	}
 #else
