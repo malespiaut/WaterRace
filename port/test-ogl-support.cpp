@@ -2,7 +2,9 @@
 // triangles, meshes and lines through the RAVE calls into a 640x480 window and checks pixels for
 // colour interpolation, depth test, blend modes, scissor and the ImageBufferInitialize notice method.
 // Then real converted textures (WaterRace Data/Textures) are drawn with each texture op and filter,
-// as bitmaps, and checked against their texels.
+// as bitmaps, and checked against their texels. Fog is checked against the RAVE formulas over w, and the
+// BufferCopy initialise method against an interface PNG (screenshot: ogl-support-buffercopy.png).
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -12,6 +14,9 @@
 
 #include "RAVE.h"
 #include "TextureLoader.h"
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 static int gFailures = 0;
 #define CHECK(c) do { if(!(c)) { std::fprintf(stderr, "FAIL %s:%d: %s\n", __FILE__, __LINE__, #c); ++gFailures; } } while(0)
@@ -238,6 +243,133 @@ static void TestTextures(TQAEngine* engine, TQADrawContext* c)
 	QATextureDelete(engine, vto1);
 }
 
+// Expected fog blend of red with fogColour at eye depth w, by the RAVE formulas.
+static void CheckFog(int line, int x, int y, long mode, float w, const float fog[3])
+{
+	float f = mode == kQAFogMode_Linear ? (10 - w) / (10 - 2) : mode == kQAFogMode_Exponential ? std::exp(-0.2f * w) : std::exp(-(0.15f * w) * (0.15f * w));
+	f = std::clamp(f, 0.0f, 1.0f);
+	CheckPixel(line, x, y, f + (1 - f) * fog[0], (1 - f) * fog[1], (1 - f) * fog[2]);
+}
+
+static void TestFog(TQADrawContext* c)
+{
+	const float		fog[3] = {0.2f, 0.6f, 1.0f};
+	const float		ws[] = {1, 2, 4, 6, 8, 12};
+
+	QASetInt(c, kQATag_ZFunction, kQAZFunction_None);
+	QASetFloat(c, kQATag_FogColor_r, fog[0]);
+	QASetFloat(c, kQATag_FogColor_g, fog[1]);
+	QASetFloat(c, kQATag_FogColor_b, fog[2]);
+	QASetFloat(c, kQATag_FogColor_a, 1);
+	QASetFloat(c, kQATag_FogStart, 2);
+	QASetFloat(c, kQATag_FogEnd, 10);
+	QASetFloat(c, kQATag_FogMaxDepth, 100);
+	QARenderStart(c, nullptr, nullptr);
+
+	// Red quads at constant w through the mesh path (top row) and QADrawTriGouraud (second row).
+	for(long mode : {(long) kQAFogMode_Linear, (long) kQAFogMode_Exponential, (long) kQAFogMode_ExponentialSquared}) {
+		QASetInt(c, kQATag_FogMode, mode);
+		QASetFloat(c, kQATag_FogDensity, mode == kQAFogMode_Exponential ? 0.2f : 0.15f);
+		for(int i = 0; i < 6; ++i) {
+			float			l = i * 50, t = (mode - 1) * 60;
+			TQAVGouraud		v0 = V(l, t + 30, 0.5, 1 / ws[i], 1, 0, 0, 1), v1 = V(l + 40, t + 30, 0.5, 1 / ws[i], 1, 0, 0, 1), v2 = V(l, t + 50, 0.5, 1 / ws[i], 1, 0, 0, 1);
+			Quad(c, l, t, l + 40, t + 20, 0.5, 1 / ws[i], 1, 0, 0, 1);
+			QADrawTriGouraud(c, &v0, &v1, &v2, 0);
+			CheckFog(__LINE__, l + 20, t + 10, mode, ws[i], fog);
+			CheckFog(__LINE__, l + 5, t + 35, mode, ws[i], fog);
+		}
+	}
+
+	// Linear fog from 0 to 8 across a quad with w 1 on the left and 4 on the right: the fog follows the
+	// true eye depth 1 / (1 - 3s/4) at screen fraction s, not w interpolated linearly in screen space.
+	QASetInt(c, kQATag_FogMode, kQAFogMode_Linear);
+	QASetFloat(c, kQATag_FogStart, 0);
+	QASetFloat(c, kQATag_FogEnd, 8);
+	TQAVGouraud			v[4] = {V(0, 190, 0.5, 1, 1, 0, 0, 1), V(256, 190, 0.5, 0.25, 1, 0, 0, 1), V(256, 240, 0.5, 0.25, 1, 0, 0, 1), V(0, 240, 0.5, 1, 1, 0, 0, 1)};
+	TQAIndexedTriangle	tris[2] = {{{0, 1, 2}, 0}, {{2, 3, 0}, 0}};
+	QASubmitVerticesGouraud(c, 4, v);
+	QADrawTriMeshGouraud(c, 2, tris);
+	for(int x = 16; x < 256; x += 32) {
+		float s = (x + 0.5f) / 256, w = 1 / (1 - 0.75f * s), f = (8 - w) / 8;
+		CHECK_PIXEL(x, 215, f + (1 - f) * fog[0], (1 - f) * fog[1], (1 - f) * fog[2]);
+	}
+
+	// Fog None: unfogged.
+	QASetInt(c, kQATag_FogMode, kQAFogMode_None);
+	Quad(c, 300, 0, 320, 20, 0.5, 1 / 12.0f, 1, 0, 0, 1);
+	CHECK_PIXEL(310, 10, 1, 0, 0);
+	QARenderEnd(c, nullptr);
+	QASetInt(c, kQATag_ZFunction, kQAZFunction_LT);
+}
+
+// Pomme-style 640x480 ARGB32 GWorld of the interface and the copied sub-rect, for BufferCopy below.
+static std::vector<unsigned char>	gInterface;
+static const long					kInterfaceRowBytes = 640 * 4;
+
+// Same copy as Buffer_InitializeMethod_BufferCopy (Infinity rendering.cp): the context-sized sub-rect
+// at (kLeft, kTop) of the GWorld into the memory device, bottom row first, 8 bytes at a time.
+static void BufferCopy(const TQADrawContext*, const TQADevice* buffer, const TQARect*, void*)
+{
+	if(buffer->deviceType != kQADeviceMemory)
+		return;
+	const TQADeviceMemory*	memoryDevice = &buffer->device.memoryDevice;
+	Ptr						sourceBaseAddress = (Ptr) gInterface.data() + kInterfaceRowBytes * kTop + 4 * kLeft + kHeight * kInterfaceRowBytes,
+							destBaseAddress = memoryDevice->baseAddr + kHeight * memoryDevice->rowBytes;
+	long					height = kHeight;
+	do {
+		sourceBaseAddress -= kInterfaceRowBytes;
+		destBaseAddress -= memoryDevice->rowBytes;
+		std::copy((double*) sourceBaseAddress, (double*) sourceBaseAddress + kWidth * 4 / 8, (double*) destBaseAddress);
+	} while(--height);
+}
+
+// BufferCopy initialise method: the interface pixels show behind a 3D quad, whose depth starts cleared.
+static void TestBufferCopy(TQADrawContext* c)
+{
+	int				w, h, n;
+	unsigned char*	rgb = stbi_load(WATERRACE_TEXTURES_DIR "/../Interface PNG/2000.png", &w, &h, &n, 3);
+	TQANoticeMethod	method;
+
+	CHECK(rgb != nullptr && w == 640 && h == 480);
+	if(rgb == nullptr)
+		return;
+	gInterface.resize(640 * 480 * 4);
+	for(int i = 0; i < 640 * 480; ++i) {
+		gInterface[i * 4 + 0] = 0xFF;
+		gInterface[i * 4 + 1] = rgb[i * 3 + 0];
+		gInterface[i * 4 + 2] = rgb[i * 3 + 1];
+		gInterface[i * 4 + 3] = rgb[i * 3 + 2];
+	}
+
+	glDisable(GL_SCISSOR_TEST);
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	method.bufferNoticeMethod = BufferCopy;
+	QASetNoticeMethod(c, kQAMethod_ImageBufferInitialize, method, nullptr);
+	for(int frame = 0; frame < 2; ++frame) {	// the second frame reuses the background texture
+		QARenderStart(c, nullptr, nullptr);
+		Quad(c, 80, 60, 240, 180, 0.99, 1, 1, 0.5, 0, 1);	// far, but the background wrote no depth
+	}
+	int		checked = 0;
+	for(int y = 0; y < kHeight; y += 7)
+		for(int x = 0; x < kWidth; x += 11) {
+			const unsigned char*	p = rgb + ((kTop + y) * 640 + kLeft + x) * 3;
+			if(x >= 80 && x < 240 && y >= 60 && y < 180)
+				CHECK_PIXEL(x, y, 1, 0.5, 0);
+			else
+				CHECK_PIXEL(x, y, p[0] / 255.0f, p[1] / 255.0f, p[2] / 255.0f), ++checked;
+		}
+	CHECK(checked > 500);
+	CHECK_PIXEL(-5, 5, 0, 0, 0);	// outside the context: untouched
+	QARenderEnd(c, nullptr);
+
+	std::vector<unsigned char>	shot(640 * 480 * 4);
+	glReadPixels(0, 0, 640, 480, GL_RGBA, GL_UNSIGNED_BYTE, shot.data());
+	stbi_flip_vertically_on_write(1);
+	CHECK(stbi_write_png("ogl-support-buffercopy.png", 640, 480, 4, shot.data(), 640 * 4));
+	stbi_image_free(rgb);
+}
+
 int main()
 {
 	TQAEngine*			engine;
@@ -354,6 +486,8 @@ int main()
 	TQADrawContext* tc;
 	CHECK(QADrawContextNew(nullptr, &bounds, nullptr, engine, 0, &tc) == kQANoErr);
 	TestTextures(engine, tc);
+	TestFog(tc);
+	TestBufferCopy(tc);
 	QADrawContextDelete(tc);
 
 	CHECK(glGetError() == GL_NO_ERROR);

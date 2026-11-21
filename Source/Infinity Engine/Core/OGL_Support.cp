@@ -19,13 +19,15 @@
  *****************************************************************************/
 
 // RAVE on OpenGL 1.4 fixed function (PORTING.md sec. 4.3, 4.4): one engine, draw contexts as
-// viewport + scissor rectangles, state tags, Gouraud triangles, meshes and lines, textures and bitmaps.
+// viewport + scissor rectangles, state tags, Gouraud triangles, meshes and lines, textures and bitmaps,
+// fog over eye depth and the ImageBufferInitialize notice method.
 // The types, tags and prototypes are in port/stubs/RAVE.h.
 
+#include				<algorithm>
 #include				<cstring>
 #include				<vector>
 
-#define					GL_GLEXT_PROTOTYPES		// GL 1.4 secondary colour
+#define					GL_GLEXT_PROTOTYPES		// GL 1.4 secondary colour and fog coordinate
 #include				<SDL3/SDL_endian.h>
 #include				<SDL3/SDL_opengl.h>
 
@@ -36,6 +38,7 @@
 #define					kTagCount					(kQATag_FogColor_a + 1)
 #define					kEngineName					"OpenGL"
 #define					kFastTextureMemory			(256L * 1024 * 1024)
+#define					kBackgroundUnwritten		0xA5C3E1F7UL		// ImageBufferInitialize buffer pixel no method wrote
 
 //STRUCTURES:
 
@@ -71,6 +74,8 @@ struct TQADrawContext
 	std::vector<GLfloat>	vertices;			// QASubmitVerticesGouraud: X,Y,Z,W clip coordinates then R,G,B,A
 	std::vector<GLfloat>	textureVertices;	// QASubmitVerticesTexture: X,Y,Z,W, S,T, kd R,G,B,A, ks R,G,B
 	std::vector<GLuint>		indices;
+	std::vector<UInt32>		background;			// ImageBufferInitialize memory device, Pomme GWorld A,R,G,B pixels
+	TQABitmap				backgroundBitmap;
 };
 
 //VARIABLES:
@@ -137,11 +142,13 @@ TQAError QADrawContextNew(TQADevice* device, const TQARect* bounds, void* notice
 
 void QADrawContextDelete(TQADrawContext* drawContext)
 {
+	if(drawContext->backgroundBitmap.name != 0)
+	glDeleteTextures(1, &drawContext->backgroundBitmap.name);
 	delete drawContext;
 }
 
-// Antialias, PerspectiveZ and the fog tags are only stored. Depth always comes from z, which
-// the engine computes for either PerspectiveZ setting.
+// Antialias and PerspectiveZ are only stored. Depth always comes from z, which the engine
+// computes for either PerspectiveZ setting.
 TQAError QASetInt(TQADrawContext* drawContext, long tag, long value)
 {
 	if(tag < 0 || tag >= kTagCount)
@@ -198,6 +205,28 @@ TQAError QASetNoticeMethod(TQADrawContext* drawContext, long method, TQANoticeMe
 	return kQANoErr;
 }
 
+// RAVE fog over eye depth w = 1/invW: linear (end - w) / (end - start), exp(-density w) and
+// exp(-(density w)^2), the GL formulas over a fog coordinate of w. FogMaxDepth and FogColor_a are unused.
+static void Context_BindFog(TQADrawContext* drawContext)
+{
+	static const GLint	fogModes[] = {GL_LINEAR, GL_EXP, GL_EXP2};
+	long				mode = drawContext->intTags[kQATag_FogMode];
+
+	if(mode < kQAFogMode_Linear || mode > kQAFogMode_ExponentialSquared) {
+		glDisable(GL_FOG);
+		return;
+	}
+
+	glEnable(GL_FOG);
+	glHint(GL_FOG_HINT, GL_NICEST);
+	glFogi(GL_FOG_COORD_SRC, GL_FOG_COORD);
+	glFogi(GL_FOG_MODE, fogModes[mode - kQAFogMode_Linear]);
+	glFogfv(GL_FOG_COLOR, &drawContext->floatTags[kQATag_FogColor_r]);
+	glFogf(GL_FOG_START, drawContext->floatTags[kQATag_FogStart]);
+	glFogf(GL_FOG_END, drawContext->floatTags[kQATag_FogEnd]);
+	glFogf(GL_FOG_DENSITY, drawContext->floatTags[kQATag_FogDensity]);
+}
+
 // Loads the context's viewport, scissor, projection (PORTING.md sec. 4.4) and state for Gouraud drawing.
 static void Context_Bind(TQADrawContext* drawContext)
 {
@@ -223,8 +252,8 @@ static void Context_Bind(TQADrawContext* drawContext)
 
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_COLOR_SUM);
-	glDisable(GL_FOG);
 	glDisable(GL_CULL_FACE);
+	Context_BindFog(drawContext);
 
 	switch(drawContext->intTags[kQATag_ZFunction]) {
 		case kQAZFunction_LT:
@@ -252,17 +281,38 @@ static void Context_Bind(TQADrawContext* drawContext)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
+static TQAError Texture_Upload(long flags, long pixelFormat, const TQAImage* image, GLuint* name);
+
 // Runs the ImageBufferInitialize notice method; without one, clears to ColorBG. The depth buffer is always cleared.
+// The method gets a memory device the size of the context: Buffer_InitializeMethod_BufferCopy copies the
+// background GWorld's sub-rect into it, which is then drawn as a bitmap; Buffer_InitializeMethod_None leaves
+// it alone, and so the colour already there.
 TQAError QARenderStart(TQADrawContext* drawContext, const TQARect* dirtyRect, void* initialContext)
 {
 	TQADevice		device;
+	TQAImage		image = {drawContext->width, drawContext->height, drawContext->width * 4, nil};
+	TQAVGouraud		origin = {};
+	auto&			background = drawContext->background;
 
 	Context_Bind(drawContext);
 	glDepthMask(GL_TRUE);
 	if(drawContext->initializeMethod.bufferNoticeMethod != nil) {
-		device.deviceType = kQADeviceGDevice;	// Buffer_InitializeMethod_BufferCopy only copies to memory devices
-		device.device.gDevice = nil;
+		background.assign(drawContext->width * drawContext->height, kBackgroundUnwritten);
+		image.pixmap = (Ptr) background.data();
+		device.deviceType = kQADeviceMemory;
+		device.device.memoryDevice.baseAddr = image.pixmap;
+		device.device.memoryDevice.rowBytes = image.rowBytes;
+		device.device.memoryDevice.width = image.width;
+		device.device.memoryDevice.height = image.height;
+		device.device.memoryDevice.pixelSize = 32;
 		drawContext->initializeMethod.bufferNoticeMethod(drawContext, &device, dirtyRect, drawContext->initializeRefCon);
+		if(std::find_if(background.begin(), background.end(), [](UInt32 p) { return p != kBackgroundUnwritten; }) != background.end()
+			&& Texture_Upload(0, kQAPixel_RGB32, &image, &drawContext->backgroundBitmap.name) == kQANoErr) {
+			drawContext->backgroundBitmap.width = image.width;
+			drawContext->backgroundBitmap.height = image.height;
+			origin.invW = origin.a = 1;
+			QADrawBitmap(drawContext, &origin, &drawContext->backgroundBitmap);
+		}
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 	else {
@@ -291,6 +341,7 @@ static void Vertex_Gouraud(const TQAVGouraud* v)
 	float			w = 1.0f / v->invW;
 
 	glColor4f(v->r, v->g, v->b, v->a);
+	glFogCoordf(w);
 	glVertex4f(v->x * w, v->y * w, v->z * w, w);
 }
 
@@ -348,14 +399,18 @@ void QADrawTriMeshGouraud(TQADrawContext* drawContext, long nTriangles, TQAIndex
 	Context_Bind(drawContext);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_FOG_COORD_ARRAY);
 	glVertexPointer(4, GL_FLOAT, 8 * sizeof(GLfloat), vertices);
 	glColorPointer(4, GL_FLOAT, 8 * sizeof(GLfloat), vertices + 4);
+	glFogCoordPointer(GL_FLOAT, 8 * sizeof(GLfloat), vertices + 3);	// w
 	glDrawElements(GL_TRIANGLES, nTriangles * 3, GL_UNSIGNED_INT, drawContext->indices.data());
+	glDisableClientState(GL_FOG_COORD_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-// Uploads image (one level, or the chain down to 1x1 with kQATexture_Mipmap) as GL_RGBA8, clamped.
+// Uploads image (one level, or the chain down to 1x1 with kQATexture_Mipmap) as GL_RGBA8, clamped,
+// into *name, or a new texture when it is 0.
 // ARGB32 images are RGBA8 bytes (Textures.cp); RGB32 ones are Pomme GWorld A,R,G,B bytes, alpha ignored.
 static TQAError Texture_Upload(long flags, long pixelFormat, const TQAImage* image, GLuint* name)
 {
@@ -375,6 +430,7 @@ static TQAError Texture_Upload(long flags, long pixelFormat, const TQAImage* ima
 	while((image[0].width >> levels) || (image[0].height >> levels))
 	++levels;
 
+	if(*name == 0)
 	glGenTextures(1, name);
 	glBindTexture(GL_TEXTURE_2D, *name);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -486,7 +542,7 @@ static void Context_BindTexture(TQADrawContext* drawContext, GLuint name, bool m
 	glEnable(GL_COLOR_SUM);
 }
 
-// The bitmap is drawn unscaled with its top-left corner at v (BitmapScale is dropped).
+// The bitmap is drawn unscaled with its top-left corner at v (BitmapScale is dropped), without fog.
 void QADrawBitmap(TQADrawContext* drawContext, TQAVGouraud* v, TQABitmap* bitmap)
 {
 	float			w = 1.0f / v->invW,
@@ -494,6 +550,7 @@ void QADrawBitmap(TQADrawContext* drawContext, TQAVGouraud* v, TQABitmap* bitmap
 					bottom = v->y + bitmap->height;
 
 	Context_BindTexture(drawContext, bitmap->name, false, kQATextureFilter_Fast, kQATextureOp_None);
+	glDisable(GL_FOG);
 	glColor4f(1, 1, 1, v->a);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 0);	glVertex4f(v->x * w, v->y * w, v->z * w, w);
@@ -550,11 +607,14 @@ void QADrawTriMeshTexture(TQADrawContext* drawContext, long nTriangles, TQAIndex
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_SECONDARY_COLOR_ARRAY);
+	glEnableClientState(GL_FOG_COORD_ARRAY);
 	glVertexPointer(4, GL_FLOAT, 13 * sizeof(GLfloat), vertices);
 	glTexCoordPointer(2, GL_FLOAT, 13 * sizeof(GLfloat), vertices + 4);
 	glColorPointer(4, GL_FLOAT, 13 * sizeof(GLfloat), vertices + 6);
 	glSecondaryColorPointer(3, GL_FLOAT, 13 * sizeof(GLfloat), vertices + 10);
+	glFogCoordPointer(GL_FLOAT, 13 * sizeof(GLfloat), vertices + 3);	// w
 	glDrawElements(GL_TRIANGLES, nTriangles * 3, GL_UNSIGNED_INT, drawContext->indices.data());
+	glDisableClientState(GL_FOG_COORD_ARRAY);
 	glDisableClientState(GL_SECONDARY_COLOR_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
