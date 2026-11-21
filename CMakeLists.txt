@@ -142,3 +142,15 @@ if(XVFB_RUN)
 else()
   add_test(NAME fx COMMAND test-fx)
 endif()
+
+# Ship and location previews (#74): Preload_DataFolders loads every 'shds'/'trds' preview from its PNG, sizes checked against the 'imag' PICT frames
+set(PREVIEW_TEST_SOURCES ${PLAYER_TEST_SOURCES})
+list(FILTER PREVIEW_TEST_SOURCES EXCLUDE REGEX "/WaterRace final/Data Files\\.cp$")
+add_executable(test-previews port/test-previews.cpp ${PREVIEW_TEST_SOURCES} port/TextureLoader.cpp port/link-stubs.cpp)
+target_include_directories(test-previews PRIVATE ${INCLUDE_DIRS} port port/stubs Pomme/src)
+target_compile_definitions(test-previews PRIVATE POMME_NO_SOUND_MIXER POMME_NO_VIDEO POMME_NO_QD3D "WATERRACE_ROOT=\"${CMAKE_SOURCE_DIR}\"")
+target_compile_options(test-previews PRIVATE -w -include MacHeadersPPC++ -fsanitize=address,undefined -fno-sanitize-recover=all)
+target_link_options(test-previews PRIVATE -fsanitize=address,undefined)
+target_link_libraries(test-previews PRIVATE Pomme OpenGL::GL)
+add_test(NAME previews COMMAND test-previews)
+set_tests_properties(previews PROPERTIES ENVIRONMENT "ASAN_OPTIONS=detect_leaks=0")  # the preloaded data lives until exit
