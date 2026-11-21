@@ -29,6 +29,13 @@ assert [img.getpixel((x, 0)) for x in range(2)] == [(20, 30, 40, 10), (21, 31, 4
 # packType 3: 0x7C00 = pure red, 0x001F = pure blue
 img = P.decode(synth(3, 16, 3, [bytes([0x7C, 0x00, 0x00, 0x1F])], 2, 1))
 assert [img.getpixel((x, 0)) for x in range(2)] == [(255, 0, 0, 255), (0, 0, 255, 255)], [img.getpixel((x, 0)) for x in range(2)]
+# PackBitsRect 0x98, 8-bit indexed, rowBytes < 8 (rows stored raw): index 1 = red, index 0 = blue
+pm = struct.pack(">HhhhhHHIIIHHHHIII", 2 | 0x8000, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 8, 1, 8, 0, 0, 0)
+ct = struct.pack(">IHH", 0, 0, 1) + struct.pack(">4H", 0, 0, 0, 0xFFFF) + struct.pack(">4H", 1, 0xFFFF, 0, 0)
+pict = (b"\0\0" + struct.pack(">hhhh", 0, 0, 1, 2) + b"\x00\x11\x02\xff" + b"\x0c\x00" + bytes(24) + b"\x00\x98" + pm
+        + ct + struct.pack(">hhhhhhhhH", 0, 0, 1, 2, 0, 0, 1, 2, 0) + b"\x01\x00" + b"\x00\xff")
+img = P.decode(pict)
+assert [img.getpixel((x, 0)) for x in range(2)] == [(255, 0, 0, 255), (0, 0, 255, 255)], [img.getpixel((x, 0)) for x in range(2)]
 # unknown opcode fails cleanly
 try:
     P.decode(b"\0\0" + bytes(8) + b"\x00\x11\x02\xff\x12\x34")
@@ -40,4 +47,7 @@ if os.path.exists(DATA):  # real data: one 0x9A (16-bit) and one 0x8200 jpeg
     fork = open(DATA, "rb").read()
     assert P.decode(P.resource(fork, b"PICT", 6000)).size == (640, 480)
     assert P.decode(P.resource(fork, b"PICT", 5020)).size == (640, 424)
+    assert P.decode(P.resource(fork, b"PICT", 301)).size == (288, 225)  # 0x98
+    assert P.decode(P.resource(fork, b"PICT", 3002)).size == (524, 21)  # 0x99
+    assert P.decode(P.resource(fork, b"PICT", 2052)).getpixel((50, 40)) == (255, 255, 255, 255)  # 0x9B, plain white
 print("ok")

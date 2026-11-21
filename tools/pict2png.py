@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Decode a raw PICT blob (DirectBitsRect 0x9A, or CompressedQuickTime 0x8200 'jpeg') to PNG.
+"""Decode a raw PICT blob (DirectBits 0x9A/0x9B, PackBits 0x98/0x99, or CompressedQuickTime 0x8200 'jpeg') to PNG.
+The mask region of the *Rgn opcodes is skipped (the image is decoded whole).
 
 Usage: pict2png.py FILE.pict OUT.png
        pict2png.py FORK.rsrc_fork ID OUT.png    (PICT resource ID from a raw resource fork)
@@ -37,11 +38,13 @@ def unpackbits(data, pos, n, unit=1):
     return bytes(out[:n]), pos
 
 
-def direct_bits(d, p):
+def direct_bits(d, p, rgn=False):
     p += 4  # baseAddr
     rowbytes, top, left, bottom, right, _ver, packtype, _packsize = struct.unpack(">HhhhhHHI", d[p:p + 18])
     pixsize, cmpcount = struct.unpack(">HH", d[p + 28:p + 32])
     p += 46 + 18  # PixMap, srcRect(8) dstRect(8) mode(2)
+    if rgn:
+        p += struct.unpack(">H", d[p:p + 2])[0]
     rowbytes &= 0x3FFF
     w, h = right - left, bottom - top
     if pixsize not in (16, 32) or packtype not in (0, 1, 3, 4):
@@ -78,6 +81,50 @@ def direct_bits(d, p):
     return img
 
 
+def packbits_rect(d, p, rgn=False):
+    """Indexed PixMap (or 1-bit BitMap) + colour table, PackBits rows."""
+    rowbytes, top, left, bottom, right = struct.unpack(">Hhhhh", d[p:p + 10])
+    w, h = right - left, bottom - top
+    if rowbytes & 0x8000:
+        (pixsize,) = struct.unpack(">H", d[p + 28:p + 30])
+        p += 46
+        _seed, flags, n = struct.unpack(">IHH", d[p:p + 8])
+        p += 8
+        clut = {}
+        for i in range(n + 1):
+            v, r, g, b = struct.unpack(">4H", d[p:p + 8])
+            clut[i if flags & 0x8000 else v] = (r >> 8, g >> 8, b >> 8)
+            p += 8
+    else:  # BitMap: 1-bit, 0 = white
+        pixsize, clut = 1, {0: (255, 255, 255), 1: (0, 0, 0)}
+        p += 10
+    if pixsize not in (1, 2, 4, 8):
+        raise PictError(f"PackBitsRect pixelSize {pixsize}")
+    p += 18  # srcRect dstRect mode
+    if rgn:
+        p += struct.unpack(">H", d[p:p + 2])[0]
+    rowbytes &= 0x3FFF
+    px = []
+    for _ in range(h):
+        if rowbytes < 8:
+            row = d[p:p + rowbytes]
+            p += rowbytes
+        else:
+            if rowbytes > 250:
+                (n,) = struct.unpack(">H", d[p:p + 2])
+                p += 2
+            else:
+                n = d[p]
+                p += 1
+            row, _ = unpackbits(d, p, rowbytes)
+            p += n
+        per, mask = 8 // pixsize, (1 << pixsize) - 1
+        px += [clut.get((row[x // per] >> (8 - pixsize * (x % per + 1))) & mask, (0, 0, 0)) for x in range(w)]
+    img = Image.new("RGB", (w, h))
+    img.putdata(px)
+    return img.convert("RGBA")
+
+
 def quicktime(d, p):
     q = p + 4 + 68  # version, matrix, matte size/rect, mode, srcRect, accuracy, maskSize
     (matte,) = struct.unpack(">I", d[p + 4 + 38:p + 4 + 42])
@@ -99,8 +146,10 @@ def decode(d):
     while p + 2 <= len(d):
         (op,) = struct.unpack(">H", d[p:p + 2])
         p += 2
-        if op == 0x009A:
-            return direct_bits(d, p)
+        if op in (0x009A, 0x009B):
+            return direct_bits(d, p, op == 0x009B)
+        if op in (0x0098, 0x0099):
+            return packbits_rect(d, p, op == 0x0099)
         if op == 0x8200:
             return quicktime(d, p)
         if op == 0x00FF:
