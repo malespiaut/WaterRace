@@ -97,11 +97,10 @@ OSErr Boot_OpenAppResources()
 	return noErr;
 }
 
-// Loads "WaterRace Data/Interface PNG/<id>.png" (tools/convert_interface.py) as a Pomme picture:
-// a Picture followed by its ARGB32 pixels (A,R,G,B in memory), freed by DisposeHandle. Returns nil if missing.
-static PicHandle Boot_LoadInterfacePNG(SInt16 theID)
+// Loads a PNG as a Pomme picture: a Picture followed by its ARGB32 pixels (A,R,G,B in memory),
+// freed by DisposeHandle. Returns nil if missing.
+PicHandle Port_NewPictureFromPNG(const char* path)
 {
-	char			path[64];
 	int				width,
 					height,
 					i;
@@ -109,7 +108,6 @@ static PicHandle Boot_LoadInterfacePNG(SInt16 theID)
 	PicHandle		thePic;
 	unsigned char*	dst;
 
-	snprintf(path, sizeof(path), kDataFolderName "/Interface PNG/%d.png", theID);
 	rgba = stbi_load(path, &width, &height, nil, 4);
 	if(rgba == nil)
 	return nil;
@@ -128,6 +126,15 @@ static PicHandle Boot_LoadInterfacePNG(SInt16 theID)
 	stbi_image_free(rgba);
 
 	return thePic;
+}
+
+// Loads "WaterRace Data/Interface PNG/<id>.png" (tools/convert_interface.py) as a Pomme picture; nil if missing.
+static PicHandle Boot_LoadInterfacePNG(SInt16 theID)
+{
+	char			path[64];
+
+	snprintf(path, sizeof(path), kDataFolderName "/Interface PNG/%d.png", theID);
+	return Port_NewPictureFromPNG(path);
 }
 
 // shortcut: searches every open resource file, not only the current one; upgrade if a second

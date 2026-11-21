@@ -26,6 +26,8 @@ void Port_GetMouse(Point* mouseLoc);
 
 // A Pomme picture (decoded ARGB32) from raw PICT data, as MetaFile 'imag' tags hold; nil if Pomme can't decode it (Boot.cp).
 PicHandle Port_NewPictureFromPICT(Ptr data, long size);
+// A Pomme picture from a PNG file (converted artwork, PORTING.md 5.3); nil if missing (Boot.cp).
+PicHandle Port_NewPictureFromPNG(const char* path);
 
 // Pomme exposes GetIndString as GetIndStringC (same arguments, Str255 out).
 #define GetIndString(s, list, index) GetIndStringC((s), (list), (index))

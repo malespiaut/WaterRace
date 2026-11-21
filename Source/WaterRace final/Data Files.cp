@@ -159,6 +159,17 @@ void Close_DataFiles()
 	UseResFile(mainResFileID);
 }
 
+//Linux port: ship and location previews come from the PNGs written by tools/convert_previews.py (PORTING.md 5.3),
+//not from their 'imag' PICTs: some are QuickTime JPEG, which Pomme can't decode
+//shortcut: an add-on without converted previews fails to load; run convert_previews.py on the Add-Ons folder if they are ever supported
+static PicHandle Preload_PreviewPNG(MetaFile_ReferencePtr reference, const char* name)
+{
+	char						path[512];
+	
+	snprintf(path, sizeof(path), "WaterRace Data/Previews/%s/%s.png", reference->textureFolder, name);
+	return Port_NewPictureFromPNG(path);
+}
+
 static OSErr Preload_Terrain(FSSpec* file, MetaFile_ReferencePtr reference, TerrainPreloadedDataPtr dataEntry)
 {
 	Data_TerrainDescriptionPtr	terrainDescription;
@@ -168,7 +179,7 @@ static OSErr Preload_Terrain(FSSpec* file, MetaFile_ReferencePtr reference, Terr
 	long						i;
 	OSType						dataType,
 								dataID;
-	Ptr							enablePreview,
+	PicHandle					enablePreview,
 								disablePreview;
 	
 	//Extract terrain id
@@ -240,21 +251,12 @@ static OSErr Preload_Terrain(FSSpec* file, MetaFile_ReferencePtr reference, Terr
 	UnpackIntsBE(2, 3, &terrainDescription->location_H); //location_H, location_V, maxNetworkPlayers
 	UnpackU32BEInPlace(&terrainDescription->languageCode);
 	
-	//Extract terrain preview - enable
-	dataType = kSubTag_Image;
-	dataID = kEnablePreviewID;
-	theError = MetaFile_Read_Data(reference, &dataType, kMetaFile_UseID, (Ptr*) &enablePreview, &dataID);
-	if(theError) {
-		DisposePtr((Ptr) terrainDescription);
-		return kError_TagMissing_Preview;
-	}
-		
-	//Extract terrain preview - disable
-	dataType = kSubTag_Image;
-	dataID = kDisablePreviewID;
-	theError = MetaFile_Read_Data(reference, &dataType, kMetaFile_UseID, (Ptr*) &disablePreview, &dataID);
-	if(theError) {
-		DisposePtr((Ptr) enablePreview);
+	//Extract terrain previews
+	enablePreview = Preload_PreviewPNG(reference, "Enbl");
+	disablePreview = Preload_PreviewPNG(reference, "Dsbl");
+	if(enablePreview == nil || disablePreview == nil) {
+		DisposeHandle((Handle) enablePreview);
+		DisposeHandle((Handle) disablePreview);
 		DisposePtr((Ptr) terrainDescription);
 		return kError_TagMissing_Preview;
 	}
@@ -264,16 +266,10 @@ static OSErr Preload_Terrain(FSSpec* file, MetaFile_ReferencePtr reference, Terr
 	dataEntry->ID = id;
 	memset(&dataEntry->description, 0, sizeof(Data_TerrainDescription));
 	BlockMove(terrainDescription, &dataEntry->description, GetPtrSize((Ptr) terrainDescription));
-	theError = PtrToHand(enablePreview, (Handle*) &dataEntry->enablePreview, GetPtrSize((Ptr) enablePreview));
-	if(theError)
-	return theError;
-	theError = PtrToHand(disablePreview, (Handle*) &dataEntry->disablePreview, GetPtrSize((Ptr) disablePreview));
-	if(theError)
-	return theError;
-				
+	dataEntry->enablePreview = enablePreview;
+	dataEntry->disablePreview = disablePreview;
+	
 	//Clean up
-	DisposePtr((Ptr) disablePreview);
-	DisposePtr((Ptr) enablePreview);
 	DisposePtr((Ptr) terrainDescription);
 	
 	return noErr;
@@ -288,7 +284,7 @@ static OSErr Preload_Ship(FSSpec* file, MetaFile_ReferencePtr reference, ShipPre
 	long						i;
 	OSType						dataType,
 								dataID;
-	Ptr							enablePreview,
+	PicHandle					enablePreview,
 								disablePreview;
 	
 	//Extract ship id
@@ -364,21 +360,12 @@ static OSErr Preload_Ship(FSSpec* file, MetaFile_ReferencePtr reference, ShipPre
 	UnpackIntsBE(4, 3, shipDescription->points);
 	UnpackU32BEInPlace(&shipDescription->languageCode);
 	
-	//Extract ship preview - enable
-	dataType = kSubTag_Image;
-	dataID = kEnablePreviewID;
-	theError = MetaFile_Read_Data(reference, &dataType, kMetaFile_UseID, (Ptr*) &enablePreview, &dataID);
-	if(theError) {
-		DisposePtr((Ptr) shipDescription);
-		return kError_TagMissing_Preview;
-	}
-	
-	//Extract ship preview - disable
-	dataType = kSubTag_Image;
-	dataID = kDisablePreviewID;
-	theError = MetaFile_Read_Data(reference, &dataType, kMetaFile_UseID, (Ptr*) &disablePreview, &dataID);
-	if(theError) {
-		DisposePtr((Ptr) enablePreview);
+	//Extract ship previews
+	enablePreview = Preload_PreviewPNG(reference, "Enbl");
+	disablePreview = Preload_PreviewPNG(reference, "Dsbl");
+	if(enablePreview == nil || disablePreview == nil) {
+		DisposeHandle((Handle) enablePreview);
+		DisposeHandle((Handle) disablePreview);
 		DisposePtr((Ptr) shipDescription);
 		return kError_TagMissing_Preview;
 	}
@@ -391,16 +378,10 @@ static OSErr Preload_Ship(FSSpec* file, MetaFile_ReferencePtr reference, ShipPre
 #else
 	BlockMove(shipDescription, &dataEntry->description, sizeof(Data_ShipDescription));
 #endif
-	theError = PtrToHand(enablePreview, (Handle*) &dataEntry->enablePreview, GetPtrSize((Ptr) enablePreview));
-	if(theError)
-	return theError;
-	theError = PtrToHand(disablePreview, (Handle*) &dataEntry->disablePreview, GetPtrSize((Ptr) disablePreview));
-	if(theError)
-	return theError;
-				
+	dataEntry->enablePreview = enablePreview;
+	dataEntry->disablePreview = disablePreview;
+	
 	//Clean up
-	DisposePtr((Ptr) disablePreview);
-	DisposePtr((Ptr) enablePreview);
 	DisposePtr((Ptr) shipDescription);
 	
 	return noErr;
