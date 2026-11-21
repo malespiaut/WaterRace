@@ -31,9 +31,33 @@
 #define				kFromStartTag				0
 #define				kFromStartDepth				0
 
+//Linux port: sizes of the big-endian PPC structures on disk (PORTING.md 5.2)
+#define				kMetaFile_HeaderDiskSize	16
+#define				kMetaFile_EntryDiskSize		24
+#define				kShape_DiskSize				300
+#define				kVertex_DiskSize			24
+#define				kTriFace_DiskSize			12
+#define				kVector_DiskSize			12
+
 //ROUTINES:
 
 //Utils:
+
+static float UnpackFloatBE(const unsigned char* data)
+{
+	UInt32				bits = UnpackU32BE(data);
+	float				value;
+	
+	BlockMove(&bits, &value, sizeof(float));
+	
+	return value;
+}
+
+static void UnpackFloatsBE(float* dest, const unsigned char* data, long count)
+{
+	for(long i = 0; i < count; ++i)
+	dest[i] = UnpackFloatBE(data + 4 * i);
+}
 
 static OSErr SetPos_IndexTag(MetaFile_ReferencePtr reference, OSType tag, long index, long fromTag, long minDepth)
 {
@@ -462,16 +486,50 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 	OSErr				theError;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
 	
-	//Allocate memory
-	*shape = (ShapePtr) NewPtr(sizeof(Shape));
+	unsigned char		data[kShape_DiskSize];
+	ShapePtr			s;
+	TriFacePtr			diskTriangles;
+	long				i;
+	
+	//Check size
+	if(tagEntry->dataSize != kShape_DiskSize)
+	return kError_FatalError;
+	
+	//Allocate memory - pointers stored on disk are meaningless and stay nil
+	*shape = s = (ShapePtr) NewPtrClear(sizeof(Shape));
 	if(*shape == nil)
 	return MemError();
 	
-	//Read shape data
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) *shape);
+	//Read shape data - Linux port: copy the fields of the 32-bit big-endian Shape (PORTING.md 5.2)
+	bytes = kShape_DiskSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
 	if(theError)
 	return theError;
+	s->pointCount = UnpackI32BE(data + 0);
+	s->triangleCount = UnpackI32BE(data + 8);
+	s->normalMode = UnpackI16BE(data + 16);
+	s->normalCount = UnpackI32BE(data + 24);
+	s->flags = UnpackU32BE(data + 32);
+	UnpackFloatsBE(&s->pos.x.x, data + 36, 12);
+	s->rotateX = UnpackFloatBE(data + 84);
+	s->rotateY = UnpackFloatBE(data + 88);
+	s->rotateZ = UnpackFloatBE(data + 92);
+	s->scale = UnpackFloatBE(data + 96);
+	s->link = UnpackI32BE(data + 100);
+	UnpackFloatsBE(&s->boundingBox[0].x, data + 104, kBBSize * 3);
+	s->texture = UnpackU32BE(data + 200);
+	s->alpha = UnpackFloatBE(data + 204);
+	s->difuse = UnpackFloatBE(data + 212);
+	s->specular = UnpackFloatBE(data + 216);
+	s->backfaceCulling = data[220] >> 7; //first bit of a big-endian 32-bit bitfield unit
+	s->unused_1 = UnpackI16BE(data + 224);
+	s->shading = UnpackU16BE(data + 226);
+	s->unused_2 = UnpackI16BE(data + 228);
+	BlockMove(data + 230, s->name, sizeof(Str31));
+	BlockMove(data + 262, s->buffer, sizeof(s->buffer));
+	s->sphereRadius = UnpackFloatBE(data + 280);
+	UnpackFloatsBE(&s->sphereCenter.x, data + 284, 3);
+	s->id = UnpackU32BE(data + 296);
 	
 	//Find point list - we suppose it is the next tag entry
 	++tagEntry;
@@ -493,6 +551,14 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 		theError = FSRead(destFileID, &bytes, (Ptr) (*shape)->pointList);
 		if(theError)
 		return theError;
+		
+		//Linux port: Vertex is 6 floats, same layout on disk - swap in place
+		//shortcut: FX shapes keep their point data raw (particle shapes store InfinityParticle records there); swap it with the shdt data by shading
+		if(IsGeometricShape(s)) {
+			if(tagEntry->dataSize != s->pointCount * kVertex_DiskSize)
+			return kError_FatalError;
+			UnpackIntsBE(4, tagEntry->dataSize / 4, (*shape)->pointList);
+		}
 	}
 	
 	//Find triangle list - we suppose it is the next tag entry
@@ -505,16 +571,24 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 		reference->currentTag += 1;
 		SetFPos(destFileID, fsFromStart, tagEntry->dataPosition);
 		
-		//Allocate memory
-		(*shape)->triangleList = (TriFacePtr) NewPtr(tagEntry->dataSize);
-		if((*shape)->triangleList == nil)
+		//Check size
+		if(tagEntry->dataSize != s->triangleCount * kTriFace_DiskSize)
+		return kError_FatalError;
+		
+		//Allocate memory - Linux port: TriFace holds unsigned longs, 8 bytes on LP64
+		(*shape)->triangleList = (TriFacePtr) NewPtr(s->triangleCount * sizeof(TriFace));
+		diskTriangles = (TriFacePtr) NewPtr(tagEntry->dataSize);
+		if(((*shape)->triangleList == nil) || (diskTriangles == nil))
 		return MemError();
 		
 		//Read triangles
 		bytes = tagEntry->dataSize;
-		theError = FSRead(destFileID, &bytes, (Ptr) (*shape)->triangleList);
+		theError = FSRead(destFileID, &bytes, (Ptr) diskTriangles);
 		if(theError)
 		return theError;
+		for(i = 0; i < s->triangleCount * 3; ++i)
+		(*shape)->triangleList[i / 3].corner[i % 3] = UnpackU32BE((unsigned char*) diskTriangles + 4 * i);
+		DisposePtr((Ptr) diskTriangles);
 	}
 	
 	//Check for normals
@@ -526,6 +600,10 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 		reference->currentTag += 1;
 		SetFPos(destFileID, fsFromStart, tagEntry->dataPosition);
 		
+		//Check size
+		if(tagEntry->dataSize != s->normalCount * kVector_DiskSize)
+		return kError_FatalError;
+		
 		//Allocate memory
 		(*shape)->normalList = (VectorPtr) NewPtr(tagEntry->dataSize);
 		if((*shape)->normalList == nil)
@@ -536,6 +614,7 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 		theError = FSRead(destFileID, &bytes, (Ptr) (*shape)->normalList);
 		if(theError)
 		return theError;
+		UnpackIntsBE(4, tagEntry->dataSize / 4, (*shape)->normalList);
 	}
 	else
 	(*shape)->normalList = nil;
@@ -551,6 +630,7 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 		SetFPos(destFileID, fsFromStart, tagEntry->dataPosition);
 		
 		//Allocate memory
+		//shortcut: shdt stays raw big-endian; ShapeData_* layouts differ on LP64, unpack them by shading before FX shapes render
 		(*shape)->dataPtr = NewPtr(tagEntry->dataSize);
 		if((*shape)->dataPtr == nil)
 		return MemError();
@@ -1523,6 +1603,9 @@ OSErr MetaFile_Read_OpenFile(FSSpec* destFile, MetaFile_ReferencePtr* newReferen
 	MetaFile_ReferencePtr	reference;
 	MetaFile_Header			header;
 	long					bytes;
+	unsigned long			tagCount,
+							i;
+	unsigned char			data[kMetaFile_EntryDiskSize];
 	Boolean					targetIsFolder,
 							wasAliased;
 	FSSpec					realFile;
@@ -1538,11 +1621,16 @@ OSErr MetaFile_Read_OpenFile(FSSpec* destFile, MetaFile_ReferencePtr* newReferen
 	if(theError)
 	return theError;
 	
-	//Read header
-	bytes = sizeof(MetaFile_Header);
-	theError = FSRead(destFileID, &bytes, (Ptr) &header);
+	//Read header - Linux port: unpacked from the 16 big-endian bytes on disk (PORTING.md 5.2)
+	bytes = kMetaFile_HeaderDiskSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
 	if(theError)
 	return theError;
+	header.version = UnpackI16BE(data + 0);
+	header.flags = UnpackU16BE(data + 2);
+	header.creatorCode = UnpackU32BE(data + 4);
+	header.tagTablePosition = UnpackI32BE(data + 8);
+	header.tagTableSize = UnpackI32BE(data + 12);
 	
 	//Check version
 	if(header.version > kMetaFile_Version) {
@@ -1550,17 +1638,41 @@ OSErr MetaFile_Read_OpenFile(FSSpec* destFile, MetaFile_ReferencePtr* newReferen
 		return kError_BadVersion;
 	}
 	
+	//Read tag count and check it against the table size
+	SetFPos(destFileID, fsFromStart, header.tagTablePosition);
+	bytes = 4;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
+	if(theError)
+	return theError;
+	tagCount = UnpackU32BE(data);
+	if((tagCount > kMetaFile_MaxTagEntries) || (header.tagTableSize != 4 + tagCount * kMetaFile_EntryDiskSize)) {
+		FSClose(destFileID);
+		return kError_FatalError;
+	}
+	
 	//Create reference
-	reference = (MetaFile_ReferencePtr) NewPtr(sizeof(MetaFile_Reference) + header.tagTableSize);
+	reference = (MetaFile_ReferencePtr) NewPtr(sizeof(MetaFile_Reference) + tagCount * sizeof(MetaFile_Entry));
 	if(reference == nil)
 	return MemError();
 	
-	//Read tag table
-	SetFPos(destFileID, fsFromStart, header.tagTablePosition);
-	bytes = header.tagTableSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) &reference->tagTable);
-	if(theError)
-	return theError;
+	//Read tag table - Linux port: each 24-byte big-endian entry is unpacked into the native one
+	reference->tagTable.tagCount = tagCount;
+	for(i = 0; i < tagCount; ++i) {
+		MetaFile_EntryPtr	entry = &reference->tagTable.tagList[i];
+		
+		bytes = kMetaFile_EntryDiskSize;
+		theError = FSRead(destFileID, &bytes, (Ptr) data);
+		if(theError)
+		return theError;
+		entry->depth = data[0];
+		entry->flags = data[1];
+		entry->version = UnpackI16BE(data + 2);
+		entry->tag = UnpackU32BE(data + 4);
+		entry->subTag = UnpackU32BE(data + 8);
+		entry->ID = UnpackU32BE(data + 12);
+		entry->dataSize = UnpackI32BE(data + 16);
+		entry->dataPosition = UnpackI32BE(data + 20);
+	}
 	
 	//Setup reference
 	reference->fileRefNum = destFileID;
@@ -1570,7 +1682,7 @@ OSErr MetaFile_Read_OpenFile(FSSpec* destFile, MetaFile_ReferencePtr* newReferen
 	*newReference = reference;
 	
 	//Reset to beginning of data
-	SetFPos(destFileID, fsFromStart, sizeof(MetaFile_Header));
+	SetFPos(destFileID, fsFromStart, kMetaFile_HeaderDiskSize);
 	
 	return noErr;
 }

@@ -25,7 +25,6 @@ asm(".section .rodata\n.Lportstub16: .string \"LMSetCurDirStore\"\n.text\n.globl
 asm(".section .rodata\n.Lportstub17: .string \"LMSetSFSaveDisk\"\n.text\n.globl LMSetSFSaveDisk\n.type LMSetSFSaveDisk,@function\nLMSetSFSaveDisk: leaq .Lportstub17(%rip), %rdi\n jmp port_todo_fatal_c\n");
 asm(".section .rodata\n.Lportstub18: .string \"ParseSndHeader\"\n.text\n.globl ParseSndHeader\n.type ParseSndHeader,@function\nParseSndHeader: leaq .Lportstub18(%rip), %rdi\n jmp port_todo_fatal_c\n");
 asm(".section .rodata\n.Lportstub19: .string \"PBControlSync\"\n.text\n.globl PBControlSync\n.type PBControlSync,@function\nPBControlSync: leaq .Lportstub19(%rip), %rdi\n jmp port_todo_fatal_c\n");
-asm(".section .rodata\n.Lportstub20: .string \"PBGetCatInfo\"\n.text\n.globl PBGetCatInfo\n.type PBGetCatInfo,@function\nPBGetCatInfo: leaq .Lportstub20(%rip), %rdi\n jmp port_todo_fatal_c\n");
 asm(".section .rodata\n.Lportstub21: .string \"PBGetVInfo\"\n.text\n.globl PBGetVInfo\n.type PBGetVInfo,@function\nPBGetVInfo: leaq .Lportstub21(%rip), %rdi\n jmp port_todo_fatal_c\n");
 asm(".section .rodata\n.Lportstub22: .string \"PBHGetVInfoSync\"\n.text\n.globl PBHGetVInfoSync\n.type PBHGetVInfoSync,@function\nPBHGetVInfoSync: leaq .Lportstub22(%rip), %rdi\n jmp port_todo_fatal_c\n");
 asm(".section .rodata\n.Lportstub23: .string \"qd\"\n.text\n.globl qd\n.type qd,@function\nqd: leaq .Lportstub23(%rip), %rdi\n jmp port_todo_fatal_c\n");

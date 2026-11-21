@@ -211,6 +211,13 @@ OSErr ResolveAliasFile(FSSpec* theSpec, Boolean resolveChains, Boolean* targetIs
 	return noErr;
 }
 
+// No catalog index on host folders yet: folder scans (Preload_Folder) find nothing.
+//shortcut: Data Files.cp only loads the core MetaFiles; enumerate host directories here when Locations/Ships/Characters must be scanned
+OSErr PBGetCatInfo(CInfoPBRec* paramBlock, Boolean async)
+{
+	return fnfErr;
+}
+
 // P1 check: the data-folder name comes out of STR# 129 through Pomme, and a resource read
 // through Get1Resource returns data. Returns true when both hold.
 Boolean Boot_CheckResources()

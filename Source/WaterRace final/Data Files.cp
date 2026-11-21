@@ -369,7 +369,7 @@ static OSErr Preload_Ship(FSSpec* file, MetaFile_ReferencePtr reference, ShipPre
 #if 0
 	dataEntry->description = *shipDescription;
 #else
-	BlockMoveData(shipDescription, &dataEntry->description, sizeof(Data_ShipDescription));
+	BlockMove(shipDescription, &dataEntry->description, sizeof(Data_ShipDescription));
 #endif
 	theError = PtrToHand(enablePreview, (Handle*) &dataEntry->enablePreview, GetPtrSize((Ptr) enablePreview));
 	if(theError)
