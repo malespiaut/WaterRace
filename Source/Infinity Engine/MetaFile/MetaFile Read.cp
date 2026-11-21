@@ -67,6 +67,9 @@
 #define				kItemReference_DiskSize		28
 #define				kEnclosure_HeaderDiskSize	44
 #define				kCollisionWall_DiskSize		92
+#define				kSkeleton_HeaderDiskSize	25632	//16 + kSkeleton_MaxNodes nodes + shapePtr + unused[3]
+#define				kNode_DiskSize				640
+#define				kShapePoint_DiskSize		24
 
 //ROUTINES:
 
@@ -643,6 +646,36 @@ OSErr MetaFile_Read_GetModelDefaultTextureSet(MetaFile_ReferencePtr reference, T
 	return theError;
 }
 
+//Linux port: unpacks the 300-byte 32-bit big-endian Shape (PORTING.md 5.2); the list pointers are left alone
+void MetaFile_UnpackShapeBE(ShapePtr s, const unsigned char* data)
+{
+	s->pointCount = UnpackI32BE(data + 0);
+	s->triangleCount = UnpackI32BE(data + 8);
+	s->normalMode = UnpackI16BE(data + 16);
+	s->normalCount = UnpackI32BE(data + 24);
+	s->flags = UnpackU32BE(data + 32);
+	UnpackFloatsBE(&s->pos.x.x, data + 36, 12);
+	s->rotateX = UnpackFloatBE(data + 84);
+	s->rotateY = UnpackFloatBE(data + 88);
+	s->rotateZ = UnpackFloatBE(data + 92);
+	s->scale = UnpackFloatBE(data + 96);
+	s->link = UnpackI32BE(data + 100);
+	UnpackFloatsBE(&s->boundingBox[0].x, data + 104, kBBSize * 3);
+	s->texture = UnpackU32BE(data + 200);
+	s->alpha = UnpackFloatBE(data + 204);
+	s->difuse = UnpackFloatBE(data + 212);
+	s->specular = UnpackFloatBE(data + 216);
+	s->backfaceCulling = data[220] >> 7; //first bit of a big-endian 32-bit bitfield unit
+	s->unused_1 = UnpackI16BE(data + 224);
+	s->shading = UnpackU16BE(data + 226);
+	s->unused_2 = UnpackI16BE(data + 228);
+	BlockMove(data + 230, s->name, sizeof(Str31));
+	BlockMove(data + 262, s->buffer, sizeof(s->buffer));
+	s->sphereRadius = UnpackFloatBE(data + 280);
+	UnpackFloatsBE(&s->sphereCenter.x, data + 284, 3);
+	s->id = UnpackU32BE(data + 296);
+}
+
 static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 {
 	short				destFileID = reference->fileRefNum;
@@ -669,31 +702,7 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 	theError = FSRead(destFileID, &bytes, (Ptr) data);
 	if(theError)
 	return theError;
-	s->pointCount = UnpackI32BE(data + 0);
-	s->triangleCount = UnpackI32BE(data + 8);
-	s->normalMode = UnpackI16BE(data + 16);
-	s->normalCount = UnpackI32BE(data + 24);
-	s->flags = UnpackU32BE(data + 32);
-	UnpackFloatsBE(&s->pos.x.x, data + 36, 12);
-	s->rotateX = UnpackFloatBE(data + 84);
-	s->rotateY = UnpackFloatBE(data + 88);
-	s->rotateZ = UnpackFloatBE(data + 92);
-	s->scale = UnpackFloatBE(data + 96);
-	s->link = UnpackI32BE(data + 100);
-	UnpackFloatsBE(&s->boundingBox[0].x, data + 104, kBBSize * 3);
-	s->texture = UnpackU32BE(data + 200);
-	s->alpha = UnpackFloatBE(data + 204);
-	s->difuse = UnpackFloatBE(data + 212);
-	s->specular = UnpackFloatBE(data + 216);
-	s->backfaceCulling = data[220] >> 7; //first bit of a big-endian 32-bit bitfield unit
-	s->unused_1 = UnpackI16BE(data + 224);
-	s->shading = UnpackU16BE(data + 226);
-	s->unused_2 = UnpackI16BE(data + 228);
-	BlockMove(data + 230, s->name, sizeof(Str31));
-	BlockMove(data + 262, s->buffer, sizeof(s->buffer));
-	s->sphereRadius = UnpackFloatBE(data + 280);
-	UnpackFloatsBE(&s->sphereCenter.x, data + 284, 3);
-	s->id = UnpackU32BE(data + 296);
+	MetaFile_UnpackShapeBE(s, data);
 	
 	//Find point list - we suppose it is the next tag entry
 	++tagEntry;
@@ -959,16 +968,59 @@ static OSErr Load_Skeleton(MetaFile_ReferencePtr reference, SkeletonPtr* skeleto
 	OSErr				theError;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
 	
+	unsigned char*		data;
+	const unsigned char*	diskNode;
+	NodePtr				node;
+	long				pointCount,
+						i,
+						j;
+	
+	//Check size
+	if((tagEntry->dataSize < kSkeleton_HeaderDiskSize) || ((tagEntry->dataSize - kSkeleton_HeaderDiskSize) % kShapePoint_DiskSize))
+	return kError_FatalError;
+	pointCount = (tagEntry->dataSize - kSkeleton_HeaderDiskSize) / kShapePoint_DiskSize;
+	
 	//Allocate memory
-	*skeleton = (SkeletonPtr) NewPtr(tagEntry->dataSize);
-	if(*skeleton == nil)
+	*skeleton = (SkeletonPtr) NewPtrClear(sizeof(Skeleton) + pointCount * sizeof(ShapePoint));
+	data = (unsigned char*) NewPtr(tagEntry->dataSize);
+	if((*skeleton == nil) || (data == nil))
 	return MemError();
 	
 	//Read skeleton data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) *skeleton);
-	if(theError)
-	return theError;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
+	if(theError) {
+		DisposePtr((Ptr) data);
+		return theError;
+	}
+	
+	//Linux port: unpack the 32-bit big-endian Skeleton, its unsigned longs are 8 bytes on LP64 (PORTING.md 5.2); shapePtr stays nil
+	(*skeleton)->id = UnpackU32BE(data + 0);
+	(*skeleton)->flags = UnpackU32BE(data + 4);
+	(*skeleton)->shapeID = UnpackU32BE(data + 8);
+	(*skeleton)->nodeCount = UnpackU32BE(data + 12);
+	for(i = 0; i < kSkeleton_MaxNodes; ++i) {
+		diskNode = data + 16 + i * kNode_DiskSize;
+		node = &(*skeleton)->nodeList[i];
+		node->parentNode = UnpackU32BE(diskNode + 0);
+		node->childNodeCount = UnpackU32BE(diskNode + 4);
+		for(j = 0; j < kSkeleton_MaxChildNodes; ++j)
+		node->childNodeList[j] = UnpackU32BE(diskNode + 8 + 4 * j);
+		UnpackFloatsBE(&node->pos.x.x, diskNode + 32, 12);
+		UnpackFloatsBE(&node->rotateX, diskNode + 80, 3);
+		node->verticeCount = UnpackU32BE(diskNode + 92);
+		for(j = 0; j < kSkeleton_MaxVertices; ++j)
+		node->verticeList[j] = UnpackU32BE(diskNode + 96 + 4 * j);
+		BlockMove(diskNode + 608, node->name, sizeof(Str31));
+		if((node->childNodeCount > kSkeleton_MaxChildNodes) || (node->verticeCount > kSkeleton_MaxVertices)) {
+			DisposePtr((Ptr) data);
+			return kError_FatalError;
+		}
+	}
+	UnpackFloatsBE(&(*skeleton)->points[0].vector.x, data + kSkeleton_HeaderDiskSize, pointCount * 6);
+	DisposePtr((Ptr) data);
+	if((*skeleton)->nodeCount > kSkeleton_MaxNodes)
+	return kError_FatalError;
 	
 	return noErr;
 }

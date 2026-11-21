@@ -73,6 +73,10 @@
 
 //ROUTINES:
 
+long Boot_ScreenshotTime(); // compositor debug hooks, Boot.cp
+void Boot_RequestScreenshot();
+void Boot_GetWindowSize(int* width, int* height);
+
 static OSErr FlyThrough()
 {
 	OSErr					theError;
@@ -250,6 +254,75 @@ static OSErr FlyThrough()
 #endif
 
 	//Clean up
+	World_Unload();
+	
+	return noErr;
+}
+
+//Linux port debug entry (WATERRACE_FLYTHROUGH, #47): Core/Practice Zone once along its own fly-through camera path
+//('flth', fly ID kNoID, as the Browser preview plays it), full window. With WATERRACE_SCREENSHOT_TIME (1/100 s)
+//the frame at that time of the path is written (Boot.cp). A key or the mouse stops it.
+OSErr Demo_PracticeFlyThrough()
+{
+	OSErr					theError;
+	FSSpec					practiceFile;
+	Point					size,
+							offset = {0, 0};
+	int						width,
+							height;
+	long					shotTime = Boot_ScreenshotTime();
+	KeyMap					theKeys;
+	
+	//Setup fake game mode
+	gameConfig.gameMode = kGameMode_Demo;
+	gameConfig.gameSubMode = kGameSubMode_None;
+	gameConfig.gameMode_save = gameConfig.gameMode;
+	gameConfig.gameSubMode_save = gameConfig.gameSubMode;
+	gameConfig.startTime = 0;
+	
+	//Init engine
+	Boot_GetWindowSize(&width, &height);
+	size.h = width;
+	size.v = height;
+	theError = Infinity_GameInit(Get_GameEngine(), &worldState, size, offset, true);
+	if(theError)
+	return theError;
+	
+	practiceFile.vRefNum = coreFolder.vRefNum;
+	practiceFile.parID = coreFolder.parID;
+	GetIndString(practiceFile.cName, folderFileNameResID, filePractice);
+	theError = World_Load(worldState, &practiceFile, kDifficulty_Easy, kNoID);
+	if(theError)
+	return theError;
+	
+	//shortcut: no World_InstallAudio, the ambient sounds (absd) still read raw; install them with the audio work (P5)
+	RClock_SetTime(0);
+	World_Prepare();
+	DriverCamera_FlyThrough_Init();
+	
+#if __SCREEN_FADES__
+	//Screen_Init faded to black
+	Set1MonitorState(mainGDHandle, mainGamma);
+#endif
+	
+	while(RClock_GetTime() - theTerrain.animStartTime < flyThroughCameraAnimation->endTime) {
+		GetKeys(theKeys);
+		if(theKeys[0] || theKeys[1] || theKeys[2] || theKeys[3] || Button())
+		break;
+		
+		if(shotTime >= 0 && RClock_GetTime() - theTerrain.animStartTime >= shotTime) {
+			RClock_SetTime(theTerrain.animStartTime + shotTime);
+			Boot_RequestScreenshot();
+		}
+		
+		worldState->lastFrameTime = worldState->frameTime;
+		worldState->frameTime = RClock_GetTime();
+		Anim_Run(&theTerrain, worldState->frameTime);
+		World_UpdateSea();
+		DriverCamera_FlyThrough_Callback();
+		Draw_Frame(worldState);
+	}
+	
 	World_Unload();
 	
 	return noErr;

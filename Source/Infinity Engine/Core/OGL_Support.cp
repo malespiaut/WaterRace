@@ -85,6 +85,7 @@ static TQAEngine		gEngine;
 //ROUTINES:
 
 void Boot_InterfaceToWindow(const Rect* r, int* x, int* y, int* width, int* height); // compositor, Boot.cp
+void Boot_GetWindowSize(int* width, int* height);
 void Boot_BeginFrame();
 void Boot_PresentFrame();
 
@@ -242,6 +243,11 @@ static void Context_Bind(TQADrawContext* drawContext)
 						0, 0, 2, 0,
 						-1, 1, -1, 1};
 
+	if(drawContext->flags & kQAContext_FullWindow) {
+		x = y = 0;
+		Boot_GetWindowSize(&width, &height);
+	}
+	else
 	Boot_InterfaceToWindow(&drawContext->displayRect, &x, &y, &width, &height);
 	glViewport(x, y, width, height);
 	glScissor(x, y, width, height);

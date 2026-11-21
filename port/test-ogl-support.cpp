@@ -30,6 +30,7 @@ void Boot_InterfaceToWindow(const Rect* r, int* x, int* y, int* width, int* heig
 	*width = r->right - r->left;
 	*height = r->bottom - r->top;
 }
+void Boot_GetWindowSize(int* width, int* height) { *width = 640; *height = 480; }
 
 // No compositor: pixels are read back from the back buffer, so nothing is drawn under the contexts or presented.
 void Boot_BeginFrame() {}

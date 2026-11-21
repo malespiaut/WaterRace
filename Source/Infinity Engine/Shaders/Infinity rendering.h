@@ -36,6 +36,7 @@
 #define					kInfinityRenderingFlag_LowResolution	(1 << 3)
 #define					kInfinityRenderingFlag_NonLinearZBuffer	(1 << 4)
 #define					kInfinityRenderingFlag_TriFiltering		(1 << 5)
+#define					kInfinityRenderingFlag_FullWindow		(1 << 6)	//Linux port: the context fills the window (PORTING.md 6.3)
 
 #define					kMaxTextures							512
 #define					kDefaultSpriteByteOffset				sizeof(InfinitySprite)

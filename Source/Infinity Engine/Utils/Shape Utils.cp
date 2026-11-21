@@ -31,6 +31,8 @@
 #include					"Infinity Rendering.h"
 #include					"Shape Utils.h"
 #include					"Clipping Utils.h"
+#include					"MetaFile Structures.h"
+#include					"MetaFile Utils.h"
 
 //CONSTANTES:
 
@@ -1265,7 +1267,6 @@ OSErr Shape_SaveInResource(ShapePtr shape, short resID)
 OSErr Shape_LoadFromResource(ShapePtr* shape, short resID)
 {
 	Handle					shapeHandle;
-	ShapeResourceHeaderPtr	headerPtr;
 
 	shapeHandle = Get1Resource(kShape_ResType, resID);
 	if(shapeHandle == nil)
@@ -1273,30 +1274,60 @@ OSErr Shape_LoadFromResource(ShapePtr* shape, short resID)
 	DetachResource(shapeHandle);
 	HLock(shapeHandle);
 	
-	//Decode header
-	headerPtr = (ShapeResourceHeaderPtr) *shapeHandle;
-	if(headerPtr->version != kShape_Version)
-	return kError_BadVersion;
+	//Decode header - Linux port: the resource is the 40-byte 32-bit big-endian header (version, pad, 9 longs),
+	//then the 300-byte disk Shape and its point, triangle and normal lists (PORTING.md 5.2)
+	const unsigned char*	data = (const unsigned char*) *shapeHandle;
+	long					size = GetHandleSize(shapeHandle),
+							i;
+	ShapeResourceHeader		header;
 	
-	*shape = (ShapePtr) NewPtr(sizeof(Shape));
+	if((size < 40) || (UnpackI16BE(data) != kShape_Version)) {
+		DisposeHandle(shapeHandle);
+		return kError_BadVersion;
+	}
+	header.shapeSize = UnpackI32BE(data + 4);
+	header.shapeOffset = UnpackI32BE(data + 8);
+	header.pointListSize = UnpackI32BE(data + 12);
+	header.pointListOffset = UnpackI32BE(data + 16);
+	header.triangleListSize = UnpackI32BE(data + 20);
+	header.triangleListOffset = UnpackI32BE(data + 24);
+	header.normalListSize = UnpackI32BE(data + 28);
+	header.normalListOffset = UnpackI32BE(data + 32);
+	if((header.shapeSize != 300) || (header.shapeOffset < 40) || (header.shapeOffset + 300 > size)
+	 || (header.pointListOffset < 0) || (header.pointListSize < 0) || (header.pointListOffset + header.pointListSize > size)
+	 || (header.triangleListOffset < 0) || (header.triangleListSize < 0) || (header.triangleListOffset + header.triangleListSize > size)
+	 || (header.normalListOffset < 0) || (header.normalListSize < 0) || (header.normalListOffset + header.normalListSize > size)) {
+		DisposeHandle(shapeHandle);
+		return kError_FatalError;
+	}
+	
+	*shape = (ShapePtr) NewPtrClear(sizeof(Shape));
 	if(*shape == nil)
 	return MemError();
 	
-	//Copy shape data
-	BlockMove(*shapeHandle + headerPtr->shapeOffset, *shape, sizeof(Shape));
+	//Copy shape data - pointers stored on disk are meaningless and stay nil
+	MetaFile_UnpackShapeBE(*shape, data + header.shapeOffset);
+	if(((*shape)->pointCount * 24 != header.pointListSize) || ((*shape)->triangleCount * 12 != header.triangleListSize)
+	 || (((*shape)->normalMode != kNoNormals) && ((*shape)->normalCount * 12 != header.normalListSize))) {
+		DisposeHandle(shapeHandle);
+		return kError_FatalError;
+	}
 	
-	//Copy point data
-	(*shape)->pointList = (VertexPtr) NewPtr(headerPtr->pointListSize);
-	BlockMove(*shapeHandle + headerPtr->pointListOffset, (*shape)->pointList, headerPtr->pointListSize);
+	//Copy point data - Vertex is 6 floats
+	(*shape)->pointList = (VertexPtr) NewPtr(header.pointListSize);
+	BlockMove(data + header.pointListOffset, (*shape)->pointList, header.pointListSize);
+	UnpackIntsBE(4, header.pointListSize / 4, (*shape)->pointList);
 	
-	//Copy triangle data
-	(*shape)->triangleList = (TriFacePtr) NewPtr(headerPtr->triangleListSize);
-	BlockMove(*shapeHandle + headerPtr->triangleListOffset, (*shape)->triangleList, headerPtr->triangleListSize);
+	//Copy triangle data - TriFace holds unsigned longs, 8 bytes on LP64
+	(*shape)->triangleList = (TriFacePtr) NewPtr((*shape)->triangleCount * sizeof(TriFace));
+	for(i = 0; i < (*shape)->triangleCount * 3; ++i)
+	(*shape)->triangleList[i / 3].corner[i % 3] = UnpackU32BE(data + header.triangleListOffset + 4 * i);
 	
 	//Copy normal data
-	if(headerPtr->normalListSize != 0) {
-		(*shape)->normalList = (VectorPtr) NewPtr(headerPtr->normalListSize);
-		BlockMove(*shapeHandle + headerPtr->normalListOffset, (*shape)->normalList, headerPtr->normalListSize);
+	if(((*shape)->normalMode != kNoNormals) && (header.normalListSize != 0)) {
+		(*shape)->normalList = (VectorPtr) NewPtr(header.normalListSize);
+		BlockMove(data + header.normalListOffset, (*shape)->normalList, header.normalListSize);
+		UnpackIntsBE(4, header.normalListSize / 4, (*shape)->normalList);
 	}
 	else
 	(*shape)->normalList = nil;

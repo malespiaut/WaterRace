@@ -66,6 +66,7 @@ long MetaFile_CountDataSubTags(MetaFile_ReferencePtr reference, OSType subTag);
 OSErr MetaFile_LowLevelRead_DataPtr(MetaFile_ReferencePtr reference, long tagNum, Ptr* data);
 OSErr MetaFile_LowLevelRead_DataHandle(MetaFile_ReferencePtr reference, long tagNum, Handle* data);
 
+void MetaFile_UnpackShapeBE(ShapePtr s, const unsigned char* data); //Linux port: also for the Shap resources (Shape Utils.cp)
 OSErr MetaFile_Read_Data(MetaFile_ReferencePtr reference, OSType* dataType, long index, Ptr* dataPtr, OSType* dataID);
 OSErr MetaFile_Read_TextureList(MetaFile_ReferencePtr reference, CompressedTexturePtr textureList[], long* textureCount, OSType tag);
 OSErr MetaFile_Read_TextureSet_ByIndex(MetaFile_ReferencePtr reference, TextureSetPtr* set, OSType modelID, long index);

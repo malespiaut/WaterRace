@@ -623,6 +623,12 @@ int Game_Main() // the Mac main(); main() in Boot.cp calls it and catches ExitTo
 	//shortcut: WATERRACE_BOOT_ONLY=1 quits here for port/check-boot.py; keep it as a boot check once Demo_Play runs (#38, #44)
 	if(getenv("WATERRACE_BOOT_ONLY") != nil)
 	ExitToShell();
+	//Linux port debug entry: Practice Zone fly-through, then quit (#47)
+	if(getenv("WATERRACE_FLYTHROUGH") != nil) {
+		theError = Demo_PracticeFlyThrough();
+		fprintf(stderr, "Boot: Demo_PracticeFlyThrough done (%d)\n", theError);
+		ExitToShell();
+	}
 	theError = Demo_Play();
 	fprintf(stderr, "Boot: Demo_Play done (%d)\n", theError);
 	if(theError) {

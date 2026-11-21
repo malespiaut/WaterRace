@@ -156,7 +156,7 @@ extern Boolean				networkOnly;
 //File: Infinity.cp
 TQAEngine* Get_GameEngine();
 TQAEngine* Get_InterfaceEngine();
-OSErr Infinity_GameInit(TQAEngine* theEngine, StatePtr* state, Point size, Point offset);
+OSErr Infinity_GameInit(TQAEngine* theEngine, StatePtr* state, Point size, Point offset, Boolean fullWindow = false); //Linux port: fullWindow, size is then the window size
 void Infinity_SetTerrainState(StatePtr state, TerrainPtr terrain);
 
 //File: Utils.cp

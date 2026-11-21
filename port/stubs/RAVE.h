@@ -111,7 +111,8 @@ enum {
 	kQAContext_DoubleBuffer = 1 << 0,
 	kQAContext_NoZBuffer = 1 << 1,
 	kQAContext_DeepZ = 1 << 2,
-	kQAContext_Scale = 1 << 3
+	kQAContext_Scale = 1 << 3,
+	kQAContext_FullWindow = 1 << 4	// Linux port: drawn over the whole window, not the letterboxed interface (PORTING.md 6.3)
 };
 
 enum {
