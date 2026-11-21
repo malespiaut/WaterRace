@@ -277,7 +277,7 @@ OSErr Demo_Play()
 	KeyMap					theKeys;
 #endif
 #if __PLAY_JINGLE__
-	Handle					theSound;
+	Handle					theSound = nil;
 #endif
 				
 	GetGWorld(&savePort, &saveDevice);
@@ -289,10 +289,8 @@ OSErr Demo_Play()
 #endif
 
 #if __PLAY_JINGLE__	
-	//Load jingle sound
+	//Load jingle sound - Linux port: sound comes with Pomme's mixer in P5 (PORTING.md 6.6)
 	UseResFile(mainResFileID);
-	Sound_ResLoad(1000, false, &theSound);
-	Sound_PlaySFxHandle(theSound);
 #else
 #if __USE_AUDIO_CD_TRACKS__ || __USE_AUDIO_FILES__
 	//Start music
@@ -438,6 +436,7 @@ OSErr Demo_Play()
 #endif
 	
 #if __PLAY_JINGLE__
+	if(theSound != nil)
 	DisposeHandle(theSound);
 #endif
 	if(userStop) {
