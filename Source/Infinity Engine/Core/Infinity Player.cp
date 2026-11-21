@@ -65,6 +65,9 @@ static float				bitmapScaleFactor;
 
 //ROUTINES:
 
+long Boot_ScreenshotTime(); // compositor debug hook, Boot.cp
+void Boot_RequestScreenshot();
+
 static ShapePtr Find_CameraShape(ObjectPtr object, float* r, float* g, float *b)
 {
 	long					i;
@@ -505,7 +508,9 @@ Boolean InfinityPlayer_RunSync(long flags, float maxFPS)
 {
 	KeyMap					theKeys;
 	Boolean					run = true,
-							forceStop = false;
+							forceStop = false,
+							shot = false;
+	long					shotTime;
 	
 	if(!animation)
 	return false;
@@ -535,6 +540,13 @@ Boolean InfinityPlayer_RunSync(long flags, float maxFPS)
 		//Is the animation done
 		if(!(currentScript->flags & kFlag_Running))
 		run = false;
+		
+		//Linux port: screenshot hook, show the frame at exactly the asked time and have it written when presented
+		if(!shot && (shotTime = Boot_ScreenshotTime()) >= 0 && RClock_GetAbsoluteTime() - currentScript->startTime >= shotTime) {
+			currentScript->startTime = RClock_GetAbsoluteTime() - shotTime;
+			Boot_RequestScreenshot();
+			shot = true;
+		}
 		
 		//Animation!
 		Script_Run(currentScript, RClock_GetAbsoluteTime());

@@ -25,6 +25,7 @@
 #include			"Infinity Error Codes.h"
 #include			"Infinity Audio Engine.h"
 #include			"Textures.h"
+#include			"Infinity rendering.h"
 
 //CONSTANTES:
 
@@ -48,6 +49,9 @@
 #define				kMegaObject0300_DiskSize	3004
 #define				kCollisionBox_DiskSize		220
 #define				kOldCollisionBox_DiskSize	52
+#define				kParticle_DiskSize			80
+#define				kShapeDataLens_DiskSize		28
+#define				kShapeDataParticle_DiskSize	104
 
 //ROUTINES:
 
@@ -592,11 +596,18 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 		return theError;
 		
 		//Linux port: Vertex is 6 floats, same layout on disk - swap in place
-		//shortcut: FX shapes keep their point data raw (particle shapes store InfinityParticle records there); swap it with the shdt data by shading
+		//shortcut: other FX shapes keep their point data raw; swap it by shading when one turns up
 		if(IsGeometricShape(s)) {
 			if(tagEntry->dataSize != s->pointCount * kVertex_DiskSize)
 			return kError_FatalError;
 			UnpackIntsBE(4, tagEntry->dataSize / 4, (*shape)->pointList);
+		}
+		else if(s->shading == kShader_Particle) {
+			//InfinityParticle records: 19 floats then the Boolean alive byte, 80 bytes on disk and on LP64
+			if(tagEntry->dataSize % kParticle_DiskSize || sizeof(InfinityParticle) != kParticle_DiskSize)
+			return kError_FatalError;
+			for(i = 0; i < tagEntry->dataSize / kParticle_DiskSize; ++i)
+			UnpackIntsBE(4, 19, (Ptr) (*shape)->pointList + i * kParticle_DiskSize);
 		}
 	}
 	
@@ -669,7 +680,6 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 		SetFPos(destFileID, fsFromStart, tagEntry->dataPosition);
 		
 		//Allocate memory
-		//shortcut: shdt stays raw big-endian; ShapeData_* layouts differ on LP64, unpack them by shading before FX shapes render
 		(*shape)->dataPtr = NewPtr(tagEntry->dataSize);
 		if((*shape)->dataPtr == nil)
 		return MemError();
@@ -679,6 +689,34 @@ static OSErr Load_Shape(MetaFile_ReferencePtr reference, ShapePtr* shape)
 		theError = FSRead(destFileID, &bytes, (*shape)->dataPtr);
 		if(theError)
 		return theError;
+		
+		//Linux port: unpack the 32-bit big-endian ShapeData_* into the native struct (longs are 8 bytes on LP64)
+		//shortcut: only the Lens and Particle shadings (Logo Intro) are unpacked; Sprite, Light and Audio stay raw until a file uses them
+		if(s->shading == kShader_Lens) {
+			ShapeData_LensPtr		lens;
+			const unsigned char*	disk = (unsigned char*) (*shape)->dataPtr;
+			
+			if((tagEntry->dataSize != kShapeDataLens_DiskSize) || ((lens = (ShapeData_LensPtr) NewPtr(sizeof(ShapeData_Lens))) == nil))
+			return kError_FatalError;
+			UnpackFloatsBE(&lens->size, disk + 0, 3); //size, order, depth
+			lens->flags = UnpackU32BE(disk + 12);
+			UnpackFloatsBE(&lens->fakePosition.x, disk + 16, 3);
+			DisposePtr((*shape)->dataPtr);
+			(*shape)->dataPtr = (Ptr) lens;
+		}
+		else if(s->shading == kShader_Particle) {
+			ShapeData_ParticlePtr	particle;
+			const unsigned char*	disk = (unsigned char*) (*shape)->dataPtr;
+			
+			if((tagEntry->dataSize != kShapeDataParticle_DiskSize) || ((particle = (ShapeData_ParticlePtr) NewPtr(sizeof(ShapeData_Particle))) == nil))
+			return kError_FatalError;
+			particle->particleCount = UnpackI32BE(disk + 0);
+			particle->lastTime = UnpackU32BE(disk + 4);
+			particle->flags = UnpackU32BE(disk + 8);
+			UnpackFloatsBE(&particle->gravity, disk + 12, 23); //gravity ... modulate_b
+			DisposePtr((*shape)->dataPtr);
+			(*shape)->dataPtr = (Ptr) particle;
+		}
 	}
 	
 	return noErr;

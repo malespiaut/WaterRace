@@ -31,6 +31,10 @@ void Boot_InterfaceToWindow(const Rect* r, int* x, int* y, int* width, int* heig
 	*height = r->bottom - r->top;
 }
 
+// No compositor: pixels are read back from the back buffer, so nothing is drawn under the contexts or presented.
+void Boot_BeginFrame() {}
+void Boot_PresentFrame() {}
+
 // Context origin in the window, so pixel checks are in context pixels.
 static const int kLeft = 100, kTop = 50, kWidth = 320, kHeight = 240;
 

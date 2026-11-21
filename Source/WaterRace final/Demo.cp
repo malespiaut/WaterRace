@@ -268,11 +268,8 @@ OSErr Demo_Play()
 							userStop = false;
 	unsigned long			startTime;
 	TQAEngine*				theEngine;
-	long					vram;
 	unsigned long			textureFlags = 0,
 							contextFlags = 0;
-	long					vendorID,
-							engineID;
 #if __KEYBOARD_STOPS_DEMO__
 	KeyMap					theKeys;
 #endif
@@ -348,42 +345,13 @@ OSErr Demo_Play()
 		Wrapper_Error_Display(146, kError_NoRaveEngineFound, nil, __FORCE_QUIT_ON_ERROR__);
 		return kError_NoRaveEngineFound;
 	}
-	QAEngineGestalt(theEngine, kQAGestalt_VendorID, &vendorID);
-	QAEngineGestalt(theEngine, kQAGestalt_EngineID, &engineID);
-	
-	//Make sure the Apple engine is not selected
-	if((vendorID == kQAVendor_Apple) && (engineID == kQAEngine_AppleSW)) {
-		;
-	}
-	else { //setup params
-		//Get available VRAM
-		vram = InfinityRendering_AvailableVRAM(theEngine);
-		if(vram <= 0) {
-			Wrapper_Error_Display(158, kError_VRAMError, nil, __FORCE_QUIT_ON_ERROR__);
-			return kError_VRAMError;
-		}
-	
-		if(vram < 1200) //Less than 1.2Mb available
-		textureFlags |= kTextureFlag_Compress;
-	}
-	
 	if(thePrefs.engineFlags & kPref_EngineFlagFiltering)
 	contextFlags |= kInfinityRenderingFlag_Filtering;
 	if(thePrefs.engineFlags & kPref_EngineFlagLowResolution)
 	contextFlags |= kInfinityRenderingFlag_LowResolution;
 	
-	if(thePrefs.textureFlags & kTextureFlag_3DfxMode)
-	textureFlags |= kTextureFlag_3DfxMode;
-	
-#if 0
-	if(Is3DfxKnownEngine(theEngine))
-#else
-	if((Is3DfxKnownEngine(theEngine) == 1) || (Is3DfxKnownEngine(theEngine) == 2))
-#endif
-	theError = InfinityPlayer_LoadAnimation(mainGDHandle, theEngine, &introFile, kPlayer_DefaultTextureSet,
-		0, 0, kInterface_Width, kInterface_Height, contextFlags, 
-		textureFlags, nil, 0, 0, false);
-	else
+	//Linux port: one OpenGL engine (PORTING.md 4.3) - no Apple software engine, VRAM or 3Dfx checks;
+	//the intro plays letterboxed, as on every non-3Dfx Mac
 	theError = InfinityPlayer_LoadAnimation(mainGDHandle, theEngine, &introFile, kPlayer_DefaultTextureSet,
 		mainWinOffset.h + kMovieHOffset, mainWinOffset.v + kMovieVOffset, kMovieWidth, kMovieHeight, contextFlags, 
 		textureFlags, nil, 0, 0, false);
