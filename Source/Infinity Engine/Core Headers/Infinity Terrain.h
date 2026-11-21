@@ -146,7 +146,7 @@ enum {kFog_None = 1, kFog_Linear, kFog_Exponential, kFog_ExponentialSquared};
 //STRUCTURES:
 
 typedef struct {
-	OSType			itemID;
+	unsigned long	itemID; //Linux port: Terrain_Resolve stores a SpecialItemPtr here
 	unsigned long	flags;
 	
 	long			visibility;
@@ -161,8 +161,8 @@ typedef struct {
 	OSType			id;
 	unsigned long	flags;
 	
-	OSType			itemType,
-					modelID;
+	OSType			itemType;
+	unsigned long	modelID; //Linux port: Terrain_Resolve stores a MegaObjectPtr here
 	long			itemValue;
 	
 	long			unused;
