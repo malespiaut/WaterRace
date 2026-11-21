@@ -33,7 +33,9 @@
 #include				"PommeInit.h"
 #include				"PommeGraphics.h"
 #include				"WaterRace.h"
+#include				"Data Files.h"
 
+#include				"stb_image.h"	// implementation in port/TextureLoader.cpp
 #define					STB_IMAGE_WRITE_IMPLEMENTATION
 #include				"stb_image_write.h"
 
@@ -84,11 +86,101 @@ OSErr Boot_OpenAppResources()
 	return noErr;
 }
 
+// Loads "WaterRace Data/Interface PNG/<id>.png" (tools/convert_interface.py) as a Pomme picture:
+// a Picture followed by its ARGB32 pixels (A,R,G,B in memory), freed by DisposeHandle. Returns nil if missing.
+static PicHandle Boot_LoadInterfacePNG(SInt16 theID)
+{
+	char			path[64];
+	int				width,
+					height,
+					i;
+	unsigned char*	rgba;
+	PicHandle		thePic;
+	unsigned char*	dst;
+
+	snprintf(path, sizeof(path), kDataFolderName "/Interface PNG/%d.png", theID);
+	rgba = stbi_load(path, &width, &height, nil, 4);
+	if(rgba == nil)
+	return nil;
+
+	thePic = (PicHandle) NewHandle(sizeof(Picture) + (size_t) width * height * 4);
+	(**thePic).picSize = -1;
+	SetRect(&(**thePic).picFrame, 0, 0, width, height);
+	(**thePic).__pomme_pixelsARGB32 = (Ptr) *thePic + sizeof(Picture);
+	dst = (unsigned char*) (**thePic).__pomme_pixelsARGB32;
+	for(i = 0; i < width * height; ++i) {
+		dst[i * 4 + 0] = rgba[i * 4 + 3];
+		dst[i * 4 + 1] = rgba[i * 4 + 0];
+		dst[i * 4 + 2] = rgba[i * 4 + 1];
+		dst[i * 4 + 3] = rgba[i * 4 + 2];
+	}
+	stbi_image_free(rgba);
+
+	return thePic;
+}
+
 // shortcut: searches every open resource file, not only the current one; upgrade if a second
 // resource file is ever opened at the same time.
+// Interface PICTs come from their converted PNGs (PORTING.md sec. 5.3): Pomme can't decode all of them.
 Handle Get1Resource(ResType theType, SInt16 theID)
 {
+	PicHandle		thePic;
+
+	if(theType == 'PICT' && CurResFile() == interfaceResFileID && (thePic = Boot_LoadInterfacePNG(theID)) != nil)
+	return (Handle) thePic;
+
 	return GetResource(theType, theID);
+}
+
+// DrawPicture for Pomme pictures, scaled (nearest pixel) to dstRect and clipped to the current port.
+void Port_DrawPicture(PicHandle myPicture, const Rect* dstRect)
+{
+	GrafPtr			port;
+	PixMapHandle	pixMap;
+	UInt32*			src;
+	UInt32*			dst;
+	int				portWidth,
+					portHeight,
+					srcWidth = (**myPicture).picFrame.right - (**myPicture).picFrame.left,
+					srcHeight = (**myPicture).picFrame.bottom - (**myPicture).picFrame.top,
+					dstWidth = dstRect->right - dstRect->left,
+					dstHeight = dstRect->bottom - dstRect->top,
+					x,
+					y;
+
+	if(dstWidth <= 0 || dstHeight <= 0)
+	return;
+
+	GetPort(&port);
+	pixMap = GetGWorldPixMap((GWorldPtr) port);
+	portWidth = (**pixMap).bounds.right - (**pixMap).bounds.left;
+	portHeight = (**pixMap).bounds.bottom - (**pixMap).bounds.top;
+	src = (UInt32*) (**myPicture).__pomme_pixelsARGB32;
+	dst = (UInt32*) GetPixBaseAddr(pixMap);
+
+	for(y = SDL_max(dstRect->top, 0); y < SDL_min(dstRect->bottom, portHeight); ++y)
+	for(x = SDL_max(dstRect->left, 0); x < SDL_min(dstRect->right, portWidth); ++x)
+	dst[y * portWidth + x] = src[(y - dstRect->top) * srcHeight / dstHeight * srcWidth + (x - dstRect->left) * srcWidth / dstWidth];
+
+	DamagePortRegion(dstRect);
+}
+
+// Pomme's CopyBits damages the current port, not the destination: also damage the screen port when
+// it is the destination, so the compositor uploads what was copied to the window.
+#undef CopyBits	// Pomme's from here on
+void Port_CopyBits(const PixMap* srcBits, PixMap* dstBits, const Rect* srcRect, const Rect* dstRect, short mode, void* maskRgn)
+{
+	CGrafPtr		screen = Pomme::Graphics::GetScreenPort();
+	GrafPtr			savePort;
+
+	CopyBits(srcBits, dstBits, srcRect, dstRect, mode, maskRgn);
+	if(dstBits != GetPortBitMapForCopyBits(screen))
+	return;
+
+	GetPort(&savePort);
+	SetPort(screen);
+	DamagePortRegion(dstRect);
+	SetPort(savePort);
 }
 
 // fileName is a C string: the callers get it from GetIndString, which is GetIndStringC here.
