@@ -4,8 +4,7 @@ cmake_minimum_required(VERSION 3.16)
 project(WaterRace CXX)
 set(CMAKE_CXX_STANDARD 17)
 
-# Pomme: Mac API layer. Graphics, input, video and QD3D stay off, as in PORTING.md §5.5.
-set(POMME_NO_GRAPHICS ON CACHE BOOL "")
+# Pomme: Mac API layer. Sound mixer, video and QD3D stay off, as in PORTING.md §5.5.
 set(POMME_NO_SOUND_MIXER ON CACHE BOOL "")
 set(POMME_NO_VIDEO ON CACHE BOOL "")
 set(POMME_NO_QD3D ON CACHE BOOL "")
@@ -44,9 +43,10 @@ list(LENGTH GAME_SOURCES N_GAME)
 message(STATUS "game sources: ${N_GAME}")
 add_executable(WaterRace ${GAME_SOURCES} port/TextureLoader.cpp port/link-stubs.cpp)
 target_include_directories(WaterRace PRIVATE ${INCLUDE_DIRS} port port/stubs Pomme/src)
-target_compile_definitions(WaterRace PRIVATE POMME_NO_GRAPHICS POMME_NO_SOUND_MIXER POMME_NO_VIDEO POMME_NO_QD3D)
+target_compile_definitions(WaterRace PRIVATE POMME_NO_SOUND_MIXER POMME_NO_VIDEO POMME_NO_QD3D)
 target_compile_options(WaterRace PRIVATE -w -include MacHeadersPPC++)
-target_link_libraries(WaterRace PRIVATE Pomme)
+find_package(OpenGL REQUIRED)
+target_link_libraries(WaterRace PRIVATE Pomme OpenGL::GL)  # Pomme brings SDL3 (PUBLIC)
 
 # Headless PNG texture loader test (no Pomme, no GL): ctest --test-dir build
 enable_testing()
@@ -58,7 +58,7 @@ add_test(NAME texture-loader COMMAND test-texture-loader)
 # Headless Textures.cp test: real MetaFiles -> Texture_NewFromCompressedTexture -> TQAImage chain vs manifest.json
 add_executable(test-textures port/test-textures.cpp "${CMAKE_SOURCE_DIR}/Source/Infinity Engine/Core/Textures.cp" port/TextureLoader.cpp)
 target_include_directories(test-textures PRIVATE ${INCLUDE_DIRS} port port/stubs Pomme/src)
-target_compile_definitions(test-textures PRIVATE POMME_NO_GRAPHICS POMME_NO_SOUND_MIXER POMME_NO_VIDEO POMME_NO_QD3D "WATERRACE_ROOT=\"${CMAKE_SOURCE_DIR}\"")
+target_compile_definitions(test-textures PRIVATE POMME_NO_SOUND_MIXER POMME_NO_VIDEO POMME_NO_QD3D "WATERRACE_ROOT=\"${CMAKE_SOURCE_DIR}\"")
 target_compile_options(test-textures PRIVATE -w -include MacHeadersPPC++)
 target_link_libraries(test-textures PRIVATE Pomme)
 add_test(NAME textures COMMAND test-textures)
