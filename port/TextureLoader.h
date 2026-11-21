@@ -20,7 +20,7 @@ std::string Texture_PNGPath(const std::string& texturesDir, const std::string& m
 
 // Load a texture PNG as RGBA8 and build its mip chain, following Texture_NewFromCompressedTexture:
 // textureFlags/alphaDepth are the CompressedTexture fields, flags the kTextureFlag_* creation flags
-// (Reduce4X, Reduce16X, 3DfxMode, MipMap, ForceMipMap are honoured). levels[0] is the full image.
+// (Reduce4X, Reduce16X, 3DfxMode, MipMap, ForceMipMap are honoured). levels[0] is the full image; alphaDepth 0 forces alpha to 255.
 bool Texture_LoadPNG(const std::string& path, uint32_t textureFlags, short alphaDepth, long flags, std::vector<TextureLevel>& levels);
 
 #endif

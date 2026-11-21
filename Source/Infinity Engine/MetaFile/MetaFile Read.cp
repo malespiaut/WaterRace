@@ -24,6 +24,7 @@
 #include			"MetaFile Structures.h"
 #include			"Infinity Error Codes.h"
 #include			"Infinity Audio Engine.h"
+#include			"Textures.h"
 
 //CONSTANTES:
 
@@ -211,37 +212,31 @@ static OSErr Load_Texture(MetaFile_ReferencePtr reference, CompressedTexturePtr*
 	OSErr				theError;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
 	
-	//Allocate memory
-	*texture = (CompressedTexturePtr) NewPtr(tagEntry->dataSize);
+	unsigned char		header[kCompressedTexture_HeaderSize];
+
+	//Allocate memory - the alpha layer after the header is not loaded: the PNG holds it
+	*texture = (CompressedTexturePtr) NewPtrClear(sizeof(CompressedTexture));
 	if(*texture == nil)
 	return MemError();
-	
-	//Read texture data
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) *texture);
+
+	//Read texture header
+	bytes = sizeof(header);
+	theError = FSRead(destFileID, &bytes, (Ptr) header);
 	if(theError)
 	return theError;
-	
-	//Find texture image - we suppose it is the next tag entry
+	Texture_UnpackHeader(*texture, header);
+
+	//Find texture image - we suppose it is the next tag entry - and skip it: the converted PNG replaces the PICT
 	++tagEntry;
 	if((tagEntry->tag != kTag_IncompleteData) || (tagEntry->subTag != kSubTag_TextureImage))
 	return kError_ItemNotFound;
 	reference->currentTag += 1;
-	SetFPos(destFileID, fsFromStart, tagEntry->dataPosition);
-	
-	//Allocate memory
-	(*texture)->image = (PicHandle) NewHandle(tagEntry->dataSize);
-	if((*texture)->image == nil)
+	SetFPos(destFileID, fsFromStart, tagEntry->dataPosition + tagEntry->dataSize);
+
+	(*texture)->pngPath = Texture_NewPNGPath(reference->textureFolder, (*texture)->name);
+	if((*texture)->pngPath == nil)
 	return MemError();
-	
-	//Read image
-	bytes = tagEntry->dataSize;
-	HLock((Handle) (*texture)->image);
-	theError = FSRead(destFileID, &bytes, (Ptr) *((*texture)->image));
-	HUnlock((Handle) (*texture)->image);
-	if(theError)
-	return theError;
-	
+
 	return noErr;
 }
 
@@ -1571,6 +1566,7 @@ OSErr MetaFile_Read_OpenFile(FSSpec* destFile, MetaFile_ReferencePtr* newReferen
 	reference->fileRefNum = destFileID;
 	reference->currentDepth = 0;
 	reference->currentTag = 0;
+	Texture_GetMetaFileFolder(&realFile, reference->textureFolder, sizeof(reference->textureFolder));
 	*newReference = reference;
 	
 	//Reset to beginning of data

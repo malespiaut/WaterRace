@@ -353,7 +353,7 @@ typedef struct {
 	unsigned short	width,
 					height,
 					depth; //for information only - depth of the source image
-	PicHandle		image;
+	char*			pngPath; //Linux port: converted PNG (PORTING.md 5.3) in place of the PICT image handle
 	unsigned long	uncompressedSize; //approximated required VRAM
 	
 	short			alphaDepth;

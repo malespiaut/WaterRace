@@ -21,324 +21,105 @@
 
 #include			<Rave.h>
 
+#include			<cstring>
+#include			<vector>
+
+#include			"PommeFiles.h"
 #include			"Infinity Structures.h"
 #include			"Infinity Error Codes.h"
 #include			"Textures.h"
-
-//CONSTANTES PREPROCESSEURS:
-
-#define	__USE_BUFFERS__	1
+#include			"TextureLoader.h"
 
 //CONSTANTES:
 
-#define				kTextureFile_Type		'PICT'
-#define				kTextureFile_Creator	'ttxt'
-
-#define				kPICTFileOffset			512
+#define				kDataFolder				"WaterRace Data"
+#define				kTexturesFolder			kDataFolder "/Textures"
+#define				kPictPNGFolder			kDataFolder "/Interface PNG"
 #define				kMaxTQAImages			16
-#define				kMaskLimit				127
-
-//LOCAL VARIABLES:
-
-#if __USE_BUFFERS__
-static GWorldPtr			_buffer32 = nil,
-							_buffer16 = nil;
-static Boolean				_bufferInited = false;
-#endif
 
 //ROUTINES:
 
-//We assume we won't use textures bigger than 1024x1024 and won't mipmap textures bigger than 512x512
-OSErr Texture_InitBuffers()
+//Linux port: textures come from the PNGs written by tools/convert_textures.py (PORTING.md 5.3), not from the PICT blob
+
+//The CompressedTexture header on disk: 28 big-endian bytes (name, flags, width, height, depth, PICT handle, size, alphaDepth)
+void Texture_UnpackHeader(CompressedTexturePtr texturePtr, const unsigned char* header)
 {
-#if __USE_BUFFERS__
-	CGrafPtr				savePort = NULL;
-	GDHandle				saveDevice = NULL;
-	OSErr					theError;
-	Rect					worldRect = {0,0,kMaxTextureSizeV,kMaxTextureSizeH};
+	auto					be16 = [header](int p) { return (UInt16) ((header[p] << 8) | header[p + 1]); };
+	auto					be32 = [header](int p) { return ((UInt32) header[p] << 24) | (header[p + 1] << 16) | (header[p + 2] << 8) | header[p + 3]; };
+
+	texturePtr->name = be32(0);
+	texturePtr->flags = be32(4);
+	texturePtr->width = be16(8);
+	texturePtr->height = be16(10);
+	texturePtr->depth = be16(12);
+	texturePtr->pngPath = nil;
+	texturePtr->uncompressedSize = be32(20);
+	texturePtr->alphaDepth = (SInt16) be16(24);
+}
+
+//Folder of a MetaFile relative to the data folder (e.g. "Locations/Venice"), as used under kTexturesFolder; "" if not found
+void Texture_GetMetaFileFolder(const FSSpec* metaFile, char* folder, long size)
+{
+	fs::path			dataFolder = fs::current_path() / kDataFolder;
+	std::error_code		err;
 	
-	GetGWorld(&savePort, &saveDevice);
-	
-	//Create 32 Bits GWorld
-	theError = NewGWorld(&_buffer32, 32, &worldRect, NULL, NULL, NULL);
-	if(theError)
-	return theError;
-	LockPixels(GetGWorldPixMap(_buffer32));
-	SetGWorld(_buffer32, NULL);
-	BackColor(whiteColor);
-	ForeColor(blackColor);
-	SetGWorld(savePort, saveDevice);
-	
-	//Create 16 Bits GWorld
-	theError = NewGWorld(&_buffer16, 16, &worldRect, NULL, NULL, NULL);
-	if(theError) {
-		Texture_DisposeBuffers();
-		return theError;
+	folder[0] = 0;
+	for(fs::recursive_directory_iterator it(dataFolder, err), end; it != end; it.increment(err)) {
+		fs::path			path = (it->path() / metaFile->cName).lexically_normal();
+		
+		if(!it->is_directory() || !fs::is_regular_file(path))
+		continue;
+		//Pomme gives the same parID to every file of a host directory
+		//shortcut: assumes the game's FSSpec came from Pomme's FSMakeFSSpec path handling; revisit when PBGetCatInfo stops being a stub
+		if(Pomme::Files::HostPathToFSSpec(path).parID == metaFile->parID) {
+			snprintf(folder, size, "%s", path.lexically_relative(dataFolder).generic_string().c_str());
+			return;
+		}
 	}
-	LockPixels(GetGWorldPixMap(_buffer16));
-	SetGWorld(_buffer16, NULL);
-	BackColor(whiteColor);
-	ForeColor(blackColor);
-	SetGWorld(savePort, saveDevice);
+}
+
+char* Texture_NewPNGPath(const char* metaFileFolder, OSType name)
+{
+	std::string			path = Texture_PNGPath(kTexturesFolder, metaFileFolder, name);
+	char*				pngPath = NewPtr(path.size() + 1);
 	
-	_bufferInited = true;
-#endif
+	if(pngPath != nil)
+	strcpy(pngPath, path.c_str());
+	
+	return pngPath;
+}
+
+//Load a PNG and its mip chain into TQAImages pointing into levels
+static OSErr Texture_LoadImages(const char* path, unsigned long textureFlags, short alphaDepth, long flags, std::vector<TextureLevel>& levels, TQAImage image[kMaxTQAImages])
+{
+	if(!Texture_LoadPNG(path, textureFlags, alphaDepth, flags, levels) || (levels.size() > kMaxTQAImages))
+	return kError_FatalError;
+	
+	for(long i = 0; i < levels.size(); ++i) {
+		image[i].width = levels[i].width;
+		image[i].height = levels[i].height;
+		image[i].rowBytes = levels[i].width * 4;
+		image[i].pixmap = (Ptr) levels[i].pixels.data();
+	}
 	
 	return noErr;
 }
 
-void Texture_DisposeBuffers()
-{
-#if __USE_BUFFERS__
-	if(_buffer32 != nil) {
-		UnlockPixels(GetGWorldPixMap(_buffer32));
-		DisposeGWorld(_buffer32);
-		_buffer32 = nil;
-	}
-	if(_buffer16 != nil) {
-		UnlockPixels(GetGWorldPixMap(_buffer16));
-		DisposeGWorld(_buffer16);
-		_buffer16 = nil;
-	}
-	_bufferInited = false;
-#endif
-}
-
-OSErr Texture_Decompress(CompressedTexturePtr texturePtr, PixMapHandle destPixMap, Rect* destRect)
-{
-	Ptr						destBaseAddress;
-	long					destRowBytes,
-							hStep,
-							vStep,
-							i,
-							j,
-							width,
-							height;
-	unsigned char			*pixel8;
-	unsigned short			*pixel16;
-	
-	if((texturePtr == nil) || (texturePtr->image == nil))
-	return kError_FatalError;
-	if(((**destPixMap).pixelSize != 16) && ((**destPixMap).pixelSize != 32))
-	return kError_FatalError;
-	
-	//Draw texture image
-	if(((**destPixMap).pixelSize == 16) && (texturePtr->depth > 16)) {
-		if(texturePtr->flags & kFlag_Dithering)
-		DrawPicture(texturePtr->image, destRect);
-		else {
-#if __USE_BUFFERS__
-			CGrafPtr				savePort = NULL;
-			GDHandle				saveDevice = NULL;
-			
-			GetGWorld(&savePort, &saveDevice);
-			SetGWorld(_buffer32, NULL);
-			DrawPicture(texturePtr->image, destRect);
-			CopyBits(GWBitMapPtr(_buffer32), *destPixMap, destRect, destRect, srcCopy, nil);
-			SetGWorld(savePort, saveDevice);
-#else
-			GWorldPtr				pictWorld = NULL;
-			PixMapHandle			pictPix = NULL;
-			CGrafPtr				savePort = NULL;
-			GDHandle				saveDevice = NULL;
-			OSErr					theError;
-			
-			GetGWorld(&savePort, &saveDevice);
-			theError = NewGWorld(&pictWorld, 32, destRect, NULL, NULL, NULL);
-			if(theError)
-			return theError;
-			pictPix = GetGWorldPixMap(pictWorld);
-			LockPixels(pictPix);
-			SetGWorld(pictWorld, NULL);
-			BackColor(whiteColor);
-			ForeColor(blackColor);
-			DrawPicture(texturePtr->image, destRect);
-			CopyBits(GWBitMapPtr(pictWorld), *destPixMap, destRect, destRect, srcCopy, nil);
-			SetGWorld(savePort, saveDevice);
-			DisposeGWorld(pictWorld);
-#endif
-		}
-	}
-	else
-	DrawPicture(texturePtr->image, destRect);
-	
-	//Decompress alpha if necessary
-	if(texturePtr->alphaDepth != kAlpha_None) {
-		width = destRect->right - destRect->left;
-		height = destRect->bottom - destRect->top;
-		hStep = texturePtr->width / width;
-		vStep = texturePtr->height / height;
-		
-		destRowBytes = (**destPixMap).rowBytes & 0x3FFF;
-		
-		if(texturePtr->alphaDepth == kAlpha_1Bit) {
-			destBaseAddress = GetPixBaseAddr(destPixMap) + destRect->top * destRowBytes + destRect->left * 2;
-		
-			for(i = 0; i < height; ++i) {
-				pixel16 = (unsigned short*) destBaseAddress;
-				for(j = 0; j < width; ++j) {
-					if(texturePtr->alphaLayerData[i * vStep * texturePtr->width + j * hStep] > kMaskLimit)
-					*pixel16 |= 32768;
-					++pixel16;
-				}
-				destBaseAddress += destRowBytes;
-			}
-		}
-		else if(texturePtr->alphaDepth == kAlpha_8Bits) {
-			destBaseAddress = GetPixBaseAddr(destPixMap) + destRect->top * destRowBytes + destRect->left * 4;
-		
-			for(i = 0; i < height; ++i) {
-				pixel8 = (unsigned char*) destBaseAddress;
-				for(j = 0; j < width; ++j) {
-					*pixel8 = texturePtr->alphaLayerData[i * vStep * texturePtr->width + j * hStep];
-					pixel8 += 4;
-				}
-				destBaseAddress += destRowBytes;
-			}
-		}
-	}
-
-	return QDError();
-}
-
 OSErr Texture_NewFromCompressedTexture(TQAEngine* engine, TQATexture** RAVETexture, CompressedTexturePtr texturePtr, long flags)
 {
-	Rect					pictRect;
-	GWorldPtr				pictWorld = NULL;
-	PixMapHandle			pictPix = NULL;
-	CGrafPtr				savePort = NULL;
-	GDHandle				saveDevice = NULL;
-#if !__USE_BUFFERS__
-	OSErr					theError;
-	Rect					worldRect;
-#endif
+	std::vector<TextureLevel>	levels;
 	TQAImage				image[kMaxTQAImages];
 	unsigned long			raveFlags;
 	TQAError				theQAErr = kQANoErr;
-	Boolean					mipmap = false;
 	
-	if((texturePtr == nil) || (texturePtr->image == nil))
+	if((texturePtr == nil) || (texturePtr->pngPath == nil))
 	return kError_FatalError;
 	if((texturePtr->width > kMaxTextureSizeH) || (texturePtr->height > kMaxTextureSizeV))
 	return kError_FatalError;
 	
-	//Set up worldRect
-	pictRect.left = 0;
-	pictRect.top = 0;
-	pictRect.right = texturePtr->width;
-	pictRect.bottom = texturePtr->height;
-		
-	//Reduce picture if required
-	if((flags & kTextureFlag_Reduce16X) && (texturePtr->width > kMinTextureReduce) && (texturePtr->height > kMinTextureReduce)) {
-		pictRect.right /= 4;
-		pictRect.bottom /= 4;
-	}
-	else if((flags & kTextureFlag_Reduce4X) && (texturePtr->width > kMinTextureReduce) && (texturePtr->height > kMinTextureReduce)) {
-		pictRect.right /= 2;
-		pictRect.bottom /= 2;
-	}
-	
-	//3Dfx can't load textures bigger than 256x256
-	if((flags & kTextureFlag_3DfxMode) && ((pictRect.right > kMax3DfxTextureSizeH) || (pictRect.bottom > kMax3DfxTextureSizeV))) {
-		long		hRatio = pictRect.right / kMax3DfxTextureSizeH,
-					vRatio = pictRect.bottom / kMax3DfxTextureSizeV;
-		
-		pictRect.left = 0;
-		pictRect.top = 0;
-		if(hRatio > vRatio) {
-			pictRect.right = kMax3DfxTextureSizeH;
-			pictRect.bottom = pictRect.bottom / hRatio;
-		}
-		else {
-			pictRect.right = pictRect.right / vRatio;
-			pictRect.bottom = kMax3DfxTextureSizeV;
-		}
-	}
-	
-	//Do we have to mipmap the texture?
-	if(((flags & kTextureFlag_MipMap) && (texturePtr->flags & kFlag_MipMap)) || (flags & kTextureFlag_ForceMipMap))
-	mipmap = true;
-	if((pictRect.right > kMaxMipmapSizeH) || (pictRect.bottom > kMaxMipmapSizeV))
-	mipmap = false;
-	
-#if __USE_BUFFERS__
-	GetGWorld(&savePort, &saveDevice);
-	if(texturePtr->alphaDepth == kAlpha_8Bits)
-	pictWorld = _buffer32;
-	else
-	pictWorld = _buffer16;
-	
-	SetGWorld(pictWorld, NULL);
-	pictPix = GetGWorldPixMap(pictWorld);
-#else
-	//Create GWorld and decompress texture into it
-	GetGWorld(&savePort, &saveDevice);
-	worldRect = pictRect;
-	if(mipmap)
-	worldRect.right *= 2;
-	if(texturePtr->alphaDepth == kAlpha_8Bits)
-	theError = NewGWorld(&pictWorld, 32, &worldRect, NULL, NULL, NULL);
-	else
-	theError = NewGWorld(&pictWorld, 16, &worldRect, NULL, NULL, NULL); //Textures are always loaded in VRAM in 16Bits!
-	if(theError)
-	return theError;
-	pictPix = GetGWorldPixMap(pictWorld);
-	
-	LockPixels(pictPix);
-	SetGWorld(pictWorld, NULL);
-	BackColor(whiteColor);
-	ForeColor(blackColor);
-#endif
-	
-	Texture_Decompress(texturePtr, pictPix, &pictRect);
-	
-	//Create Rave texture - Setup TQAImage
-	image[0].width = pictRect.right;
-	image[0].height = pictRect.bottom;
-	image[0].rowBytes = (**pictPix).rowBytes & 0x3FFF;
-	image[0].pixmap = GetPixBaseAddr(pictPix);
-	if(mipmap) {
-		long		index = 1;
-		short		width = pictRect.right / 2,
-					height = pictRect.bottom / 2,
-					hPos = pictRect.right;
-		Boolean		go = true;
-		Rect		newPictRect;
-		
-		while(go) {
-			newPictRect.left = hPos;
-			newPictRect.top = 0;
-			newPictRect.right = hPos + width;
-			newPictRect.bottom = height;
-			if(texturePtr->alphaDepth == kAlpha_None)
-			CopyBits(GWBitMapPtr(pictWorld), GWBitMapPtr(pictWorld), &pictRect, &newPictRect, srcCopy, nil);
-			else
-			Texture_Decompress(texturePtr, pictPix, &newPictRect);
-			
-			image[index].width = width;
-			image[index].height = height;
-			image[index].rowBytes = (**pictPix).rowBytes & 0x3FFF;
-			if(texturePtr->alphaDepth == kAlpha_8Bits)
-			image[index].pixmap = GetPixBaseAddr(pictPix) + newPictRect.left * 4;
-			else
-			image[index].pixmap = GetPixBaseAddr(pictPix) + newPictRect.left * 2;
-			
-			hPos += width;
-			width /= 2;
-			height /= 2;
-			
-			if((width == 0) && (height == 0))
-			go = false;
-			else {
-				if(height == 0)
-				height = 1;
-				if(width == 0)
-				width = 1;
-			}
-			++index;
-		}
-	}
-	SetGWorld(savePort, saveDevice);
+	//Load picture, reduce it and build its mipmaps (Reduce4X, Reduce16X, 3DfxMode, MipMap, ForceMipMap)
+	if(Texture_LoadImages(texturePtr->pngPath, texturePtr->flags, texturePtr->alphaDepth, flags, levels, image))
+	return kError_FatalError;
 	
 	//Setup Rave flags
 	raveFlags = kQATexture_None;
@@ -346,19 +127,13 @@ OSErr Texture_NewFromCompressedTexture(TQAEngine* engine, TQATexture** RAVETextu
 	raveFlags |= kQATexture_HighCompression;
 	else if(!(flags & kTextureFlag_LowQuality))
 	raveFlags |= kQATexture_NoCompression;
-	if(mipmap)
+	if(levels.size() > 1)
 	raveFlags |= kQATexture_Mipmap;
 	if(flags & kTextureFlag_ForceAGP) //ATI only
 	raveFlags |= 3 << 28;
 	
-	//Create Rave texture
-	switch(texturePtr->alphaDepth) {
-		
-		case kAlpha_None: theQAErr = QATextureNew(engine, raveFlags, kQAPixel_RGB16, image, RAVETexture); break;
-		case kAlpha_1Bit: theQAErr = QATextureNew(engine, raveFlags, kQAPixel_ARGB16, image, RAVETexture); break;
-		case kAlpha_8Bits: theQAErr = QATextureNew(engine, raveFlags, kQAPixel_ARGB32, image, RAVETexture); break;
-		
-	}
+	//Create Rave texture - pixels are always RGBA8 bytes now, whatever the alpha depth (PORTING.md 4)
+	theQAErr = QATextureNew(engine, raveFlags, kQAPixel_ARGB32, image, RAVETexture);
 	
 	//Force load into VRAM
 	if(theQAErr == kQANoErr) {
@@ -370,71 +145,32 @@ OSErr Texture_NewFromCompressedTexture(TQAEngine* engine, TQATexture** RAVETextu
 		}
 	}
 	
-	//Clean up
-#if !__USE_BUFFERS__
-	DisposeGWorld(pictWorld);
-#endif
-	
 	return theQAErr;
+}
+
+//PICT resources are read from kPictPNGFolder/<pictID>.png
+static std::string Texture_PictPNGPath(short pictID)
+{
+	return std::string(kPictPNGFolder "/") + std::to_string(pictID) + ".png";
 }
 
 OSErr Texture_NewARGB32BitmapFromPictResource(TQAEngine* engine, TQABitmap** RAVEBitmap, short pictID, long flags)
 {
 	TQAError		theQAErr = kQANoErr;
-	TQAImage		image;
-	PicHandle		picture = NULL;
-	Rect			pictRect;
-#if !__USE_BUFFERS__
-	OSErr			theError;
-	GWorldPtr		pictWorld = NULL;
-#endif
-	PixMapHandle	pictPix = NULL;
-	CGrafPtr		savePort = NULL;
-	GDHandle		saveDevice = NULL;
+	std::vector<TextureLevel>	levels;
+	TQAImage		image[kMaxTQAImages];
 	
-	//Get picture
-	picture = (PicHandle) Get1Resource('PICT', pictID);
-	if(picture == nil)
-	return ResError();
-	
-#if __USE_BUFFERS__
-	GetGWorld(&savePort, &saveDevice);
-	SetGWorld(_buffer32, NULL);
-	pictPix = GetGWorldPixMap(_buffer32);
-	DrawPicture(picture, &pictRect);
-	SetGWorld(savePort, saveDevice);
-#else
-	//Create GWorld
-	pictRect = (**picture).picFrame;
-	OffsetRect(&pictRect, -pictRect.left, -pictRect.top);
-	theError = NewGWorld(&pictWorld, 32, &pictRect, NULL, NULL, NULL);
-	if(theError)
-	return theError;
-	pictPix = GetGWorldPixMap(pictWorld);
-	LockPixels(pictPix);
-	
-	//Draw picture
-	GetGWorld(&savePort, &saveDevice);
-	SetGWorld(pictWorld, NULL);
-	BackColor(whiteColor);
-	ForeColor(blackColor);
-	DrawPicture(picture, &pictRect);
-	SetGWorld(savePort, saveDevice);
-#endif
-	
-	//Setup TQAImage
-	image.width = pictRect.right;
-	image.height = pictRect.bottom;
-	image.rowBytes = (**pictPix).rowBytes & 0x3FFF;
-	image.pixmap = GetPixBaseAddr(pictPix);
+	//Get picture - bitmaps are never reduced
+	if(Texture_LoadImages(Texture_PictPNGPath(pictID).c_str(), 0, kAlpha_8Bits, 0, levels, image))
+	return resNotFound;
 	
 	//Create Rave texture
 	if(flags & kTextureFlag_Compress)
-	theQAErr = QABitmapNew(engine, kQABitmap_HighCompression, kQAPixel_ARGB32, &image, RAVEBitmap);
+	theQAErr = QABitmapNew(engine, kQABitmap_HighCompression, kQAPixel_ARGB32, image, RAVEBitmap);
 	else if(!(flags & kTextureFlag_LowQuality))
-	theQAErr = QABitmapNew(engine, kQABitmap_NoCompression, kQAPixel_ARGB32, &image, RAVEBitmap);
+	theQAErr = QABitmapNew(engine, kQABitmap_NoCompression, kQAPixel_ARGB32, image, RAVEBitmap);
 	else
-	theQAErr = QABitmapNew(engine, kQABitmap_None, kQAPixel_ARGB32, &image, RAVEBitmap);
+	theQAErr = QABitmapNew(engine, kQABitmap_None, kQAPixel_ARGB32, image, RAVEBitmap);
 	if(theQAErr == kQANoErr) {
 		theQAErr = QABitmapDetach(engine, *RAVEBitmap);
 		if(theQAErr != kQANoErr) {	
@@ -444,95 +180,19 @@ OSErr Texture_NewARGB32BitmapFromPictResource(TQAEngine* engine, TQABitmap** RAV
 		}
 	}
 	
-	//Clean up
-	ReleaseResource((Handle) picture);
-#if !__USE_BUFFERS__
-	DisposeGWorld(pictWorld);
-#endif
-	
 	return theQAErr;
 }
 
 OSErr Texture_NewARGB32TextureFromPictResource(TQAEngine* engine, TQATexture** RAVETexture, short pictID, long flags)
 {
 	TQAError		theQAErr = kQANoErr;
-	TQAImage		image;
-	PicHandle		picture = NULL;
-	Rect			pictRect;
-#if !__USE_BUFFERS__
-	OSErr			theError;
-	GWorldPtr		pictWorld = NULL;
-#endif
-	PixMapHandle	pictPix = NULL;
-	CGrafPtr		savePort = NULL;
-	GDHandle		saveDevice = NULL;
+	std::vector<TextureLevel>	levels;
+	TQAImage		image[kMaxTQAImages];
 	unsigned long	raveFlags;
 	
-	//Get picture
-	picture = (PicHandle) Get1Resource('PICT', pictID);
-	if(picture == nil)
-	return ResError();
-	
-	//Extract picture frame rect
-	pictRect = (**picture).picFrame;
-	OffsetRect(&pictRect, -pictRect.left, -pictRect.top);
-	
-	//Reduce picture if required
-	if((flags & kTextureFlag_Reduce16X) && (pictRect.right > kMinTextureReduce) && (pictRect.bottom > kMinTextureReduce)) {
-		pictRect.right /= 4;
-		pictRect.bottom /= 4;
-	}
-	else if((flags & kTextureFlag_Reduce4X) && (pictRect.right > kMinTextureReduce) && (pictRect.bottom > kMinTextureReduce)) {
-		pictRect.right /= 2;
-		pictRect.bottom /= 2;
-	}
-	
-	//3Dfx can't load textures bigger than 256x256
-	if((flags & kTextureFlag_3DfxMode) && ((pictRect.right > kMax3DfxTextureSizeH) || (pictRect.bottom > kMax3DfxTextureSizeV))) {
-		long		hRatio = pictRect.right / kMax3DfxTextureSizeH,
-					vRatio = pictRect.bottom / kMax3DfxTextureSizeV;
-		
-		pictRect.left = 0;
-		pictRect.top = 0;
-		if(hRatio > vRatio) {
-			pictRect.right = kMax3DfxTextureSizeH;
-			pictRect.bottom = pictRect.bottom / hRatio;
-		}
-		else {
-			pictRect.right = pictRect.right / vRatio;
-			pictRect.bottom = kMax3DfxTextureSizeV;
-		}
-	}
-	
-#if __USE_BUFFERS__
-	//Draw picture
-	GetGWorld(&savePort, &saveDevice);
-	SetGWorld(_buffer32, NULL);
-	pictPix = GetGWorldPixMap(_buffer32);
-	DrawPicture(picture, &pictRect);
-	SetGWorld(savePort, saveDevice);
-#else
-	//Create GWorld
-	theError = NewGWorld(&pictWorld, 32, &pictRect, NULL, NULL, NULL);
-	if(theError)
-	return theError;
-	pictPix = GetGWorldPixMap(pictWorld);
-	LockPixels(pictPix);
-	
-	//Draw picture
-	GetGWorld(&savePort, &saveDevice);
-	SetGWorld(pictWorld, NULL);
-	BackColor(whiteColor);
-	ForeColor(blackColor);
-	DrawPicture(picture, &pictRect);
-	SetGWorld(savePort, saveDevice);
-#endif
-
-	//Setup TQAImage
-	image.width = pictRect.right;
-	image.height = pictRect.bottom;
-	image.rowBytes = (**pictPix).rowBytes & 0x3FFF;
-	image.pixmap = GetPixBaseAddr(pictPix);
+	//Get picture, reduce it if required - no mipmaps
+	if(Texture_LoadImages(Texture_PictPNGPath(pictID).c_str(), 0, kAlpha_8Bits, flags & (kTextureFlag_Reduce16X | kTextureFlag_Reduce4X | kTextureFlag_3DfxMode), levels, image))
+	return resNotFound;
 	
 	//Setup Rave flags
 	raveFlags = kQATexture_None;
@@ -544,7 +204,7 @@ OSErr Texture_NewARGB32TextureFromPictResource(TQAEngine* engine, TQATexture** R
 	raveFlags |= 3 << 28;
 	
 	//Create Rave texture
-	theQAErr = QATextureNew(engine, raveFlags, kQAPixel_ARGB32, &image, RAVETexture);
+	theQAErr = QATextureNew(engine, raveFlags, kQAPixel_ARGB32, image, RAVETexture);
 	if(theQAErr == kQANoErr) {
 		theQAErr = QATextureDetach(engine, *RAVETexture); 
 		if(theQAErr != kQANoErr) {	
@@ -553,12 +213,6 @@ OSErr Texture_NewARGB32TextureFromPictResource(TQAEngine* engine, TQATexture** R
 			*RAVETexture = nil;
 		}
 	}
-	
-	//Clean up
-	ReleaseResource((Handle) picture);
-#if !__USE_BUFFERS__
-	DisposeGWorld(pictWorld);
-#endif
 	
 	return theQAErr;
 }

@@ -161,6 +161,7 @@ typedef struct {
 	short				fileRefNum;
 	long				currentDepth; //used when writing
 	long				currentTag;
+	char				textureFolder[256]; //Linux port: folder of this MetaFile's PNGs, see Texture_GetMetaFileFolder()
 	MetaFile_Table		tagTable;
 } MetaFile_Reference;
 typedef MetaFile_Reference* MetaFile_ReferencePtr;
