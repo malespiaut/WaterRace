@@ -43,19 +43,25 @@ def im_render(pict):
     return Image.open(io.BytesIO(r.stdout)).convert("RGB") if r.returncode == 0 else None
 
 
-def pomme_render(pict):
-    """Pomme's ReadPICT via tools/pomme_pict_ref.cpp ($POMME_PICT_REF): ARGB bytes, opaque here (the alpha plane is a separate cptx)."""
+def pomme_render(pict, alpha=False):
+    """Pomme's ReadPICT via tools/pomme_pict_ref.cpp ($POMME_PICT_REF): ARGB bytes, opaque unless alpha (a cptx's alpha plane is a separate PICT)."""
     exe = os.environ.get("POMME_PICT_REF")
     if not exe:
         return None
     # Pomme rejects the full-plane clip rect (-32767..32767) these PICTs carry: clip to the picture frame instead
     pict = pict.replace(b"\x00\x01\x00\x0a\x80\x01\x80\x01\x7f\xff\x7f\xff", b"\x00\x01\x00\x0a" + pict[2:10])
+    # Pomme lacks DirectBitsRgn (0x9B): drop the mask region (after baseAddr, PixMap, srcRect, dstRect, mode) -> DirectBitsRect
+    i = pict.find(b"\x00\x9b", 10)
+    if i >= 0 and i % 2 == 0:
+        r = i + 2 + 4 + 46 + 18
+        pict = pict[:i] + b"\x00\x9a" + pict[i + 2:r] + pict[r + struct.unpack(">H", pict[r:r + 2])[0]:]
     r = subprocess.run([exe], input=pict, capture_output=True)
     if r.returncode:
         return None
     hdr, _, px = r.stdout.partition(b"\n")
     w, h = map(int, hdr.split())
-    return Image.frombytes("RGBA", (w, h), px, "raw", "ARGB").convert("RGB")
+    img = Image.frombytes("RGBA", (w, h), px, "raw", "ARGB")
+    return img if alpha else img.convert("RGB")
 
 
 def checker(size):

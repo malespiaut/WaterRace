@@ -34,7 +34,7 @@
 
 #define				kDataFolder				"WaterRace Data"
 #define				kTexturesFolder			kDataFolder "/Textures"
-#define				kPictPNGFolder			kDataFolder "/Interface PNG"
+#define				kPictPNGFolder			kDataFolder "/Post FX PNG"
 #define				kMaxTQAImages			16
 
 //ROUTINES:
@@ -148,7 +148,8 @@ OSErr Texture_NewFromCompressedTexture(TQAEngine* engine, TQATexture** RAVETextu
 	return theQAErr;
 }
 
-//PICT resources are read from kPictPNGFolder/<pictID>.png
+//PICT resources of the app fork (Post FX textures, tools/convert_interface.py --argb) are read from kPictPNGFolder/<pictID>.png:
+//not "Interface PNG", whose 7000/7001 are other pictures (Champion.cp backgrounds)
 static std::string Texture_PictPNGPath(short pictID)
 {
 	return std::string(kPictPNGFolder "/") + std::to_string(pictID) + ".png";

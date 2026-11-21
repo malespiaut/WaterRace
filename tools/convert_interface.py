@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Convert every PICT in a raw resource fork (Interface.rsrc_fork menu artwork) to PNG (see PORTING.md 5.3).
 
-Usage: convert_interface.py FORK.rsrc_fork OUT_DIR [SHEET.png]
-Writes OUT_DIR/<id>.png and OUT_DIR/manifest.json ([{id, name, width, height, png}]); with SHEET.png also a
+Usage: convert_interface.py [--argb] FORK.rsrc_fork OUT_DIR [SHEET.png]
+Writes OUT_DIR/<id>.png and merges them into OUT_DIR/manifest.json ([{id, name, width, height, png}]); with SHEET.png also a
 contact sheet of original | converted, the original rendered without pict2png (ImageMagick/ffmpeg, else Pomme via
 $POMME_PICT_REF, see tools/pomme_pict_ref.cpp); cells whose mean RGB difference exceeds TOL are outlined red,
 cells no reference decoder reads are labelled grey. Failures and mismatches go to stderr, exit 1.
+--argb (Post FX textures, Texture_NewARGB32TextureFromPictResource): keep the PICT's alpha plane; each sheet image is
+shown as RGB | alpha over a checkerboard, and the reference is Pomme's RGBA decode when $POMME_PICT_REF is set.
 """
 import json
 import os
@@ -39,6 +41,9 @@ def picts(fork):
 
 
 def main(argv):
+    argb = argv[1:2] == ["--argb"]
+    if argb:
+        argv = argv[:1] + argv[2:]
     if len(argv) not in (3, 4):
         print(__doc__, file=sys.stderr)
         return 2
@@ -47,8 +52,13 @@ def main(argv):
     manifest, fails, cells, unread = [], 0, [], []
     for rid, name, d in sorted(picts(fork)):
         try:
-            # DrawPicture ignores the alpha plane of 32-bit PICTs: keep the artwork opaque
-            img = pict2png.decode(d).convert("RGB")
+            img = pict2png.decode(d)
+            if not argb:  # DrawPicture ignores the alpha plane of 32-bit PICTs: keep the artwork opaque
+                img = img.convert("RGB")
+            elif img.getchannel("A").getextrema() == (255, 255):
+                # No alpha plane (the QuickTime JPEG lens flares): the GWorld's x byte stayed 0, kQABlend_PreMultiply adds them
+                # shortcut: a 4-channel PICT with a fully opaque alpha plane would also get 0; none of the Post FX PICTs has one
+                img.putalpha(0)
         except Exception as ex:  # noqa: BLE001 - log every outlier, keep going
             fails += 1
             print(f"FAIL PICT {rid} {name!r}: {ex}", file=sys.stderr)
@@ -58,17 +68,21 @@ def main(argv):
         if len(argv) == 4:
             import texture_sheets as ts  # noqa: E402 - only for the optional sheet
             # ImageMagick rejects the full-plane clip rect these PICTs carry: clip to the picture frame instead
-            orig = ts.im_render(d.replace(b"\x00\x01\x00\x0a\x80\x01\x80\x01\x7f\xff\x7f\xff", b"\x00\x01\x00\x0a" + d[2:10])) \
+            orig = argb and ts.pomme_render(d, alpha=True) or ts.im_render(d.replace(b"\x00\x01\x00\x0a\x80\x01\x80\x01\x7f\xff\x7f\xff", b"\x00\x01\x00\x0a" + d[2:10])) \
                 or ts.pomme_render(d)
-            diff = orig is not None and (orig.size != img.size or max(ImageStat.Stat(ImageChops.difference(orig, img)).mean) > TOL)
+            ref = img if orig is None or orig.mode == img.mode else img.convert(orig.mode)  # a JPEG reference has no alpha to compare
+            diff = orig is not None and (orig.size != img.size or max(ImageStat.Stat(ImageChops.difference(orig, ref)).mean) > TOL)
             if orig is None:
                 unread.append(rid)
             if diff:
                 fails += 1
                 print(f"MISMATCH PICT {rid} {name!r}", file=sys.stderr)
             cells.append((f"{rid} {name} {img.width}x{img.height}", orig, img, diff))
-    with open(os.path.join(out, "manifest.json"), "w") as f:
-        json.dump(manifest, f, indent=1)
+    path = os.path.join(out, "manifest.json")
+    ids = {e["id"] for e in manifest}  # several forks share one folder: replace this fork's ids, keep the others
+    kept = [e for e in json.load(open(path)) if e["id"] not in ids] if os.path.exists(path) else []
+    with open(path, "w") as f:
+        json.dump(sorted(manifest + kept, key=lambda e: e["id"]), f, indent=1)
     if cells:
         cw, cols = 320, 4
         rows = (len(cells) + cols - 1) // cols
@@ -80,6 +94,14 @@ def main(argv):
                 if im is None:  # no reference decoder reads it: review the converted image by eye
                     continue
                 im = im.copy()
+                if argb:  # RGB | alpha over a checkerboard, side by side
+                    over = ts.checker(im.size)
+                    if "A" in im.getbands():
+                        over.paste(im.convert("RGB"), mask=im.getchannel("A"))
+                    pair = Image.new("RGB", (im.width * 2 + 2, im.height), (40, 40, 40))
+                    pair.paste(im.convert("RGB"))
+                    pair.paste(over, (im.width + 2, 0))
+                    im = pair
                 im.thumbnail((cw, cw * 3 // 4))
                 sheet.paste(im, (x + k * cw, y + 14))
             dr.text((x + 2, y + 1), label, fill=(255, 80, 80) if diff else (255, 255, 255) if orig else (150, 150, 150))
