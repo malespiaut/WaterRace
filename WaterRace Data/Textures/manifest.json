@@ -1,0 +1,7102 @@
+[
+ {
+  "name": "Hugg",
+  "flags": 2,
+  "width": 512,
+  "height": 512,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Characters/Bob Ska",
+  "png": "Characters/Bob Ska/Hugg.png"
+ },
+ {
+  "name": "Tewn",
+  "flags": 2,
+  "width": 512,
+  "height": 512,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Characters/Ewan Mac Gore",
+  "png": "Characters/Ewan Mac Gore/Tewn.png"
+ },
+ {
+  "name": "Arle",
+  "flags": 0,
+  "width": 512,
+  "height": 512,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Characters/Francesca Toucci",
+  "png": "Characters/Francesca Toucci/Arle.png"
+ },
+ {
+  "name": "Tbob",
+  "flags": 2,
+  "width": 512,
+  "height": 512,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Characters/MC Tiger",
+  "png": "Characters/MC Tiger/Tbob.png"
+ },
+ {
+  "name": "RsCw",
+  "flags": 2,
+  "width": 512,
+  "height": 512,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Characters/Rusty Mac Cow",
+  "png": "Characters/Rusty Mac Cow/RsCw.png"
+ },
+ {
+  "name": "sara",
+  "flags": 0,
+  "width": 512,
+  "height": 512,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Characters/Sarah Craft",
+  "png": "Characters/Sarah Craft/sara.png"
+ },
+ {
+  "name": "Tlea",
+  "flags": 2,
+  "width": 512,
+  "height": 512,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Characters/Sarah Craft",
+  "png": "Characters/Sarah Craft/Tlea.png"
+ },
+ {
+  "name": "serg",
+  "flags": 2,
+  "width": 512,
+  "height": 512,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Characters/Sergei Kouglov",
+  "png": "Characters/Sergei Kouglov/serg.png"
+ },
+ {
+  "name": "text",
+  "flags": 0,
+  "width": 512,
+  "height": 512,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Characters/Wang Lei",
+  "png": "Characters/Wang Lei/text.png"
+ },
+ {
+  "name": "sky ",
+  "flags": 2,
+  "width": 1024,
+  "height": 512,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/sky .png"
+ },
+ {
+  "name": "sea ",
+  "flags": 3,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/sea .png"
+ },
+ {
+  "name": "grnd",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/grnd.png"
+ },
+ {
+  "name": "sbl\u0000",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 0,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/sbl.png"
+ },
+ {
+  "name": "Sbo2",
+  "flags": 2,
+  "width": 256,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Sbo2.png"
+ },
+ {
+  "name": "Vqua",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Vqua.png"
+ },
+ {
+  "name": "Lgh2",
+  "flags": 2,
+  "width": 16,
+  "height": 16,
+  "depth": 32,
+  "alphaDepth": 1,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Lgh2.png"
+ },
+ {
+  "name": "Lgh1",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Lgh1.png"
+ },
+ {
+  "name": "Tpin",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tpin.png"
+ },
+ {
+  "name": "roK1",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/roK1.png"
+ },
+ {
+  "name": "Tpal",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tpal.png"
+ },
+ {
+  "name": "Stm1",
+  "flags": 2,
+  "width": 128,
+  "height": 256,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Stm1.png"
+ },
+ {
+  "name": "Stm2",
+  "flags": 2,
+  "width": 128,
+  "height": 256,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Stm2.png"
+ },
+ {
+  "name": "Stm3",
+  "flags": 2,
+  "width": 128,
+  "height": 256,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Stm3.png"
+ },
+ {
+  "name": "Stm7",
+  "flags": 2,
+  "width": 128,
+  "height": 256,
+  "depth": 32,
+  "alphaDepth": 1,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Stm7.png"
+ },
+ {
+  "name": "Bcra",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Bcra.png"
+ },
+ {
+  "name": "Tbu2",
+  "flags": 2,
+  "width": 128,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tbu2.png"
+ },
+ {
+  "name": "Tbu3",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tbu3.png"
+ },
+ {
+  "name": "Tfl2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tfl2.png"
+ },
+ {
+  "name": "Tfl4",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tfl4.png"
+ },
+ {
+  "name": "Tfl3",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tfl3.png"
+ },
+ {
+  "name": "Vn01",
+  "flags": 3,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Vn01.png"
+ },
+ {
+  "name": "Tzod",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tzod.png"
+ },
+ {
+  "name": "Tpzo",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tpzo.png"
+ },
+ {
+  "name": "Tpla",
+  "flags": 2,
+  "width": 32,
+  "height": 32,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tpla.png"
+ },
+ {
+  "name": "Tpl2",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tpl2.png"
+ },
+ {
+  "name": "Tpon",
+  "flags": 2,
+  "width": 32,
+  "height": 32,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tpon.png"
+ },
+ {
+  "name": "spir",
+  "flags": 2,
+  "width": 32,
+  "height": 32,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/spir.png"
+ },
+ {
+  "name": "Tcha",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tcha.png"
+ },
+ {
+  "name": "Tpa1",
+  "flags": 0,
+  "width": 128,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tpa1.png"
+ },
+ {
+  "name": "Tmry",
+  "flags": 0,
+  "width": 256,
+  "height": 64,
+  "depth": 1,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tmry.png"
+ },
+ {
+  "name": "boa1",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/boa1.png"
+ },
+ {
+  "name": "boa2",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/boa2.png"
+ },
+ {
+  "name": "hote",
+  "flags": 0,
+  "width": 128,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/hote.png"
+ },
+ {
+  "name": "boa4",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/boa4.png"
+ },
+ {
+  "name": "TV04",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/TV04.png"
+ },
+ {
+  "name": "Tv05",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tv05.png"
+ },
+ {
+  "name": "Tplv",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tplv.png"
+ },
+ {
+  "name": "TV06",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/TV06.png"
+ },
+ {
+  "name": "Tdol",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tdol.png"
+ },
+ {
+  "name": "Tmec",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tmec.png"
+ },
+ {
+  "name": "Bgn1",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Bgn1.png"
+ },
+ {
+  "name": "Tpar",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tpar.png"
+ },
+ {
+  "name": "cana",
+  "flags": 0,
+  "width": 256,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/cana.png"
+ },
+ {
+  "name": "pro1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/pro1.png"
+ },
+ {
+  "name": "palc",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 1,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/palc.png"
+ },
+ {
+  "name": "T2cv",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/T2cv.png"
+ },
+ {
+  "name": "Wcop",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Wcop.png"
+ },
+ {
+  "name": "Tcp2",
+  "flags": 2,
+  "width": 16,
+  "height": 128,
+  "depth": 32,
+  "alphaDepth": 1,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tcp2.png"
+ },
+ {
+  "name": "Tjok",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/Cote d'azur",
+  "png": "Core/Cote d'azur/Tjok.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Fx07.png"
+ },
+ {
+  "name": "S9gb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/S9gb.png"
+ },
+ {
+  "name": "Tlea",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Tlea.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Fx05.png"
+ },
+ {
+  "name": "S1gb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/S1gb.png"
+ },
+ {
+  "name": "Tsar",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Tsar.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Fx05_dup.png"
+ },
+ {
+  "name": "S2gb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/S2gb.png"
+ },
+ {
+  "name": "Twan",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Twan.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Fx07_dup.png"
+ },
+ {
+  "name": "S3gb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/S3gb.png"
+ },
+ {
+  "name": "Trus",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Trus.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Fx06.png"
+ },
+ {
+  "name": "S4gb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/S4gb.png"
+ },
+ {
+  "name": "Tbob",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Tbob.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Fx05_dup_dup.png"
+ },
+ {
+  "name": "S5gb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/S5gb.png"
+ },
+ {
+  "name": "Tser",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Tser.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Fx05_dup_dup_dup.png"
+ },
+ {
+  "name": "S6gb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/S6gb.png"
+ },
+ {
+  "name": "Tewa",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Tewa.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Fx06_dup.png"
+ },
+ {
+  "name": "S7gb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/S7gb.png"
+ },
+ {
+  "name": "Tmct",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Tmct.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Fx05_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "S8gb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/S8gb.png"
+ },
+ {
+  "name": "Tfra",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/G-Boat",
+  "png": "Core/G-Boat/Tfra.png"
+ },
+ {
+  "name": "Tlea",
+  "flags": 2,
+  "width": 512,
+  "height": 512,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Leah",
+  "png": "Core/Leah/Tlea.png"
+ },
+ {
+  "name": "Wrlg",
+  "flags": 2,
+  "width": 512,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Logo Intro",
+  "png": "Core/Logo Intro/Wrlg.png"
+ },
+ {
+  "name": "Flr1",
+  "flags": 0,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Core/Logo Intro",
+  "png": "Core/Logo Intro/Flr1.png"
+ },
+ {
+  "name": "Flr2",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/Logo Intro",
+  "png": "Core/Logo Intro/Flr2.png"
+ },
+ {
+  "name": "Flr3",
+  "flags": 0,
+  "width": 16,
+  "height": 16,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/Logo Intro",
+  "png": "Core/Logo Intro/Flr3.png"
+ },
+ {
+  "name": "Flr5",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/Logo Intro",
+  "png": "Core/Logo Intro/Flr5.png"
+ },
+ {
+  "name": "Flr4",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/Logo Intro",
+  "png": "Core/Logo Intro/Flr4.png"
+ },
+ {
+  "name": "sky ",
+  "flags": 2,
+  "width": 1024,
+  "height": 512,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/sky .png"
+ },
+ {
+  "name": "sea ",
+  "flags": 3,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/sea .png"
+ },
+ {
+  "name": "grnd",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 0,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/grnd.png"
+ },
+ {
+  "name": "ROCH",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/ROCH.png"
+ },
+ {
+  "name": "sbl\u0000",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 0,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/sbl.png"
+ },
+ {
+  "name": "Tbdk",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Tbdk.png"
+ },
+ {
+  "name": "Flr1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Flr1.png"
+ },
+ {
+  "name": "Tpal",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Tpal.png"
+ },
+ {
+  "name": "SM1w",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/SM1w.png"
+ },
+ {
+  "name": "Sro1",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Sro1.png"
+ },
+ {
+  "name": "Sro2",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Sro2.png"
+ },
+ {
+  "name": "Tpoj",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Tpoj.png"
+ },
+ {
+  "name": "Alg1",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Alg1.png"
+ },
+ {
+  "name": "Tpel",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Tpel.png"
+ },
+ {
+  "name": "ttm2",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/ttm2.png"
+ },
+ {
+  "name": "ttm1",
+  "flags": 2,
+  "width": 32,
+  "height": 32,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/ttm1.png"
+ },
+ {
+  "name": "M1A1",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/M1A1.png"
+ },
+ {
+  "name": "Than",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Than.png"
+ },
+ {
+  "name": "mira",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/mira.png"
+ },
+ {
+  "name": "mirb",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/mirb.png"
+ },
+ {
+  "name": "Truk",
+  "flags": 2,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Truk.png"
+ },
+ {
+  "name": "Tco2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Tco2.png"
+ },
+ {
+  "name": "Frhu",
+  "flags": 2,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Frhu.png"
+ },
+ {
+  "name": "gri1",
+  "flags": 2,
+  "width": 16,
+  "height": 16,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/gri1.png"
+ },
+ {
+  "name": "Tbu2",
+  "flags": 2,
+  "width": 128,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Tbu2.png"
+ },
+ {
+  "name": "Tfl4",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Tfl4.png"
+ },
+ {
+  "name": "Tbu3",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Tbu3.png"
+ },
+ {
+  "name": "Tfl3",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Tfl3.png"
+ },
+ {
+  "name": "Mbl2",
+  "flags": 2,
+  "width": 16,
+  "height": 16,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Mbl2.png"
+ },
+ {
+  "name": "Mble",
+  "flags": 2,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Mble.png"
+ },
+ {
+  "name": "recB",
+  "flags": 2,
+  "width": 2,
+  "height": 2,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/recB.png"
+ },
+ {
+  "name": "pous",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/pous.png"
+ },
+ {
+  "name": "Tbnk",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Tbnk.png"
+ },
+ {
+  "name": "Tzod",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Tzod.png"
+ },
+ {
+  "name": "Tpzo",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Tpzo.png"
+ },
+ {
+  "name": "mari",
+  "flags": 0,
+  "width": 64,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/mari.png"
+ },
+ {
+  "name": "japs",
+  "flags": 0,
+  "width": 64,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/japs.png"
+ },
+ {
+  "name": "mous",
+  "flags": 0,
+  "width": 64,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/mous.png"
+ },
+ {
+  "name": "TexZ",
+  "flags": 0,
+  "width": 128,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/TexZ.png"
+ },
+ {
+  "name": "pro1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/pro1.png"
+ },
+ {
+  "name": "Bcra",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Bcra.png"
+ },
+ {
+  "name": "Tco1",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/Tco1.png"
+ },
+ {
+  "name": "TDes",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Core/Practice Zone",
+  "png": "Core/Practice Zone/TDes.png"
+ },
+ {
+  "name": "sky ",
+  "flags": 0,
+  "width": 1024,
+  "height": 512,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/sky .png"
+ },
+ {
+  "name": "sea ",
+  "flags": 3,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/sea .png"
+ },
+ {
+  "name": "grnd",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/grnd.png"
+ },
+ {
+  "name": "Snow",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Snow.png"
+ },
+ {
+  "name": "Clif",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Clif.png"
+ },
+ {
+  "name": "Side",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Side.png"
+ },
+ {
+  "name": "Tbu3",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tbu3.png"
+ },
+ {
+  "name": "Tpog",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tpog.png"
+ },
+ {
+  "name": "Sro1",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Sro1.png"
+ },
+ {
+  "name": "Sro2",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Sro2.png"
+ },
+ {
+  "name": "Tbdk",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tbdk.png"
+ },
+ {
+  "name": "Tco1",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tco1.png"
+ },
+ {
+  "name": "Tfl2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tfl2.png"
+ },
+ {
+  "name": "Tfl3",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tfl3.png"
+ },
+ {
+  "name": "Tfl4",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tfl4.png"
+ },
+ {
+  "name": "Bala",
+  "flags": 2,
+  "width": 256,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Bala.png"
+ },
+ {
+  "name": "SM1w",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/SM1w.png"
+ },
+ {
+  "name": "Tha2",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tha2.png"
+ },
+ {
+  "name": "Tsmk",
+  "flags": 49152,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tsmk.png"
+ },
+ {
+  "name": "Tcss",
+  "flags": 2,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tcss.png"
+ },
+ {
+  "name": "pro1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/pro1.png"
+ },
+ {
+  "name": "Flr2",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Flr2.png"
+ },
+ {
+  "name": "ping",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/ping.png"
+ },
+ {
+  "name": "Walr",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Walr.png"
+ },
+ {
+  "name": "Tjok",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tjok.png"
+ },
+ {
+  "name": "ttm2",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/ttm2.png"
+ },
+ {
+  "name": "ttm1",
+  "flags": 2,
+  "width": 32,
+  "height": 32,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/ttm1.png"
+ },
+ {
+  "name": "Tbgl",
+  "flags": 2,
+  "width": 512,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tbgl.png"
+ },
+ {
+  "name": "Bcra",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Bcra.png"
+ },
+ {
+  "name": "Vgr2",
+  "flags": 2,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Vgr2.png"
+ },
+ {
+  "name": "TVPc",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/TVPc.png"
+ },
+ {
+  "name": "Our2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Our2.png"
+ },
+ {
+  "name": "Tigl",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tigl.png"
+ },
+ {
+  "name": "Tdog",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tdog.png"
+ },
+ {
+  "name": "pois",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/pois.png"
+ },
+ {
+  "name": "Tfx1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Tfx1.png"
+ },
+ {
+  "name": "Flr3",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Arctic",
+  "png": "Locations/Arctic/Flr3.png"
+ },
+ {
+  "name": "sky ",
+  "flags": 2,
+  "width": 1024,
+  "height": 512,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/sky .png"
+ },
+ {
+  "name": "sea ",
+  "flags": 0,
+  "width": 128,
+  "height": 128,
+  "depth": 1,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/sea .png"
+ },
+ {
+  "name": "gale",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 1,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/gale.png"
+ },
+ {
+  "name": "ROCH",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/ROCH.png"
+ },
+ {
+  "name": "SABL",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/SABL.png"
+ },
+ {
+  "name": "rock",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/rock.png"
+ },
+ {
+  "name": "beuh",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/beuh.png"
+ },
+ {
+  "name": "Cacu",
+  "flags": 2,
+  "width": 32,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Cacu.png"
+ },
+ {
+  "name": "Brmo",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Brmo.png"
+ },
+ {
+  "name": "Tvau",
+  "flags": 0,
+  "width": 64,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Tvau.png"
+ },
+ {
+  "name": "Sro2",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Sro2.png"
+ },
+ {
+  "name": "Tpos",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Tpos.png"
+ },
+ {
+  "name": "Tfl2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Tfl2.png"
+ },
+ {
+  "name": "Bcra",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Bcra.png"
+ },
+ {
+  "name": "Tfl4",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Tfl4.png"
+ },
+ {
+  "name": "Tfl3",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Tfl3.png"
+ },
+ {
+  "name": "Tbu3",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Tbu3.png"
+ },
+ {
+  "name": "Tjok",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Tjok.png"
+ },
+ {
+  "name": "Arbm",
+  "flags": 2,
+  "width": 32,
+  "height": 32,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Arbm.png"
+ },
+ {
+  "name": "Tvac",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Tvac.png"
+ },
+ {
+  "name": "Fort",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Fort.png"
+ },
+ {
+  "name": "Twin",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Twin.png"
+ },
+ {
+  "name": "Tmin",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Tmin.png"
+ },
+ {
+  "name": "Trai",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Trai.png"
+ },
+ {
+  "name": "Tdol",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Tdol.png"
+ },
+ {
+  "name": "TVPc",
+  "flags": 0,
+  "width": 64,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/TVPc.png"
+ },
+ {
+  "name": "Tsmk",
+  "flags": 49152,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Tsmk.png"
+ },
+ {
+  "name": "Tfx1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Tfx1.png"
+ },
+ {
+  "name": "Flr3",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Flr3.png"
+ },
+ {
+  "name": "tipi",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/tipi.png"
+ },
+ {
+  "name": "Tadt",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Tadt.png"
+ },
+ {
+  "name": "Tind",
+  "flags": 0,
+  "width": 64,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Tind.png"
+ },
+ {
+  "name": "Taig",
+  "flags": 0,
+  "width": 128,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Locations/Canyon",
+  "png": "Locations/Canyon/Taig.png"
+ },
+ {
+  "name": "sky ",
+  "flags": 2,
+  "width": 1024,
+  "height": 512,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/sky .png"
+ },
+ {
+  "name": "sea ",
+  "flags": 1,
+  "width": 128,
+  "height": 128,
+  "depth": 0,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/sea .png"
+ },
+ {
+  "name": "grnd",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/grnd.png"
+ },
+ {
+  "name": "sble",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 0,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/sble.png"
+ },
+ {
+  "name": "rok1",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/rok1.png"
+ },
+ {
+  "name": "rok2",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/rok2.png"
+ },
+ {
+  "name": "Hbrd",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Hbrd.png"
+ },
+ {
+  "name": "Tbud",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Tbud.png"
+ },
+ {
+  "name": "Tpal",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Tpal.png"
+ },
+ {
+  "name": "hoo1",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/hoo1.png"
+ },
+ {
+  "name": "hoo2",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 32,
+  "alphaDepth": 1,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/hoo2.png"
+ },
+ {
+  "name": "Tpoj",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Tpoj.png"
+ },
+ {
+  "name": "sap1",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/sap1.png"
+ },
+ {
+  "name": "sap5",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/sap5.png"
+ },
+ {
+  "name": "sap3",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/sap3.png"
+ },
+ {
+  "name": "sap4",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/sap4.png"
+ },
+ {
+  "name": "jonq",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/jonq.png"
+ },
+ {
+  "name": "Pago",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Pago.png"
+ },
+ {
+  "name": "Tfx1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Tfx1.png"
+ },
+ {
+  "name": "Tsmk",
+  "flags": 49152,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Tsmk.png"
+ },
+ {
+  "name": "Flr3",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 8,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Flr3.png"
+ },
+ {
+  "name": "eaut",
+  "flags": 49153,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/eaut.png"
+ },
+ {
+  "name": "flot",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/flot.png"
+ },
+ {
+  "name": "Alg1",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Alg1.png"
+ },
+ {
+  "name": "Shar",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Shar.png"
+ },
+ {
+  "name": "Tpab",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Tpab.png"
+ },
+ {
+  "name": "Tjok",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Tjok.png"
+ },
+ {
+  "name": "Htki",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Htki.png"
+ },
+ {
+  "name": "tcab",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/tcab.png"
+ },
+ {
+  "name": "pois",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/pois.png"
+ },
+ {
+  "name": "viet",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/viet.png"
+ },
+ {
+  "name": "Bcra",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Bcra.png"
+ },
+ {
+  "name": "Tbu3",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Tbu3.png"
+ },
+ {
+  "name": "Tpin",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Tpin.png"
+ },
+ {
+  "name": "THfi",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/THfi.png"
+ },
+ {
+  "name": "Hpag",
+  "flags": 2,
+  "width": 64,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Hpag.png"
+ },
+ {
+  "name": "Tfl3",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Tfl3.png"
+ },
+ {
+  "name": "Tfl4",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Tfl4.png"
+ },
+ {
+  "name": "Tfl2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Tfl2.png"
+ },
+ {
+  "name": "Hcog",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Hcog.png"
+ },
+ {
+  "name": "Tadt",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Locations/Halong",
+  "png": "Locations/Halong/Tadt.png"
+ },
+ {
+  "name": "sky ",
+  "flags": 2,
+  "width": 1024,
+  "height": 512,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/sky .png"
+ },
+ {
+  "name": "sea ",
+  "flags": 3,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/sea .png"
+ },
+ {
+  "name": "grnd",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/grnd.png"
+ },
+ {
+  "name": "sbl\u0000",
+  "flags": 2,
+  "width": 32,
+  "height": 32,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/sbl.png"
+ },
+ {
+  "name": "Roch",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Roch.png"
+ },
+ {
+  "name": "Ombr",
+  "flags": 0,
+  "width": 64,
+  "height": 128,
+  "depth": 1,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Ombr.png"
+ },
+ {
+  "name": "Liz6",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Liz6.png"
+ },
+ {
+  "name": "Tpal",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tpal.png"
+ },
+ {
+  "name": "Tbu2",
+  "flags": 2,
+  "width": 128,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tbu2.png"
+ },
+ {
+  "name": "Alg1",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Alg1.png"
+ },
+ {
+  "name": "gri1",
+  "flags": 2,
+  "width": 16,
+  "height": 16,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/gri1.png"
+ },
+ {
+  "name": "roK1",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/roK1.png"
+ },
+ {
+  "name": "Tbu3",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tbu3.png"
+ },
+ {
+  "name": "Frhu",
+  "flags": 2,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Frhu.png"
+ },
+ {
+  "name": "Tsgu",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tsgu.png"
+ },
+ {
+  "name": "Tman",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tman.png"
+ },
+ {
+  "name": "eaut",
+  "flags": 49153,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/eaut.png"
+ },
+ {
+  "name": "flot",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/flot.png"
+ },
+ {
+  "name": "Pago",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Pago.png"
+ },
+ {
+  "name": "Bcra",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Bcra.png"
+ },
+ {
+  "name": "Tpab",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tpab.png"
+ },
+ {
+  "name": "Galn",
+  "flags": 2,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Galn.png"
+ },
+ {
+  "name": "Mble",
+  "flags": 2,
+  "width": 256,
+  "height": 128,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Mble.png"
+ },
+ {
+  "name": "Mbl2",
+  "flags": 2,
+  "width": 16,
+  "height": 16,
+  "depth": 32,
+  "alphaDepth": 1,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Mbl2.png"
+ },
+ {
+  "name": "Tche",
+  "flags": 2,
+  "width": 64,
+  "height": 32,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tche.png"
+ },
+ {
+  "name": "Tpel",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tpel.png"
+ },
+ {
+  "name": "Tpir",
+  "flags": 2,
+  "width": 128,
+  "height": 32,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tpir.png"
+ },
+ {
+  "name": "Pfis",
+  "flags": 0,
+  "width": 128,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Pfis.png"
+ },
+ {
+  "name": "Pub2",
+  "flags": 0,
+  "width": 128,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Pub2.png"
+ },
+ {
+  "name": "Tpoj",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tpoj.png"
+ },
+ {
+  "name": "Paga",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Paga.png"
+ },
+ {
+  "name": "Tjok",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tjok.png"
+ },
+ {
+  "name": "Bido",
+  "flags": 2,
+  "width": 32,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Bido.png"
+ },
+ {
+  "name": "Bive",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Bive.png"
+ },
+ {
+  "name": "Pagb",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Pagb.png"
+ },
+ {
+  "name": "Pagr",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Pagr.png"
+ },
+ {
+  "name": "Tra1",
+  "flags": 0,
+  "width": 128,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tra1.png"
+ },
+ {
+  "name": "Tpou",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tpou.png"
+ },
+ {
+  "name": "Tcoq",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tcoq.png"
+ },
+ {
+  "name": "Tfl3",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tfl3.png"
+ },
+ {
+  "name": "Tfl4",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tfl4.png"
+ },
+ {
+  "name": "Tfl2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/Tfl2.png"
+ },
+ {
+  "name": "hel1",
+  "flags": 2,
+  "width": 256,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/hel1.png"
+ },
+ {
+  "name": "pro1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Jamaica",
+  "png": "Locations/Jamaica/pro1.png"
+ },
+ {
+  "name": "sky ",
+  "flags": 2,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/sky .png"
+ },
+ {
+  "name": "sea ",
+  "flags": 3,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/sea .png"
+ },
+ {
+  "name": "grnd",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/grnd.png"
+ },
+ {
+  "name": "sbl\u0000",
+  "flags": 2,
+  "width": 32,
+  "height": 32,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/sbl.png"
+ },
+ {
+  "name": "Tbu2",
+  "flags": 2,
+  "width": 128,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tbu2.png"
+ },
+ {
+  "name": "Flr1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Flr1.png"
+ },
+ {
+  "name": "Tbu3",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tbu3.png"
+ },
+ {
+  "name": "Vgru",
+  "flags": 2,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Vgru.png"
+ },
+ {
+  "name": "Truk",
+  "flags": 2,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Truk.png"
+ },
+ {
+  "name": "Lgh1",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Lgh1.png"
+ },
+ {
+  "name": "Lgh2",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Lgh2.png"
+ },
+ {
+  "name": "Th46",
+  "flags": 0,
+  "width": 256,
+  "height": 64,
+  "depth": 1,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Th46.png"
+ },
+ {
+  "name": "Thwe",
+  "flags": 2,
+  "width": 32,
+  "height": 32,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Thwe.png"
+ },
+ {
+  "name": "Lgh3",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Lgh3.png"
+ },
+ {
+  "name": "Bcas",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Bcas.png"
+ },
+ {
+  "name": "Tbdk",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tbdk.png"
+ },
+ {
+  "name": "Tco1",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tco1.png"
+ },
+ {
+  "name": "Tco2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tco2.png"
+ },
+ {
+  "name": "Tco3",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tco3.png"
+ },
+ {
+  "name": "Tfl2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tfl2.png"
+ },
+ {
+  "name": "Tfl3",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tfl3.png"
+ },
+ {
+  "name": "Tfl4",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tfl4.png"
+ },
+ {
+  "name": "Bqua",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Bqua.png"
+ },
+ {
+  "name": "dkh2",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/dkh2.png"
+ },
+ {
+  "name": "dkh3",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/dkh3.png"
+ },
+ {
+  "name": "Flr3",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Flr3.png"
+ },
+ {
+  "name": "mira",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/mira.png"
+ },
+ {
+  "name": "mirb",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/mirb.png"
+ },
+ {
+  "name": "Than",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Than.png"
+ },
+ {
+  "name": "Min1",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Min1.png"
+ },
+ {
+  "name": "Min2",
+  "flags": 0,
+  "width": 64,
+  "height": 16,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Min2.png"
+ },
+ {
+  "name": "Tbit",
+  "flags": 2,
+  "width": 32,
+  "height": 32,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tbit.png"
+ },
+ {
+  "name": "Tgun",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tgun.png"
+ },
+ {
+  "name": "SM1w",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/SM1w.png"
+ },
+ {
+  "name": "M1A1",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/M1A1.png"
+ },
+ {
+  "name": "ttm1",
+  "flags": 2,
+  "width": 32,
+  "height": 32,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/ttm1.png"
+ },
+ {
+  "name": "ttm2",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/ttm2.png"
+ },
+ {
+  "name": "Bsb1",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Bsb1.png"
+ },
+ {
+  "name": "sbgr",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/sbgr.png"
+ },
+ {
+  "name": "Bbr1",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Bbr1.png"
+ },
+ {
+  "name": "Bbr2",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Bbr2.png"
+ },
+ {
+  "name": "Tjok",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tjok.png"
+ },
+ {
+  "name": "Frhu",
+  "flags": 0,
+  "width": 256,
+  "height": 128,
+  "depth": 1,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Frhu.png"
+ },
+ {
+  "name": "gri1",
+  "flags": 2,
+  "width": 16,
+  "height": 16,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/gri1.png"
+ },
+ {
+  "name": "TDes",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/TDes.png"
+ },
+ {
+  "name": "japs",
+  "flags": 2,
+  "width": 64,
+  "height": 32,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/japs.png"
+ },
+ {
+  "name": "mari",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/mari.png"
+ },
+ {
+  "name": "Tbnk",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tbnk.png"
+ },
+ {
+  "name": "mous",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/mous.png"
+ },
+ {
+  "name": "Sro1",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Sro1.png"
+ },
+ {
+  "name": "Sro2",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Sro2.png"
+ },
+ {
+  "name": "Tzod",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tzod.png"
+ },
+ {
+  "name": "Tpzo",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Tpzo.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Fx05.png"
+ },
+ {
+  "name": "fum5",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/fum5.png"
+ },
+ {
+  "name": "Misl",
+  "flags": 0,
+  "width": 16,
+  "height": 16,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Naval Base",
+  "png": "Locations/Naval Base/Misl.png"
+ },
+ {
+  "name": "sky ",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/sky .png"
+ },
+ {
+  "name": "sea ",
+  "flags": 3,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/sea .png"
+ },
+ {
+  "name": "grnd",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/grnd.png"
+ },
+ {
+  "name": "grne",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/grne.png"
+ },
+ {
+  "name": "bou2",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/bou2.png"
+ },
+ {
+  "name": "Tun1",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tun1.png"
+ },
+ {
+  "name": "Flr4",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Flr4.png"
+ },
+ {
+  "name": "Tun2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tun2.png"
+ },
+ {
+  "name": "Tun3",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tun3.png"
+ },
+ {
+  "name": "Tgte",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tgte.png"
+ },
+ {
+  "name": "blan",
+  "flags": 2,
+  "width": 2,
+  "height": 2,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/blan.png"
+ },
+ {
+  "name": "Td\u00e9r",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Td\u00e9r.png"
+ },
+ {
+  "name": "Tun4",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tun4.png"
+ },
+ {
+  "name": "room",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/room.png"
+ },
+ {
+  "name": "Tbt1",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tbt1.png"
+ },
+ {
+  "name": "Tbt2",
+  "flags": 2,
+  "width": 256,
+  "height": 32,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tbt2.png"
+ },
+ {
+  "name": "Tnyo",
+  "flags": 2,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tnyo.png"
+ },
+ {
+  "name": "Tmur",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tmur.png"
+ },
+ {
+  "name": "spak",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Locations/New York",
+  "png": "Locations/New York/spak.png"
+ },
+ {
+  "name": "Trat",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Trat.png"
+ },
+ {
+  "name": "Trab",
+  "flags": 2,
+  "width": 32,
+  "height": 32,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Trab.png"
+ },
+ {
+  "name": "Flr3",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Flr3.png"
+ },
+ {
+  "name": "Pess",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Pess.png"
+ },
+ {
+  "name": "Barr",
+  "flags": 2,
+  "width": 32,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Barr.png"
+ },
+ {
+  "name": "Tnyh",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tnyh.png"
+ },
+ {
+  "name": "Tsta",
+  "flags": 2,
+  "width": 32,
+  "height": 32,
+  "depth": 32,
+  "alphaDepth": 1,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tsta.png"
+ },
+ {
+  "name": "Lave",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Lave.png"
+ },
+ {
+  "name": "Tcox",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tcox.png"
+ },
+ {
+  "name": "Roue",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Roue.png"
+ },
+ {
+  "name": "Bive",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Bive.png"
+ },
+ {
+  "name": "twor",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/twor.png"
+ },
+ {
+  "name": "Ttag",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Ttag.png"
+ },
+ {
+  "name": "Tmtr",
+  "flags": 2,
+  "width": 256,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tmtr.png"
+ },
+ {
+  "name": "Tfl2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tfl2.png"
+ },
+ {
+  "name": "Tfl4",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tfl4.png"
+ },
+ {
+  "name": "Tjok",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tjok.png"
+ },
+ {
+  "name": "Tbu3",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tbu3.png"
+ },
+ {
+  "name": "Flr1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Flr1.png"
+ },
+ {
+  "name": "Pote",
+  "flags": 2,
+  "width": 256,
+  "height": 32,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Pote.png"
+ },
+ {
+  "name": "Tnyd",
+  "flags": 0,
+  "width": 64,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tnyd.png"
+ },
+ {
+  "name": "Bqua",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Bqua.png"
+ },
+ {
+  "name": "Tbui",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tbui.png"
+ },
+ {
+  "name": "Bcas",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Bcas.png"
+ },
+ {
+  "name": "mous",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/mous.png"
+ },
+ {
+  "name": "TVPc",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/TVPc.png"
+ },
+ {
+  "name": "TVPo",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/TVPo.png"
+ },
+ {
+  "name": "Tind",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tind.png"
+ },
+ {
+  "name": "wgay",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/wgay.png"
+ },
+ {
+  "name": "Tfx1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tfx1.png"
+ },
+ {
+  "name": "Tsmk",
+  "flags": 49152,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Tsmk.png"
+ },
+ {
+  "name": "Yclo",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Yclo.png"
+ },
+ {
+  "name": "boue",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/boue.png"
+ },
+ {
+  "name": "hel2",
+  "flags": 2,
+  "width": 256,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/hel2.png"
+ },
+ {
+  "name": "pro1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/New York",
+  "png": "Locations/New York/pro1.png"
+ },
+ {
+  "name": "Croc",
+  "flags": 2,
+  "width": 256,
+  "height": 32,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/New York",
+  "png": "Locations/New York/Croc.png"
+ },
+ {
+  "name": "sky ",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/sky .png"
+ },
+ {
+  "name": "sea ",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/sea .png"
+ },
+ {
+  "name": "grnd",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/grnd.png"
+ },
+ {
+  "name": "Scot",
+  "flags": 2,
+  "width": 64,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Scot.png"
+ },
+ {
+  "name": "Smur",
+  "flags": 0,
+  "width": 64,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Smur.png"
+ },
+ {
+  "name": "Serb",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Serb.png"
+ },
+ {
+  "name": "Sbo2",
+  "flags": 2,
+  "width": 256,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Sbo2.png"
+ },
+ {
+  "name": "Sbo1",
+  "flags": 2,
+  "width": 256,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Sbo1.png"
+ },
+ {
+  "name": "Sbar",
+  "flags": 0,
+  "width": 128,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Sbar.png"
+ },
+ {
+  "name": "Sfar",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Sfar.png"
+ },
+ {
+  "name": "Sme1",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Sme1.png"
+ },
+ {
+  "name": "Sme2",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Sme2.png"
+ },
+ {
+  "name": "Wwbk",
+  "flags": 2,
+  "width": 32,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Wwbk.png"
+ },
+ {
+  "name": "Wwle",
+  "flags": 2,
+  "width": 128,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Wwle.png"
+ },
+ {
+  "name": "Sro2",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Sro2.png"
+ },
+ {
+  "name": "Sro1",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Sro1.png"
+ },
+ {
+  "name": "Tfl2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Tfl2.png"
+ },
+ {
+  "name": "Tfl3",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Tfl3.png"
+ },
+ {
+  "name": "Tfl4",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Tfl4.png"
+ },
+ {
+  "name": "Sshe",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Sshe.png"
+ },
+ {
+  "name": "Tpon",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Tpon.png"
+ },
+ {
+  "name": "Srun",
+  "flags": 2,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Srun.png"
+ },
+ {
+  "name": "nes0",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/nes0.png"
+ },
+ {
+  "name": "Flr1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 8,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Flr1.png"
+ },
+ {
+  "name": "Tfa2",
+  "flags": 2,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Tfa2.png"
+ },
+ {
+  "name": "Tbu3",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Tbu3.png"
+ },
+ {
+  "name": "Tbu2",
+  "flags": 2,
+  "width": 128,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Tbu2.png"
+ },
+ {
+  "name": "Tsmk",
+  "flags": 49152,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Tsmk.png"
+ },
+ {
+  "name": "Tfx1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Tfx1.png"
+ },
+ {
+  "name": "Scas",
+  "flags": 2,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Scas.png"
+ },
+ {
+  "name": "Tgaz",
+  "flags": 1,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Tgaz.png"
+ },
+ {
+  "name": "Flr3",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 8,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Flr3.png"
+ },
+ {
+  "name": "Tjok",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Tjok.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Fx06.png"
+ },
+ {
+  "name": "Tmon",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Tmon.png"
+ },
+ {
+  "name": "Tswa",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Tswa.png"
+ },
+ {
+  "name": "Tsco",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Scotland",
+  "png": "Locations/Scotland/Tsco.png"
+ },
+ {
+  "name": "sky ",
+  "flags": 2,
+  "width": 1024,
+  "height": 512,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/sky .png"
+ },
+ {
+  "name": "sea ",
+  "flags": 3,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/sea .png"
+ },
+ {
+  "name": "grnd",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/grnd.png"
+ },
+ {
+  "name": "grn2",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/grn2.png"
+ },
+ {
+  "name": "Vm07",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vm07.png"
+ },
+ {
+  "name": "Vm11",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vm11.png"
+ },
+ {
+  "name": "Vm13",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vm13.png"
+ },
+ {
+  "name": "Vm02",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vm02.png"
+ },
+ {
+  "name": "Vm03",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vm03.png"
+ },
+ {
+  "name": "Vm12",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vm12.png"
+ },
+ {
+  "name": "Vp03",
+  "flags": 3,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vp03.png"
+ },
+ {
+  "name": "Vm04",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vm04.png"
+ },
+ {
+  "name": "Vm10",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vm10.png"
+ },
+ {
+  "name": "Vm05",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vm05.png"
+ },
+ {
+  "name": "Vm06",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vm06.png"
+ },
+ {
+  "name": "Vgm1",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vgm1.png"
+ },
+ {
+  "name": "Vpl1",
+  "flags": 3,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vpl1.png"
+ },
+ {
+  "name": "Vm09",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vm09.png"
+ },
+ {
+  "name": "Vgri",
+  "flags": 2,
+  "width": 64,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vgri.png"
+ },
+ {
+  "name": "Vto1",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vto1.png"
+ },
+ {
+  "name": "Vto3",
+  "flags": 3,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vto3.png"
+ },
+ {
+  "name": "Vpo2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vpo2.png"
+ },
+ {
+  "name": "Vn01",
+  "flags": 3,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vn01.png"
+ },
+ {
+  "name": "Vgm2",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vgm2.png"
+ },
+ {
+  "name": "Vpo1",
+  "flags": 2,
+  "width": 256,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vpo1.png"
+ },
+ {
+  "name": "Vgm3",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vgm3.png"
+ },
+ {
+  "name": "Vpi1",
+  "flags": 0,
+  "width": 16,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vpi1.png"
+ },
+ {
+  "name": "Vpi2",
+  "flags": 0,
+  "width": 16,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vpi2.png"
+ },
+ {
+  "name": "Vcan",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vcan.png"
+ },
+ {
+  "name": "GonT",
+  "flags": 2,
+  "width": 256,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/GonT.png"
+ },
+ {
+  "name": "Tbu2",
+  "flags": 2,
+  "width": 128,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tbu2.png"
+ },
+ {
+  "name": "Vm14",
+  "flags": 3,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vm14.png"
+ },
+ {
+  "name": "Vqua",
+  "flags": 3,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vqua.png"
+ },
+ {
+  "name": "Tpal",
+  "flags": 2,
+  "width": 128,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tpal.png"
+ },
+ {
+  "name": "Vbal",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vbal.png"
+ },
+ {
+  "name": "Tbu3",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tbu3.png"
+ },
+ {
+  "name": "Vhg1",
+  "flags": 2,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vhg1.png"
+ },
+ {
+  "name": "Veg1",
+  "flags": 3,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Veg1.png"
+ },
+ {
+  "name": "Veg2",
+  "flags": 2,
+  "width": 32,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Veg2.png"
+ },
+ {
+  "name": "Tfl2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tfl2.png"
+ },
+ {
+  "name": "Tfl3",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tfl3.png"
+ },
+ {
+  "name": "Tfl4",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tfl4.png"
+ },
+ {
+  "name": "Tco1",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tco1.png"
+ },
+ {
+  "name": "Tco2",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tco2.png"
+ },
+ {
+  "name": "Tco3",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tco3.png"
+ },
+ {
+  "name": "Tfo3",
+  "flags": 2,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tfo3.png"
+ },
+ {
+  "name": "Tfo4",
+  "flags": 2,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tfo4.png"
+ },
+ {
+  "name": "Vgru",
+  "flags": 2,
+  "width": 256,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Vgru.png"
+ },
+ {
+  "name": "Tjok",
+  "flags": 0,
+  "width": 32,
+  "height": 32,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tjok.png"
+ },
+ {
+  "name": "Wwbk",
+  "flags": 2,
+  "width": 32,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Wwbk.png"
+ },
+ {
+  "name": "Wwle",
+  "flags": 2,
+  "width": 128,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Wwle.png"
+ },
+ {
+  "name": "twor",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/twor.png"
+ },
+ {
+  "name": "mous",
+  "flags": 2,
+  "width": 64,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/mous.png"
+ },
+ {
+  "name": "THfi",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/THfi.png"
+ },
+ {
+  "name": "Alg1",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Alg1.png"
+ },
+ {
+  "name": "Tzod",
+  "flags": 2,
+  "width": 128,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tzod.png"
+ },
+ {
+  "name": "Tpzo",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tpzo.png"
+ },
+ {
+  "name": "Mbl2",
+  "flags": 2,
+  "width": 16,
+  "height": 16,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Mbl2.png"
+ },
+ {
+  "name": "Mble",
+  "flags": 2,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Mble.png"
+ },
+ {
+  "name": "Frhu",
+  "flags": 2,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Frhu.png"
+ },
+ {
+  "name": "gri1",
+  "flags": 2,
+  "width": 16,
+  "height": 16,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/gri1.png"
+ },
+ {
+  "name": "Tva2",
+  "flags": 2,
+  "width": 256,
+  "height": 128,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tva2.png"
+ },
+ {
+  "name": "Tsgu",
+  "flags": 2,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Locations/Venice",
+  "png": "Locations/Venice/Tsgu.png"
+ },
+ {
+  "name": "Tab7",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Tab7.png"
+ },
+ {
+  "name": "pro1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/pro1.png"
+ },
+ {
+  "name": "Tmct",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Tmct.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Fx05.png"
+ },
+ {
+  "name": "Tab8",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Tab8.png"
+ },
+ {
+  "name": "pro1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/pro1_dup.png"
+ },
+ {
+  "name": "Tfra",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Tfra.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Fx05_dup.png"
+ },
+ {
+  "name": "Tab1",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Tab1.png"
+ },
+ {
+  "name": "pro1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/pro1_dup_dup.png"
+ },
+ {
+  "name": "Twan",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Twan.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Fx05_dup_dup.png"
+ },
+ {
+  "name": "Tab2",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Tab2.png"
+ },
+ {
+  "name": "pro1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/pro1_dup_dup_dup.png"
+ },
+ {
+  "name": "Tbob",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Tbob.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Fx07.png"
+ },
+ {
+  "name": "Tab3",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Tab3.png"
+ },
+ {
+  "name": "pro1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/pro1_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "Tser",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Tser.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Fx06.png"
+ },
+ {
+  "name": "Tab4",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Tab4.png"
+ },
+ {
+  "name": "pro1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/pro1_dup_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "Trus",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Trus.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Fx05_dup_dup_dup.png"
+ },
+ {
+  "name": "Tab5",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Tab5.png"
+ },
+ {
+  "name": "pro1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/pro1_dup_dup_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "Tsar",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Tsar.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Fx05_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "Tab6",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 32,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Tab6.png"
+ },
+ {
+  "name": "pro1",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 24,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/pro1_dup_dup_dup_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "Tewa",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Tewa.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Air Boat",
+  "png": "Ships/Air Boat/Fx07_dup.png"
+ },
+ {
+  "name": "S3cb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/S3cb.png"
+ },
+ {
+  "name": "Trus",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Trus.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Fx05.png"
+ },
+ {
+  "name": "S4cb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/S4cb.png"
+ },
+ {
+  "name": "Tbob",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Tbob.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Fx06.png"
+ },
+ {
+  "name": "S5cb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/S5cb.png"
+ },
+ {
+  "name": "Tser",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Tser.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Fx06_dup.png"
+ },
+ {
+  "name": "S6cb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/S6cb.png"
+ },
+ {
+  "name": "Tewa",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Tewa.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Fx05_dup.png"
+ },
+ {
+  "name": "S7cb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/S7cb.png"
+ },
+ {
+  "name": "Tmct",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Tmct.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Fx07.png"
+ },
+ {
+  "name": "S8cb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/S8cb.png"
+ },
+ {
+  "name": "Tfra",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Tfra.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Fx05_dup_dup.png"
+ },
+ {
+  "name": "S1cb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/S1cb.png"
+ },
+ {
+  "name": "Twan",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Twan.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Fx05_dup_dup_dup.png"
+ },
+ {
+  "name": "S2cb",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/S2cb.png"
+ },
+ {
+  "name": "Tsar",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Tsar.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Cow Boat",
+  "png": "Ships/Cow Boat/Fx07_dup.png"
+ },
+ {
+  "name": "Y2hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Y2hu.png"
+ },
+ {
+  "name": "Tsar",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Tsar.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Fx05.png"
+ },
+ {
+  "name": "Y3hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Y3hu.png"
+ },
+ {
+  "name": "Tfra",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Tfra.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Fx05_dup.png"
+ },
+ {
+  "name": "Y4hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Y4hu.png"
+ },
+ {
+  "name": "Twan",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Twan.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Fx05_dup_dup.png"
+ },
+ {
+  "name": "Y5hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Y5hu.png"
+ },
+ {
+  "name": "Tmct",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Tmct.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Fx05_dup_dup_dup.png"
+ },
+ {
+  "name": "Y6hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Y6hu.png"
+ },
+ {
+  "name": "Tewa",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Tewa.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Fx07.png"
+ },
+ {
+  "name": "Y7hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Y7hu.png"
+ },
+ {
+  "name": "Trus",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Trus.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Fx05_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "Y8hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Y8hu.png"
+ },
+ {
+  "name": "Tser",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Tser.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Fx05_dup_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "Y1hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Y1hu.png"
+ },
+ {
+  "name": "Tbob",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Tbob.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Drag Boat",
+  "png": "Ships/Drag Boat/Fx06.png"
+ },
+ {
+  "name": "F1hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/F1hu.png"
+ },
+ {
+  "name": "Tfra",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Tfra.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Fx05.png"
+ },
+ {
+  "name": "F3hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/F3hu.png"
+ },
+ {
+  "name": "Twan",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Twan.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Fx05_dup.png"
+ },
+ {
+  "name": "F4hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/F4hu.png"
+ },
+ {
+  "name": "Tsar",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Tsar.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Fx06.png"
+ },
+ {
+  "name": "F2hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/F2hu.png"
+ },
+ {
+  "name": "Trus",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Trus.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Fx05_dup_dup.png"
+ },
+ {
+  "name": "F5hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/F5hu.png"
+ },
+ {
+  "name": "Tmct",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Tmct.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Fx05_dup_dup_dup.png"
+ },
+ {
+  "name": "F6hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/F6hu.png"
+ },
+ {
+  "name": "Tbob",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Tbob.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Fx07.png"
+ },
+ {
+  "name": "F7hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/F7hu.png"
+ },
+ {
+  "name": "TSer",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/TSer.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Fx05_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "F8hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/F8hu.png"
+ },
+ {
+  "name": "Tewa",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Tewa.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Formula 1",
+  "png": "Ships/Formula 1/Fx05_dup_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Fx06.png"
+ },
+ {
+  "name": "S5ho",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/S5ho.png"
+ },
+ {
+  "name": "Tser",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Tser.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Fx06_dup.png"
+ },
+ {
+  "name": "S6ho",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/S6ho.png"
+ },
+ {
+  "name": "Tewa",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Tewa.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Fx07.png"
+ },
+ {
+  "name": "S7ho",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/S7ho.png"
+ },
+ {
+  "name": "Tmct",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Tmct.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Fx05.png"
+ },
+ {
+  "name": "S8ho",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/S8ho.png"
+ },
+ {
+  "name": "Tfra",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Tfra.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Fx05_dup.png"
+ },
+ {
+  "name": "S1ho",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/S1ho.png"
+ },
+ {
+  "name": "Tsar",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Tsar.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Fx07_dup.png"
+ },
+ {
+  "name": "S2ho",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/S2ho.png"
+ },
+ {
+  "name": "Twan",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Twan.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Fx05_dup_dup.png"
+ },
+ {
+  "name": "S3ho",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/S3ho.png"
+ },
+ {
+  "name": "Trus",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Trus.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Fx07_dup_dup.png"
+ },
+ {
+  "name": "S4ho",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 1,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/S4ho.png"
+ },
+ {
+  "name": "Tbob",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/HoverCraft",
+  "png": "Ships/HoverCraft/Tbob.png"
+ },
+ {
+  "name": "Twag",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Twag.png"
+ },
+ {
+  "name": "Twan",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Twan.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Fx05.png"
+ },
+ {
+  "name": "Tsgv",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Tsgv.png"
+ },
+ {
+  "name": "Tser",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Tser.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Fx06.png"
+ },
+ {
+  "name": "Trct",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Trct.png"
+ },
+ {
+  "name": "Tsar",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Tsar.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Fx05_dup.png"
+ },
+ {
+  "name": "Tfto",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Tfto.png"
+ },
+ {
+  "name": "Tfra",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Tfra.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Fx06_dup.png"
+ },
+ {
+  "name": "Tscw",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Tscw.png"
+ },
+ {
+  "name": "Trus",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Trus.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Fx05_dup_dup.png"
+ },
+ {
+  "name": "Tbsk",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Tbsk.png"
+ },
+ {
+  "name": "Tbob",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Tbob.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Fx05_dup_dup_dup.png"
+ },
+ {
+  "name": "Twgr",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Twgr.png"
+ },
+ {
+  "name": "Tewa",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Tewa.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Fx06_dup_dup.png"
+ },
+ {
+  "name": "Tctg",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Tctg.png"
+ },
+ {
+  "name": "Tmct",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Tmct.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Hydroplane",
+  "png": "Ships/Hydroplane/Fx05_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "S7of",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/S7of.png"
+ },
+ {
+  "name": "Tewa",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Tewa.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Fx05.png"
+ },
+ {
+  "name": "S8of",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/S8of.png"
+ },
+ {
+  "name": "Tmct",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Tmct.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Fx07.png"
+ },
+ {
+  "name": "S1of",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/S1of.png"
+ },
+ {
+  "name": "Twan",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Twan.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Fx07_dup.png"
+ },
+ {
+  "name": "S2of",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/S2of.png"
+ },
+ {
+  "name": "Tsar",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Tsar.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Fx07_dup_dup.png"
+ },
+ {
+  "name": "S3of",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/S3of.png"
+ },
+ {
+  "name": "Tbob",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Tbob.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Fx05_dup.png"
+ },
+ {
+  "name": "S4of",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/S4of.png"
+ },
+ {
+  "name": "Tfra",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Tfra.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Fx05_dup_dup.png"
+ },
+ {
+  "name": "S5of",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/S5of.png"
+ },
+ {
+  "name": "Trus",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Trus.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Fx06.png"
+ },
+ {
+  "name": "S6of",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/S6of.png"
+ },
+ {
+  "name": "Tser",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Tser.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Offshore Racer",
+  "png": "Ships/Offshore Racer/Fx06_dup.png"
+ },
+ {
+  "name": "S1hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/S1hu.png"
+ },
+ {
+  "name": "Smot",
+  "flags": 0,
+  "width": 128,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Smot.png"
+ },
+ {
+  "name": "Tbob",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Tbob.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Fx05.png"
+ },
+ {
+  "name": "S2hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/S2hu.png"
+ },
+ {
+  "name": "Smot",
+  "flags": 0,
+  "width": 128,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Smot_dup.png"
+ },
+ {
+  "name": "Tsar",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Tsar.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Fx07.png"
+ },
+ {
+  "name": "S3hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/S3hu.png"
+ },
+ {
+  "name": "Smot",
+  "flags": 0,
+  "width": 128,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Smot_dup_dup.png"
+ },
+ {
+  "name": "Tfra",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Tfra.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Fx05_dup.png"
+ },
+ {
+  "name": "S4hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/S4hu.png"
+ },
+ {
+  "name": "Smot",
+  "flags": 0,
+  "width": 128,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Smot_dup_dup_dup.png"
+ },
+ {
+  "name": "Twan",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Twan.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Fx05_dup_dup.png"
+ },
+ {
+  "name": "S5hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/S5hu.png"
+ },
+ {
+  "name": "Smot",
+  "flags": 0,
+  "width": 128,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Smot_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "Tmct",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Tmct.png"
+ },
+ {
+  "name": "Fx07",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Fx07_dup.png"
+ },
+ {
+  "name": "S6hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/S6hu.png"
+ },
+ {
+  "name": "Smot",
+  "flags": 0,
+  "width": 128,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Smot_dup_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "Tewa",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Tewa.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Fx05_dup_dup_dup.png"
+ },
+ {
+  "name": "S7hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/S7hu.png"
+ },
+ {
+  "name": "Smot",
+  "flags": 128,
+  "width": 128,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Smot_dup_dup_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "Trus",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Trus.png"
+ },
+ {
+  "name": "Fx05",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Fx05_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "S8hu",
+  "flags": 2,
+  "width": 512,
+  "height": 256,
+  "depth": 24,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/S8hu.png"
+ },
+ {
+  "name": "Smot",
+  "flags": 0,
+  "width": 128,
+  "height": 128,
+  "depth": 16,
+  "alphaDepth": 1,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Smot_dup_dup_dup_dup_dup_dup_dup.png"
+ },
+ {
+  "name": "Tser",
+  "flags": 0,
+  "width": 32,
+  "height": 64,
+  "depth": 16,
+  "alphaDepth": 0,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Tser.png"
+ },
+ {
+  "name": "Fx06",
+  "flags": 0,
+  "width": 64,
+  "height": 64,
+  "depth": 32,
+  "alphaDepth": 8,
+  "source": "Ships/Speed Boat",
+  "png": "Ships/Speed Boat/Fx06.png"
+ }
+]
