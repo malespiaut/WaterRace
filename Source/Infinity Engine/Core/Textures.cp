@@ -148,7 +148,7 @@ OSErr Texture_NewFromCompressedTexture(TQAEngine* engine, TQATexture** RAVETextu
 	return theQAErr;
 }
 
-//PICT resources of the app fork (Post FX textures, tools/convert_interface.py --argb) are read from kPictPNGFolder/<pictID>.png:
+//PICT resources of the app fork (Post FX textures, World.cp turbo/joker/wake, tools/convert_interface.py --argb) are read from kPictPNGFolder/<pictID>.png:
 //not "Interface PNG", whose 7000/7001 are other pictures (Champion.cp backgrounds)
 static std::string Texture_PictPNGPath(short pictID)
 {

@@ -1,7 +1,7 @@
 // Headless test for Textures.cp: loads every cptx texture of the real MetaFiles through Texture_UnpackHeader,
 // Texture_GetMetaFileFolder and Texture_NewFromCompressedTexture, records the TQAImage chain handed to
 // QATextureNew and checks its sizes and mip counts against "WaterRace Data/Textures/manifest.json"; then loads the
-// Post FX PICT textures through Texture_NewARGB32TextureFromPictResource.
+// app-fork PICT textures (Post FX, World.cp turbo/joker/wake) through Texture_NewARGB32TextureFromPictResource.
 // Usage: test-textures [GAME_ROOT]   (GAME_ROOT holds "WaterRace Data/")
 
 #include <Rave.h>
@@ -187,8 +187,8 @@ int main(int argc, char** argv)
 	}
 	CHECK(next == manifest.size());
 
-	//Post FX PICT textures: lens flares (QuickTime JPEG, no alpha plane: alpha 0, drawn additively), then ARGB PICTs with alpha
-	const short			pictIDs[] = {7000, 7001, 7002, 7003, 7100, 7200, 7300, 7400, 7410};
+	//app-fork PICT textures: wake and lens flares (no alpha plane: alpha 0, drawn additively), then ARGB PICTs with alpha
+	const short			pictIDs[] = {250, 7000, 7001, 7002, 7003, 200, 201, 7100, 7200, 7300, 7400, 7410};
 	for(short id : pictIDs) {
 		TQATexture*			raveTexture = nil;
 		int					minAlpha = 255,
@@ -203,7 +203,7 @@ int main(int argc, char** argv)
 			minAlpha = std::min(minAlpha, (int) gPixels[0][i]);
 			maxAlpha = std::max(maxAlpha, (int) gPixels[0][i]);
 		}
-		if(id < 7100)
+		if(id == 250 || (id >= 7000 && id < 7100))
 		CHECK(maxAlpha == 0);
 		else
 		CHECK(minAlpha == 0 && maxAlpha > 200);

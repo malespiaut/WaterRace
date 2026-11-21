@@ -6,7 +6,7 @@ Writes OUT_DIR/<id>.png and merges them into OUT_DIR/manifest.json ([{id, name, 
 contact sheet of original | converted, the original rendered without pict2png (ImageMagick/ffmpeg, else Pomme via
 $POMME_PICT_REF, see tools/pomme_pict_ref.cpp); cells whose mean RGB difference exceeds TOL are outlined red,
 cells no reference decoder reads are labelled grey. Failures and mismatches go to stderr, exit 1.
---argb (Post FX textures, Texture_NewARGB32TextureFromPictResource): keep the PICT's alpha plane; each sheet image is
+--argb (app-fork textures: Post FX, World.cp turbo/joker/wake, Texture_NewARGB32TextureFromPictResource): keep the PICT's alpha plane; each sheet image is
 shown as RGB | alpha over a checkerboard, and the reference is Pomme's RGBA decode when $POMME_PICT_REF is set.
 """
 import json
@@ -56,8 +56,9 @@ def main(argv):
             if not argb:  # DrawPicture ignores the alpha plane of 32-bit PICTs: keep the artwork opaque
                 img = img.convert("RGB")
             elif img.getchannel("A").getextrema() == (255, 255):
-                # No alpha plane (the QuickTime JPEG lens flares): the GWorld's x byte stayed 0, kQABlend_PreMultiply adds them
-                # shortcut: a 4-channel PICT with a fully opaque alpha plane would also get 0; none of the Post FX PICTs has one
+                # No alpha plane (the QuickTime JPEG lens flares, the 3-component wake 250): the GWorld's x byte stayed 0,
+                # kQABlend_PreMultiply (LensFlare.cp, Drawing.cp wake) adds them
+                # shortcut: a 4-channel PICT with a fully opaque alpha plane would also get 0; none of the app-fork PICTs has one
                 img.putalpha(0)
         except Exception as ex:  # noqa: BLE001 - log every outlier, keep going
             fails += 1
