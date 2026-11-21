@@ -85,6 +85,14 @@ target_compile_options(test-metafile PRIVATE -w -include MacHeadersPPC++)
 target_link_libraries(test-metafile PRIVATE Pomme)
 add_test(NAME metafile COMMAND test-metafile)
 
+# Practice Zone load test (#45): Terrain, TerrainMesh, SeaMesh, View and the texture lists read from the big-endian layout
+add_executable(test-terrain port/test-terrain.cpp "${CMAKE_SOURCE_DIR}/Source/Infinity Engine/Core/Textures.cp" port/TextureLoader.cpp)
+target_include_directories(test-terrain PRIVATE ${INCLUDE_DIRS} port port/stubs Pomme/src)
+target_compile_definitions(test-terrain PRIVATE POMME_NO_SOUND_MIXER POMME_NO_VIDEO POMME_NO_QD3D "WATERRACE_ROOT=\"${CMAKE_SOURCE_DIR}\"")
+target_compile_options(test-terrain PRIVATE -w -include MacHeadersPPC++)
+target_link_libraries(test-terrain PRIVATE Pomme)
+add_test(NAME terrain COMMAND test-terrain)
+
 # Logo Intro load test (#43): InfinityPlayer_LoadAnimation with the default texture set, on GL. Every game file but Boot.cp, which the test includes.
 set(PLAYER_TEST_SOURCES ${GAME_SOURCES})
 list(FILTER PLAYER_TEST_SOURCES EXCLUDE REGEX "/WaterRace final/Boot\\.cp$")

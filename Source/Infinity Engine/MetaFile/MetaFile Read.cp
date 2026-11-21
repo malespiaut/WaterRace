@@ -52,6 +52,19 @@
 #define				kParticle_DiskSize			80
 #define				kShapeDataLens_DiskSize		28
 #define				kShapeDataParticle_DiskSize	104
+#define				kView_DiskSize				120
+#define				kTerrain_DiskSize			5636
+#define				kTerrainMesh_DiskSize		12792
+#define				kSeaMesh_DiskSize			12796
+#define				kModelReference_DiskSize	96
+#define				kLightning_DiskSize			24
+#define				kModelAnimation_HeaderDiskSize	96
+#define				kKeyFrame_DiskSize			32
+#define				kRaceTrack_HeaderDiskSize	316
+#define				kCheckPoint_DiskSize		68
+#define				kItemReference_DiskSize		28
+#define				kEnclosure_HeaderDiskSize	44
+#define				kCollisionWall_DiskSize		92
 
 //ROUTINES:
 
@@ -88,6 +101,99 @@ static void UnpackObjectBE(ObjectPtr object, const unsigned char* data)
 	object->id = UnpackU32BE(data + 1032);
 }
 
+//Linux port: reads the next tag entry, which must be a subtag of the given size, into a new buffer
+static OSErr Read_NextSubTag(MetaFile_ReferencePtr reference, OSType subTag, long dataSize, Ptr* data)
+{
+	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag + 1];
+	long				bytes = dataSize;
+	
+	if((reference->currentTag + 1 >= reference->tagTable.tagCount) || (tagEntry->tag != kTag_IncompleteData) || (tagEntry->subTag != subTag))
+	return kError_ItemNotFound;
+	if(tagEntry->dataSize != dataSize)
+	return kError_FatalError;
+	reference->currentTag += 1;
+	SetFPos(reference->fileRefNum, fsFromStart, tagEntry->dataPosition);
+	
+	*data = NewPtr(dataSize);
+	if(*data == nil)
+	return MemError();
+	
+	return FSRead(reference->fileRefNum, &bytes, *data);
+}
+
+//Linux port: reads the point, lightning and triangle subtags of a terrain or sea mesh (24-byte vertices and lightnings, 12-byte triangles on disk)
+static OSErr Read_MeshLists(MetaFile_ReferencePtr reference, long pointCount, long triangleCount, VertexPtr* pointList, LightningPtr* lightningList, TriFacePtr* triangleList)
+{
+	OSErr				theError;
+	Ptr					diskTriangles;
+	long				i;
+	
+	if((pointCount < 0) || (triangleCount < 0))
+	return kError_FatalError;
+	
+	theError = Read_NextSubTag(reference, kSubTag_PointList, pointCount * kVertex_DiskSize, (Ptr*) pointList);
+	if(theError)
+	return theError;
+	UnpackIntsBE(4, pointCount * 6, *pointList);
+	
+	theError = Read_NextSubTag(reference, kSubTag_LightningList, pointCount * kLightning_DiskSize, (Ptr*) lightningList);
+	if(theError)
+	return theError;
+	UnpackIntsBE(4, pointCount * 6, *lightningList);
+	
+	//TriFace holds unsigned longs, 8 bytes on LP64
+	theError = Read_NextSubTag(reference, kSubTag_TriangleList, triangleCount * kTriFace_DiskSize, &diskTriangles);
+	if(theError)
+	return theError;
+	*triangleList = (TriFacePtr) NewPtr(triangleCount * sizeof(TriFace));
+	if(*triangleList == nil)
+	return MemError();
+	for(i = 0; i < triangleCount * 3; ++i)
+	(*triangleList)[i / 3].corner[i % 3] = UnpackU32BE((unsigned char*) diskTriangles + 4 * i);
+	DisposePtr(diskTriangles);
+	
+	return noErr;
+}
+
+//Linux port: unpacks the fields shared by the big-endian TerrainMesh and SeaMesh (name to diffuse); pointers stay nil
+template <class Mesh> static void UnpackMeshBE(Mesh* mesh, const unsigned char* data)
+{
+	BlockMove(data + 0, mesh->name, sizeof(Str31));
+	mesh->id = UnpackU32BE(data + 32);
+	mesh->flags = UnpackU32BE(data + 36);
+	UnpackFloatsBE(&mesh->pos.x.x, data + 40, 12);
+	UnpackFloatsBE(&mesh->rotateX, data + 88, 6); //rotateX, rotateY, rotateZ, scaleX, scaleY, scaleZ
+	mesh->pointCount = UnpackI32BE(data + 112);
+	mesh->triangleCount = UnpackI32BE(data + 124);
+	UnpackFloatsBE(&mesh->boundingBox[0].x, data + 132, kBBSize * 3);
+	mesh->clipping = UnpackI32BE(data + 228);
+	mesh->texture = UnpackU32BE(data + 232);
+	mesh->diffuse = UnpackFloatBE(data + 236);
+	BlockMove(data + 248, mesh->unusedArray, sizeof(mesh->unusedArray));
+}
+
+//Linux port: unpacks big-endian ModelReferences (96 bytes each on disk)
+static OSErr UnpackModelReferencesBE(ModelReferencePtr list, unsigned long* count, const unsigned char* data)
+{
+	*count = UnpackU32BE(data);
+	if(*count > kMaxReferences_Mesh)
+	return kError_FatalError;
+	for(unsigned long i = 0; i < *count; ++i) {
+		const unsigned char*	ref = data + 4 + i * kModelReference_DiskSize;
+	
+		list[i].id = UnpackU32BE(ref + 0);
+		list[i].flags = UnpackU32BE(ref + 4);
+		list[i].visibility = UnpackI32BE(ref + 8);
+		UnpackFloatsBE(&list[i].pos.x.x, ref + 12, 12);
+		UnpackFloatsBE(&list[i].rotateX, ref + 60, 5); //rotateX, rotateY, rotateZ, scale, inertia
+		for(long j = 0; j < 4; ++j)
+		list[i].unused[j] = UnpackI32BE(ref + 80 + 4 * j);
+	}
+	
+	return noErr;
+}
+
+//Linux port: fake tags (tgeo, ttxl, mtxl...) have no data, at position -1; seeking there would fail Pomme's stream for every later read
 static OSErr SetPos_IndexTag(MetaFile_ReferencePtr reference, OSType tag, long index, long fromTag, long minDepth)
 {
 	long				num = 0,
@@ -102,7 +208,7 @@ static OSErr SetPos_IndexTag(MetaFile_ReferencePtr reference, OSType tag, long i
 			++num;
 			if(num == index) {
 				reference->currentTag = i;
-				SetFPos(reference->fileRefNum, fsFromStart, entry->dataPosition);
+				if(entry->dataPosition != kMetaFile_NoData) SetFPos(reference->fileRefNum, fsFromStart, entry->dataPosition);
 				return noErr;
 			}
 		}
@@ -122,7 +228,7 @@ static OSErr SetPos_IDTag(MetaFile_ReferencePtr reference, OSType tag, OSType ID
 		return kError_ItemNotFound;
 		if((entry->tag == tag) && (entry->ID == ID)) {
 			reference->currentTag = i;
-			SetFPos(reference->fileRefNum, fsFromStart, entry->dataPosition);
+			if(entry->dataPosition != kMetaFile_NoData) SetFPos(reference->fileRefNum, fsFromStart, entry->dataPosition);
 			return noErr;
 		}
 	}
@@ -144,7 +250,7 @@ static OSErr SetPos_IndexSubTag(MetaFile_ReferencePtr reference, OSType tag, OST
 			++num;
 			if(num == index) {
 				reference->currentTag = i;
-				SetFPos(reference->fileRefNum, fsFromStart, entry->dataPosition);
+				if(entry->dataPosition != kMetaFile_NoData) SetFPos(reference->fileRefNum, fsFromStart, entry->dataPosition);
 				return noErr;
 			}
 		}
@@ -165,7 +271,7 @@ static OSErr SetPos_IDSubTag(MetaFile_ReferencePtr reference, OSType tag, OSType
 		return kError_ItemNotFound;
 		if((entry->tag == tag) && (entry->subTag == subTag) && (entry->ID == id)) {
 			reference->currentTag = i;
-			SetFPos(reference->fileRefNum, fsFromStart, entry->dataPosition);
+			if(entry->dataPosition != kMetaFile_NoData) SetFPos(reference->fileRefNum, fsFromStart, entry->dataPosition);
 			return noErr;
 		}
 	}
@@ -474,18 +580,31 @@ static OSErr Load_View(MetaFile_ReferencePtr reference, ViewPtr* view)
 	long				bytes;
 	OSErr				theError;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
-	
-	//Allocate memory
-	*view = (ViewPtr) NewPtr(sizeof(View));
+	unsigned char		data[kView_DiskSize];
+
+	//Check size
+	if(tagEntry->dataSize != kView_DiskSize)
+	return kError_FatalError;
+
+	//Allocate memory - the window, state and refCon pointers stored on disk stay nil
+	*view = (ViewPtr) NewPtrClear(sizeof(View));
 	if(*view == nil)
 	return MemError();
-	
-	//Read camera position data
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) *view);
+
+	//Read camera position data - Linux port: copy the fields of the 32-bit big-endian View (PORTING.md 5.2)
+	bytes = kView_DiskSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
 	if(theError)
 	return theError;
-	
+	BlockMove(data + 0, (*view)->name, sizeof(Str31));
+	(*view)->flags = UnpackU32BE(data + 32);
+	(*view)->width = UnpackI16BE(data + 36);
+	(*view)->height = UnpackI16BE(data + 38);
+	(*view)->posH = UnpackI16BE(data + 40);
+	(*view)->posV = UnpackI16BE(data + 42);
+	UnpackFloatsBE(&(*view)->camera.x.x, data + 44, 12);
+	UnpackFloatsBE(&(*view)->roll, data + 92, 4); //roll, pitch, yaw, zoom
+
 	return noErr;
 }
 
@@ -1034,89 +1153,37 @@ static OSErr Load_TerrainMesh(MetaFile_ReferencePtr reference, TerrainMeshPtr* m
 	long				bytes;
 	OSErr				theError;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
+	unsigned char		data[kTerrainMesh_DiskSize];
 	
-	//Allocate memory
-	*mesh = (TerrainMeshPtr) NewPtr(sizeof(TerrainMesh));
+	//Check size
+	if(tagEntry->dataSize != kTerrainMesh_DiskSize)
+	return kError_FatalError;
+	
+	//Allocate memory - pointers stored on disk stay nil
+	*mesh = (TerrainMeshPtr) NewPtrClear(sizeof(TerrainMesh));
 	if(*mesh == nil)
 	return MemError();
 	
-	//Read mesh data
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) *mesh);
+	//Read mesh data - Linux port: copy the fields of the 32-bit big-endian TerrainMesh (PORTING.md 5.2)
+	bytes = kTerrainMesh_DiskSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
+	if(theError)
+	return theError;
+	UnpackMeshBE(*mesh, data);
+	theError = UnpackModelReferencesBE((*mesh)->referenceList, &(*mesh)->referenceCount, data + 500);
 	if(theError)
 	return theError;
 	
-	//Find point list - we suppose it is the next tag entry
-	++tagEntry;
-	if((tagEntry->tag != kTag_IncompleteData) || (tagEntry->subTag != kSubTag_PointList))
-	return kError_ItemNotFound;
-	reference->currentTag += 1;
-	SetFPos(destFileID, fsFromStart, tagEntry->dataPosition);
-	
-	//Allocate memory
-	(*mesh)->pointList = (VertexPtr) NewPtr(tagEntry->dataSize);
-	if((*mesh)->pointList == nil)
-	return MemError();
-	
-	//Read points
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) (*mesh)->pointList);
+	//Read point, lightning and triangle lists - we suppose they are the next tag entries
+	theError = Read_MeshLists(reference, (*mesh)->pointCount, (*mesh)->triangleCount, &(*mesh)->pointList, &(*mesh)->lightningList, &(*mesh)->triangleList);
 	if(theError)
 	return theError;
 	
-	//Find lightning list - we suppose it is the next tag entry
-	++tagEntry;
-	if((tagEntry->tag != kTag_IncompleteData) || (tagEntry->subTag != kSubTag_LightningList))
-	return kError_ItemNotFound;
-	reference->currentTag += 1;
-	SetFPos(destFileID, fsFromStart, tagEntry->dataPosition);
-	
-	//Allocate memory
-	(*mesh)->lightningList = (LightningPtr) NewPtr(tagEntry->dataSize);
-	if((*mesh)->lightningList == nil)
-	return MemError();
-	
-	//Read lightning
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) (*mesh)->lightningList);
+	//Read normal list (one per point) - we suppose it is the next tag entry
+	theError = Read_NextSubTag(reference, kSubTag_NormalList, (*mesh)->pointCount * kVector_DiskSize, (Ptr*) &(*mesh)->normalList);
 	if(theError)
 	return theError;
-	
-	//Find triangle list - we suppose it is the next tag entry
-	++tagEntry;
-	if((tagEntry->tag != kTag_IncompleteData) || (tagEntry->subTag != kSubTag_TriangleList))
-	return kError_ItemNotFound;
-	reference->currentTag += 1;
-	SetFPos(destFileID, fsFromStart, tagEntry->dataPosition);
-	
-	//Allocate memory
-	(*mesh)->triangleList = (TriFacePtr) NewPtr(tagEntry->dataSize);
-	if((*mesh)->triangleList == nil)
-	return MemError();
-	
-	//Read triangles
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) (*mesh)->triangleList);
-	if(theError)
-	return theError;
-	
-	//Find normal list - we suppose it is the next tag entry
-	++tagEntry;
-	if((tagEntry->tag != kTag_IncompleteData) || (tagEntry->subTag != kSubTag_NormalList))
-	return kError_ItemNotFound;
-	reference->currentTag += 1;
-	SetFPos(destFileID, fsFromStart, tagEntry->dataPosition);
-	
-	//Allocate memory
-	(*mesh)->normalList = (VectorPtr) NewPtr(tagEntry->dataSize);
-	if((*mesh)->normalList == nil)
-	return MemError();
-
-	//Read normals
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) (*mesh)->normalList);
-	if(theError)
-	return theError;
+	UnpackIntsBE(4, (*mesh)->pointCount * 3, (*mesh)->normalList);
 	
 	return noErr;
 }
@@ -1127,73 +1194,31 @@ static OSErr Load_SeaMesh(MetaFile_ReferencePtr reference, SeaMeshPtr* mesh)
 	long				bytes;
 	OSErr				theError;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
+	unsigned char		data[kSeaMesh_DiskSize];
 	
-	//Allocate memory
-	*mesh = (SeaMeshPtr) NewPtr(sizeof(SeaMesh));
+	//Check size
+	if(tagEntry->dataSize != kSeaMesh_DiskSize)
+	return kError_FatalError;
+	
+	//Allocate memory - pointers stored on disk stay nil
+	*mesh = (SeaMeshPtr) NewPtrClear(sizeof(SeaMesh));
 	if(*mesh == nil)
 	return MemError();
 	
-	//Read mesh data
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) *mesh);
+	//Read mesh data - Linux port: copy the fields of the 32-bit big-endian SeaMesh (PORTING.md 5.2)
+	bytes = kSeaMesh_DiskSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
+	if(theError)
+	return theError;
+	UnpackMeshBE(*mesh, data);
+	(*mesh)->alpha = UnpackFloatBE(data + 240);
+	(*mesh)->lastUpdateTime = UnpackU32BE(data + 500);
+	theError = UnpackModelReferencesBE((*mesh)->referenceList, &(*mesh)->referenceCount, data + 504);
 	if(theError)
 	return theError;
 	
-	//Find point list - we suppose it is the next tag entry
-	++tagEntry;
-	if((tagEntry->tag != kTag_IncompleteData) || (tagEntry->subTag != kSubTag_PointList))
-	return kError_ItemNotFound;
-	reference->currentTag += 1;
-	SetFPos(destFileID, fsFromStart, tagEntry->dataPosition);
-	
-	//Allocate memory
-	(*mesh)->pointList = (VertexPtr) NewPtr(tagEntry->dataSize);
-	if((*mesh)->pointList == nil)
-	return MemError();
-	
-	//Read points
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) (*mesh)->pointList);
-	if(theError)
-	return theError;
-	
-	//Find lightning list - we suppose it is the next tag entry
-	++tagEntry;
-	if((tagEntry->tag != kTag_IncompleteData) || (tagEntry->subTag != kSubTag_LightningList))
-	return kError_ItemNotFound;
-	reference->currentTag += 1;
-	SetFPos(destFileID, fsFromStart, tagEntry->dataPosition);
-	
-	//Allocate memory
-	(*mesh)->lightningList = (LightningPtr) NewPtr(tagEntry->dataSize);
-	if((*mesh)->lightningList == nil)
-	return MemError();
-	
-	//Read lightning
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) (*mesh)->lightningList);
-	if(theError)
-	return theError;
-	
-	//Find triangle list - we suppose it is the next tag entry
-	++tagEntry;
-	if((tagEntry->tag != kTag_IncompleteData) || (tagEntry->subTag != kSubTag_TriangleList))
-	return kError_ItemNotFound;
-	reference->currentTag += 1;
-	SetFPos(destFileID, fsFromStart, tagEntry->dataPosition);
-	
-	//Allocate memory
-	(*mesh)->triangleList = (TriFacePtr) NewPtr(tagEntry->dataSize);
-	if((*mesh)->triangleList == nil)
-	return MemError();
-	
-	//Read triangles
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) (*mesh)->triangleList);
-	if(theError)
-	return theError;
-	
-	return noErr;
+	//Read point, lightning and triangle lists - we suppose they are the next tag entries
+	return Read_MeshLists(reference, (*mesh)->pointCount, (*mesh)->triangleCount, &(*mesh)->pointList, &(*mesh)->lightningList, &(*mesh)->triangleList);
 }
 
 static OSErr Load_AmbientSound(MetaFile_ReferencePtr reference, AmbientSoundPtr* sound)
@@ -1209,6 +1234,7 @@ static OSErr Load_AmbientSound(MetaFile_ReferencePtr reference, AmbientSoundPtr*
 	return MemError();
 	
 	//Read sound data
+	//shortcut: AmbientSound and its ExtSoundHeader/PCM stay raw big-endian; unpack them with the audio work (PORTING.md 6.6)
 	bytes = tagEntry->dataSize;
 	theError = FSRead(destFileID, &bytes, (Ptr) *sound);
 	if(theError)
@@ -1223,17 +1249,50 @@ static OSErr Load_ModelAnimation(MetaFile_ReferencePtr reference, ModelAnimation
 	long				bytes;
 	OSErr				theError;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
+	unsigned char*		data;
+	unsigned long		i,
+						frameCount;
 	
-	//Allocate memory
-	*path = (ModelAnimationPtr) NewPtr(tagEntry->dataSize);
+	//Check size
+	if(tagEntry->dataSize < kModelAnimation_HeaderDiskSize)
+	return kError_FatalError;
+	
+	//Read path data
+	data = (unsigned char*) NewPtr(tagEntry->dataSize);
+	if(data == nil)
+	return MemError();
+	bytes = tagEntry->dataSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
+	if(theError)
+	return theError;
+	frameCount = UnpackU32BE(data + 92);
+	if(tagEntry->dataSize != kModelAnimation_HeaderDiskSize + frameCount * kKeyFrame_DiskSize)
+	return kError_FatalError;
+	
+	//Allocate memory - Linux port: KeyFrame holds a long, 40 bytes on LP64 against 32 on disk
+	*path = (ModelAnimationPtr) NewPtrClear(sizeof(ModelAnimation) + frameCount * sizeof(KeyFrame));
 	if(*path == nil)
 	return MemError();
 	
-	//Read path data
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) *path);
-	if(theError)
-	return theError;
+	//Copy the fields of the 32-bit big-endian ModelAnimation (PORTING.md 5.2)
+	(*path)->modelID = UnpackU32BE(data + 0);
+	(*path)->flyID = UnpackU32BE(data + 4);
+	(*path)->flags = UnpackU32BE(data + 8);
+	UnpackFloatsBE(&(*path)->pos.x.x, data + 12, 12);
+	UnpackFloatsBE(&(*path)->rotateX, data + 60, 3);
+	(*path)->visibility = UnpackI32BE(data + 72);
+	(*path)->unused1 = UnpackFloatBE(data + 76);
+	(*path)->loopTime = UnpackI32BE(data + 80);
+	(*path)->endTime = UnpackI32BE(data + 84);
+	(*path)->running = data[88];
+	(*path)->frameCount = frameCount;
+	for(i = 0; i < frameCount; ++i) {
+		const unsigned char*	frame = data + kModelAnimation_HeaderDiskSize + i * kKeyFrame_DiskSize;
+	
+		(*path)->frameList[i].time = UnpackI32BE(frame);
+		UnpackFloatsBE(&(*path)->frameList[i].rotateX, frame + 4, 7); //rotateX, rotateY, rotateZ, rotateW, position
+	}
+	DisposePtr((Ptr) data);
 	
 	return noErr;
 }
@@ -1244,17 +1303,47 @@ static OSErr Load_Track(MetaFile_ReferencePtr reference, RaceTrackPtr* track)
 	long				bytes;
 	OSErr				theError;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
+	unsigned char*		data;
+	unsigned long		i,
+						checkCount;
+	
+	//Check size
+	if(tagEntry->dataSize < kRaceTrack_HeaderDiskSize)
+	return kError_FatalError;
+	
+	//Read track data
+	data = (unsigned char*) NewPtr(tagEntry->dataSize);
+	if(data == nil)
+	return MemError();
+	bytes = tagEntry->dataSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
+	if(theError)
+	return theError;
+	checkCount = UnpackU32BE(data + 312);
+	if(tagEntry->dataSize != kRaceTrack_HeaderDiskSize + checkCount * kCheckPoint_DiskSize)
+	return kError_FatalError;
 	
 	//Allocate memory
-	*track = (RaceTrackPtr) NewPtr(tagEntry->dataSize);
+	*track = (RaceTrackPtr) NewPtrClear(sizeof(RaceTrack) + checkCount * sizeof(Check));
 	if(*track == nil)
 	return MemError();
 	
-	//Read track data
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) *track);
-	if(theError)
-	return theError;
+	//Copy the fields of the 32-bit big-endian RaceTrack (PORTING.md 5.2)
+	BlockMove(data + 0, (*track)->name, sizeof(Str31));
+	(*track)->id = UnpackU32BE(data + 32);
+	(*track)->flags = UnpackU32BE(data + 36);
+	UnpackFloatsBE(&(*track)->color_r, data + 40, 3);
+	(*track)->lapNumber = UnpackI32BE(data + 52);
+	BlockMove(data + 56, (*track)->unused, sizeof((*track)->unused));
+	(*track)->checkCount = checkCount;
+	for(i = 0; i < checkCount; ++i) {
+		const unsigned char*	check = data + kRaceTrack_HeaderDiskSize + i * kCheckPoint_DiskSize;
+	
+		(*track)->checkList[i].flags = UnpackU32BE(check);
+		UnpackFloatsBE(&(*track)->checkList[i].rightMark.x, check + 4, 6); //rightMark, leftMark
+		BlockMove(check + 28, (*track)->checkList[i].unused, sizeof((*track)->checkList[i].unused));
+	}
+	DisposePtr((Ptr) data);
 	
 	return noErr;
 }
@@ -1265,17 +1354,47 @@ static OSErr Load_Enclosure(MetaFile_ReferencePtr reference, CollisionEnclosureP
 	long				bytes;
 	OSErr				theError;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
+	unsigned char*		data;
+	long				i,
+						j,
+						wallCount;
+	
+	//Check size
+	if(tagEntry->dataSize < kEnclosure_HeaderDiskSize)
+	return kError_FatalError;
+	
+	//Read enclosure data
+	data = (unsigned char*) NewPtr(tagEntry->dataSize);
+	if(data == nil)
+	return MemError();
+	bytes = tagEntry->dataSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
+	if(theError)
+	return theError;
+	wallCount = UnpackI32BE(data + 40);
+	if((wallCount < 0) || (tagEntry->dataSize != kEnclosure_HeaderDiskSize + wallCount * kCollisionWall_DiskSize))
+	return kError_FatalError;
 	
 	//Allocate memory
-	*enclosure = (CollisionEnclosurePtr) NewPtr(tagEntry->dataSize);
+	*enclosure = (CollisionEnclosurePtr) NewPtrClear(sizeof(CollisionEnclosure) + wallCount * sizeof(CollisionWall));
 	if(*enclosure == nil)
 	return MemError();
 	
-	//Read track data
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) *enclosure);
-	if(theError)
-	return theError;
+	//Copy the fields of the 32-bit big-endian CollisionEnclosure (PORTING.md 5.2)
+	(*enclosure)->flags = UnpackU32BE(data + 0);
+	(*enclosure)->closed = data[4];
+	UnpackFloatsBE(&(*enclosure)->bounding_min_x, data + 8, 4);
+	for(j = 0; j < 4; ++j)
+	(*enclosure)->unused[j] = UnpackI32BE(data + 24 + 4 * j);
+	(*enclosure)->wallCount = wallCount;
+	for(i = 0; i < wallCount; ++i) {
+		const unsigned char*	wall = data + kEnclosure_HeaderDiskSize + i * kCollisionWall_DiskSize;
+	
+		UnpackFloatsBE(&(*enclosure)->wallList[i].left.x, wall, 19); //left, right, inverseMatrix, width
+		for(j = 0; j < 4; ++j)
+		(*enclosure)->wallList[i].unused[j] = UnpackI32BE(wall + 76 + 4 * j);
+	}
+	DisposePtr((Ptr) data);
 	
 	return noErr;
 }
@@ -1286,17 +1405,102 @@ static OSErr Load_ItemList(MetaFile_ReferencePtr reference, SpecialItemReference
 	long				bytes;
 	OSErr				theError;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
+	unsigned char*		data;
+	long				i,
+						count = tagEntry->dataSize / kItemReference_DiskSize;
 	
-	//Allocate memory
-	*itemList = (SpecialItemReferencePtr) NewPtr(tagEntry->dataSize);
-	if(*itemList == nil)
+	//Check size
+	if(tagEntry->dataSize % kItemReference_DiskSize)
+	return kError_FatalError;
+	
+	//Read item list data
+	data = (unsigned char*) NewPtr(tagEntry->dataSize);
+	*itemList = (SpecialItemReferencePtr) NewPtrClear(count * sizeof(SpecialItemReference));
+	if((data == nil) || (*itemList == nil))
 	return MemError();
-	
-	//Read track data
 	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) *itemList);
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
 	if(theError)
 	return theError;
+	
+	//Copy the fields of the 32-bit big-endian SpecialItemReferences (PORTING.md 5.2)
+	for(i = 0; i < count; ++i) {
+		const unsigned char*	item = data + i * kItemReference_DiskSize;
+	
+		(*itemList)[i].itemID = UnpackU32BE(item + 0);
+		(*itemList)[i].flags = UnpackU32BE(item + 4);
+		(*itemList)[i].visibility = UnpackI32BE(item + 8);
+		UnpackFloatsBE(&(*itemList)[i].position.x, item + 12, 3);
+		(*itemList)[i].unused = UnpackI32BE(item + 24);
+	}
+	DisposePtr((Ptr) data);
+	
+	return noErr;
+}
+
+//Linux port: copies the fields of the 32-bit big-endian Terrain into the native one; the pointer lists stay nil (PORTING.md 5.2)
+static OSErr UnpackTerrainBE(TerrainPtr terrain, const unsigned char* data)
+{
+	long				i;
+	
+	BlockMove(data + 0, terrain->name, sizeof(Str63));
+	terrain->id = UnpackU32BE(data + 64);
+	terrain->flags = UnpackU32BE(data + 68);
+	BlockMove(data + 72, terrain->unused, sizeof(terrain->unused));
+	terrain->enclosureCount = UnpackI32BE(data + 196);
+	UnpackFloatsBE(&terrain->timeScale, data + 328, 10); //timeScale ... sunAngle_Z
+	terrain->skyFlags = UnpackU32BE(data + 368);
+	terrain->numTiles = UnpackI16BE(data + 372);
+	UnpackFloatsBE(&terrain->skyScale, data + 376, 5); //skyScale, skyRotation, unused_1 ... unused_3
+	terrain->fogMode = UnpackI16BE(data + 396);
+	UnpackFloatsBE(&terrain->fogColor_r, data + 400, 9); //fogColor_r ... fogEnd, clippingDistance, skyRadius, skyHeight
+	terrain->itemReferenceCount = UnpackU32BE(data + 436);
+	terrain->specialItemCount = UnpackU32BE(data + 444);
+	for(i = 0; i < kMaxItems; ++i) {
+		const unsigned char*	item = data + 448 + i * 24;
+	
+		terrain->specialItemList[i].id = UnpackU32BE(item + 0);
+		terrain->specialItemList[i].flags = UnpackU32BE(item + 4);
+		terrain->specialItemList[i].itemType = UnpackU32BE(item + 8);
+		terrain->specialItemList[i].modelID = UnpackU32BE(item + 12);
+		terrain->specialItemList[i].itemValue = UnpackI32BE(item + 16);
+		terrain->specialItemList[i].unused = UnpackI32BE(item + 20);
+	}
+	BlockMove(data + 640, terrain->unused2, sizeof(terrain->unused2));
+	terrain->trackCount = UnpackU32BE(data + 672);
+	terrain->meshCount = UnpackU32BE(data + 708);
+	terrain->seaCount = UnpackU32BE(data + 1224);
+	terrain->terrainTextureSize_NoMipMap = UnpackU32BE(data + 1740);
+	terrain->terrainTextureSize_MipMap = UnpackU32BE(data + 1744);
+	terrain->terrainTextureSize_FullMipMap = UnpackU32BE(data + 1748);
+	terrain->modelTextureSize_NoMipMap = UnpackU32BE(data + 1752);
+	terrain->modelTextureSize_MipMap = UnpackU32BE(data + 1756);
+	terrain->modelTextureSize_FullMipMap = UnpackU32BE(data + 1760);
+	terrain->sourceCount = UnpackI32BE(data + 1764);
+	for(i = 0; i < kMaxSources; ++i) {
+		const unsigned char*	source = data + 1768 + i * 48;
+	
+		terrain->sourceList[i].sourceType = UnpackU32BE(source + 0);
+		terrain->sourceList[i].soundID = UnpackU32BE(source + 4);
+		UnpackFloatsBE(&terrain->sourceList[i].position.x, source + 8, 5); //position, maxDistance, minDistance
+		terrain->sourceList[i].visibility = UnpackI32BE(source + 28);
+		UnpackFloatsBE(&terrain->sourceList[i].volume, source + 32, 2); //volume, pitch
+		terrain->sourceList[i].unused[0] = UnpackI32BE(source + 40);
+		terrain->sourceList[i].unused[1] = UnpackI32BE(source + 44);
+	}
+	terrain->cameraCount = UnpackI32BE(data + 4840);
+	terrain->soundCount = UnpackI32BE(data + 5100);
+	terrain->unused3 = UnpackU32BE(data + 5360);
+	terrain->animStartTime = UnpackI32BE(data + 5364);
+	terrain->animLength = UnpackI32BE(data + 5368);
+	terrain->unused4 = UnpackI32BE(data + 5372);
+	terrain->animCount = UnpackU32BE(data + 5376);
+	
+	if((terrain->enclosureCount < 0) || (terrain->enclosureCount > kMaxEnclosures) || (terrain->specialItemCount > kMaxItems) || (terrain->trackCount > kMaxTracks)
+		|| (terrain->meshCount > kMaxMesh) || (terrain->seaCount > kMaxSea) || (terrain->sourceCount < 0) || (terrain->sourceCount > kMaxSources)
+		|| (terrain->cameraCount < 0) || (terrain->cameraCount > kMaxCameras) || (terrain->soundCount < 0) || (terrain->soundCount > kMaxAmbientSounds)
+		|| (terrain->animCount > kMaxModelAnimations))
+	return kError_FatalError;
 	
 	return noErr;
 }
@@ -1309,10 +1513,20 @@ static OSErr Load_Terrain(MetaFile_ReferencePtr reference, TerrainPtr terrain, l
 						searchTag = reference->currentTag + 1;
 	short				destFileID = reference->fileRefNum;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
+	unsigned char		data[kTerrain_DiskSize];
 	
-	//Read terrain data
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) terrain);
+	//Check size - Linux port: only the 0x0104 layout occurs in the data
+	//shortcut: older (smaller) terrain layouts fail here; unpack them if such a file turns up
+	if(tagEntry->dataSize != kTerrain_DiskSize)
+	return kError_FatalError;
+	
+	//Read terrain data - Linux port: copy the fields of the 32-bit big-endian Terrain (PORTING.md 5.2)
+	bytes = kTerrain_DiskSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
+	if(theError)
+	return theError;
+	*terrain = {}; //pointer lists stay nil
+	theError = UnpackTerrainBE(terrain, data);
 	if(theError)
 	return theError;
 	
@@ -1433,7 +1647,9 @@ static OSErr Load_Terrain(MetaFile_ReferencePtr reference, TerrainPtr terrain, l
 		theError = SetPos_IndexTag(reference, kTag_ItemList, 1, searchTag, kFromStartDepth);
 		if(theError)
 		return theError;
-		
+		if(reference->tagTable.tagList[reference->currentTag].dataSize != terrain->itemReferenceCount * kItemReference_DiskSize)
+		return kError_FatalError;
+
 		//Read item list
 		theError = Load_ItemList(reference, &terrain->itemReferenceList);
 		if(theError)
@@ -1502,25 +1718,27 @@ OSErr MetaFile_Read_MegaObjectNameID_ByIndex(MetaFile_ReferencePtr reference, St
 OSErr MetaFile_Read_TerrainNameID_ByIndex(MetaFile_ReferencePtr reference, Str63 name, OSType* id, long index)
 {
 	OSErr				theError;
-	Terrain				tempTerrain;
+	unsigned char		data[sizeof(Str63) + 4]; //name, id
 	long				bytes;
 	MetaFile_EntryPtr	tagEntry;
 	short				destFileID = reference->fileRefNum;
-	
+
 	//Find data
 	theError = SetPos_IndexTag(reference, kTag_Terrain, index, kFromStartTag, kFromStartDepth);
 	if(theError)
 	return theError;
-	
-	//Read terrain data
+
+	//Read terrain data - Linux port: only the name and big-endian id at its start are needed (PORTING.md 5.2)
 	tagEntry = &reference->tagTable.tagList[reference->currentTag];
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) &tempTerrain);
+	if(tagEntry->dataSize < sizeof(data))
+	return kError_FatalError;
+	bytes = sizeof(data);
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
 	if(theError)
 	return theError;
-	
-	BlockMove(tempTerrain.name, name, sizeof(Str63));
-	*id = tempTerrain.id;
+
+	BlockMove(data + 0, name, sizeof(Str63));
+	*id = UnpackU32BE(data + 64);
 	
 	return noErr;
 }
@@ -1640,7 +1858,7 @@ OSErr MetaFile_LowLevelRead_DataPtr(MetaFile_ReferencePtr reference, long tagNum
 	
 	//Find data
 	reference->currentTag = tagNum;
-	SetFPos(reference->fileRefNum, fsFromStart, entry->dataPosition);
+	if(entry->dataPosition != kMetaFile_NoData) SetFPos(reference->fileRefNum, fsFromStart, entry->dataPosition);
 	
 	//Read data
 	bytes = entry->dataSize;
@@ -1660,7 +1878,7 @@ OSErr MetaFile_LowLevelRead_DataPtr(MetaFile_ReferencePtr reference, long tagNum
 	
 	//Find data
 	reference->currentTag = tagNum;
-	SetFPos(reference->fileRefNum, fsFromStart, entry->dataPosition);
+	if(entry->dataPosition != kMetaFile_NoData) SetFPos(reference->fileRefNum, fsFromStart, entry->dataPosition);
 	
 	//Allocate memory
 	*data = NewPtr(entry->dataSize);
@@ -1686,7 +1904,7 @@ OSErr MetaFile_LowLevelRead_DataHandle(MetaFile_ReferencePtr reference, long tag
 	
 	//Find data
 	reference->currentTag = tagNum;
-	SetFPos(reference->fileRefNum, fsFromStart, entry->dataPosition);
+	if(entry->dataPosition != kMetaFile_NoData) SetFPos(reference->fileRefNum, fsFromStart, entry->dataPosition);
 	
 	//Allocate memory
 	*data = NewHandle(entry->dataSize);
