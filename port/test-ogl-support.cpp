@@ -226,7 +226,7 @@ static void TestTextures(TQAEngine* engine, TQADrawContext* c)
 		CHECK_PIXEL(ax, ay, t[0] * a, t[1] * g * a, t[2] * b * a + (1 - a));
 	}
 
-	// Bitmaps: Tsmk at (100, 20) unscaled, blended by its alpha; a Pomme-style A,R,G,B GWorld (RGB32, alpha ignored).
+	// Bitmaps: Tsmk at (100, 20) unscaled (BitmapScale 1 by default), blended by its alpha; a Pomme-style A,R,G,B GWorld (RGB32, alpha ignored).
 	unsigned char		argb[2 * 4] = {0x00, 0xFF, 0x00, 0x00,  0x00, 0x00, 0x80, 0xFF};
 	TQAImage			gworldImage = {2, 1, 8, (Ptr) argb};
 	TQAVGouraud			bv = V(100, 20, 0.5, 1, 1, 1, 1, 1);
@@ -240,6 +240,12 @@ static void TestTextures(TQAEngine* engine, TQADrawContext* c)
 	QADrawBitmap(c, &bv, gworld);
 	CHECK_PIXEL(10, 200, 1, 0, 0);
 	CHECK_PIXEL(11, 200, 0, 0x80 / 255.0f, 1);
+	QASetFloat(c, kQATag_BitmapScale_x, 2);	// scaled contexts draw their background bitmap at 2x (Infinity rendering.cp)
+	bv.y = 210;
+	QADrawBitmap(c, &bv, gworld);
+	QASetFloat(c, kQATag_BitmapScale_x, 1);
+	CHECK_PIXEL(11, 210, 1, 0, 0);
+	CHECK_PIXEL(12, 210, 0, 0x80 / 255.0f, 1);
 	QARenderEnd(c, nullptr);
 
 	QASetInt(c, kQATag_ZFunction, kQAZFunction_LT);
@@ -455,7 +461,6 @@ int main()
 	CHECK(QADrawContextNew(nullptr, &bounds, nullptr, engine, 0, &c) == kQANoErr);
 	CHECK(QAGetInt(c, kQATag_ZFunction) == kQAZFunction_LT);
 	QASetInt(c, kQATag_Antialias, 1);
-	QASetFloat(c, kQATag_BitmapScale_x, 0.5);
 	QASetInt(c, kQATag_Blend, kQABlend_Interpolate);
 	CHECK(QAGetInt(c, kQATag_Blend) == kQABlend_Interpolate);
 

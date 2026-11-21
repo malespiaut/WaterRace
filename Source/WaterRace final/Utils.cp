@@ -52,10 +52,6 @@
 
 #define MacOSTextAliasingAvailable() ((RoutineDescriptorPtr) IsAntiAliasedTextEnabled != (RoutineDescriptorPtr) kUnresolvedCFragSymbolAddress)
 
-#define Mask16(s, m) ( ((((s) & 0x001F) * (m) / 255) & 0x001F) \
-						+ ((((s) & 0x03E0) * (m) / 255) & 0x03E0) \
-						+ ((((s) & 0x7C00) * (m) / 255) & 0x7C00) )
-
 //VARIABLES:
 
 static Boolean		textAliasingEnabled;
@@ -361,6 +357,7 @@ Boolean MacOSTextAliasing_IsEnabled()
 	return textAliasingEnabled;
 }
 
+//Linux port: every GWorld is ARGB32 (A,R,G,B in memory), the grey alpha map too: its red byte is the alpha (PORTING.md 6.5)
 void CopyBits_16WithAlpha(PixMap *alphaMap, PixMap *srcMap, PixMap *destMap, Rect* alphaRect, Rect *sourceRect, Rect *destRect)
 {
 	Ptr					alphaLineStart,
@@ -372,31 +369,33 @@ void CopyBits_16WithAlpha(PixMap *alphaMap, PixMap *srcMap, PixMap *destMap, Rec
 						width,
 						height,
 						i,
-						j;
-	unsigned short		*sourcePixel,
-						*destPixel;
-	unsigned char		*alpha;
+						j,
+						k;
+	unsigned char		*sourcePixel,
+						*destPixel,
+						*alpha;
 	
 	alphaRowBytes = alphaMap->rowBytes & 0x3FFF;
-	alphaLineStart = GetPixBaseAddr(&alphaMap) + alphaRect->top * alphaRowBytes + alphaRect->left; // Pomme: PixMap has no baseAddr field
+	alphaLineStart = GetPixBaseAddr(&alphaMap) + alphaRect->top * alphaRowBytes + alphaRect->left * 4; // Pomme: PixMap has no baseAddr field
 	sourceRowBytes = srcMap->rowBytes & 0x3FFF;
-	sourceLineStart = GetPixBaseAddr(&srcMap) + sourceRect->top * sourceRowBytes + sourceRect->left * 2;
+	sourceLineStart = GetPixBaseAddr(&srcMap) + sourceRect->top * sourceRowBytes + sourceRect->left * 4;
 	destRowBytes = destMap->rowBytes & 0x3FFF;
-	destLineStart = GetPixBaseAddr(&destMap) + destRect->top * destRowBytes + destRect->left * 2;
+	destLineStart = GetPixBaseAddr(&destMap) + destRect->top * destRowBytes + destRect->left * 4;
 	
 	width = sourceRect->right - sourceRect->left;
 	height = sourceRect->bottom - sourceRect->top;
 	for(i = 0; i < height; ++i) {
-		alpha = (unsigned char*) alphaLineStart;
-		sourcePixel = (unsigned short*) sourceLineStart;
-		destPixel = (unsigned short*) destLineStart;
-		for(j = 0; j < width; ++j, ++alpha, ++sourcePixel, ++destPixel) {
+		alpha = (unsigned char*) alphaLineStart + 1;
+		sourcePixel = (unsigned char*) sourceLineStart;
+		destPixel = (unsigned char*) destLineStart;
+		for(j = 0; j < width; ++j, alpha += 4, sourcePixel += 4, destPixel += 4) {
 			if(*alpha == 0xFF)
-			*destPixel = *sourcePixel;
+			*((UInt32*) destPixel) = *((UInt32*) sourcePixel);
 			else if(*alpha == 0x00)
 			;
 			else
-			*destPixel = Mask16(*sourcePixel, *alpha) + Mask16(*destPixel, 0xFF - *alpha);
+			for(k = 1; k < 4; ++k)
+			destPixel[k] = (sourcePixel[k] * *alpha + destPixel[k] * (0xFF - *alpha)) / 255;
 		}
 		alphaLineStart += alphaRowBytes;
 		sourceLineStart += sourceRowBytes;
@@ -448,6 +447,10 @@ void Sound_QuitSFx()
 
 void Sound_PlaySFx(short SFxID)
 {
+	//Linux port: no interface sfx before Pomme's mixer in P5 (main.cp does not call Sound_InitSFx yet)
+	if(sfxSounds[SFxID] == nil)
+	return;
+	
 	InfinityAudio_InstallSound_FX(kCreatorType, (ExtSoundHeaderPtr) *sfxSounds[SFxID], kSfxVolume, kInfinityAudio_CenteredPanoramic, kInfinityAudio_NormalPitch, nil);
 }
 

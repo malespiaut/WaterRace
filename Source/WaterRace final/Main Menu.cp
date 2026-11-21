@@ -380,6 +380,7 @@ static short MainMenu_Run()
 	
 	//Loop presenter
 	InfinityPlayer_PlayAnimation(GetRandomLoop());
+	fprintf(stderr, "Interface: main menu ready\n"); //port/check-main-menu.py waits for it
 	
 	SetPort(mainWin);
 #if !__SHOW_SPINNING_CURSOR__

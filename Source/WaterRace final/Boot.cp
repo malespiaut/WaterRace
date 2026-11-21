@@ -23,6 +23,7 @@
 // resource fork. Pomme resolves every FSSpec against it (HostVolume directory 0).
 
 #include				<cstdio>
+#include				<csignal>
 #include				<cstdlib>
 #include				<cstring>
 #include				<vector>
@@ -34,6 +35,7 @@
 #include				"PommeGraphics.h"
 #include				"WaterRace.h"
 #include				"Data Files.h"
+#include				"Interface.h"
 
 #include				"stb_image.h"	// implementation in port/TextureLoader.cpp
 #define					STB_IMAGE_WRITE_IMPLEMENTATION
@@ -74,6 +76,7 @@ static GLuint			gPortTexture = 0;
 static GammaInfo		gOverlay = {0, 0, 0, 0};
 static Boolean			gFrameBegun = false,
 						gScreenshotRequested = false;
+static volatile sig_atomic_t	gSnapshotRequested = 0;
 
 //ROUTINES:
 
@@ -124,14 +127,38 @@ static PicHandle Boot_LoadInterfacePNG(SInt16 theID)
 // shortcut: searches every open resource file, not only the current one; upgrade if a second
 // resource file is ever opened at the same time.
 // Interface PICTs come from their converted PNGs (PORTING.md sec. 5.3): Pomme can't decode all of them.
+// 'Btns' (ButtonList, all shorts) is swapped from big-endian here: every caller detaches it right away,
+// so each load is a fresh copy, swapped once.
 Handle Get1Resource(ResType theType, SInt16 theID)
 {
 	PicHandle		thePic;
+	Handle			theResource;
+	SInt16*			data;
+	long			i;
 
 	if(theType == 'PICT' && CurResFile() == interfaceResFileID && (thePic = Boot_LoadInterfacePNG(theID)) != nil)
 	return (Handle) thePic;
 
-	return GetResource(theType, theID);
+	theResource = GetResource(theType, theID);
+	if(theType == kButtonsResType && theResource != nil) {
+		data = (SInt16*) *theResource;
+		for(i = 0; i < GetHandleSize(theResource) / 2; ++i)
+		data[i] = SDL_Swap16BE(data[i]);
+	}
+
+	return theResource;
+}
+
+// The 'clut' resource as is: Pomme's NewGWorld ignores it (every GWorld is ARGB32), the callers only release it.
+CTabHandle GetCTable(short ctID)
+{
+	return (CTabHandle) GetResource('clut', ctID);
+}
+
+// QuickDraw's Random: uniform in -32767..32767.
+short Random(void)
+{
+	return (short) (SDL_rand(65535) - 32767);
 }
 
 // DrawPicture for Pomme pictures, scaled (nearest pixel) to dstRect and clipped to the current port.
@@ -339,6 +366,50 @@ void Boot_InterfaceToWindow(const Rect* r, int* x, int* y, int* width, int* heig
 	*height = SDL_lroundf(bottom + (kWindowHeight - r->top) * scale) - *y;
 }
 
+// GetMouse in 640x480 interface coordinates: the inverse of the letterbox above (PORTING.md sec. 6.4).
+// Pumps SDL events, so Button() sees the current state too.
+void Port_GetMouse(Point* mouseLoc)
+{
+	int				windowWidth,
+					windowHeight;
+	float			x,
+					y,
+					scale;
+
+	SDL_PumpEvents();
+	SDL_GetMouseState(&x, &y);
+	SDL_GetWindowSize(gSDLWindow, &windowWidth, &windowHeight);
+	scale = SDL_min((float) windowWidth / kWindowWidth, (float) windowHeight / kWindowHeight);
+	mouseLoc->h = (short) SDL_floorf((x - (windowWidth - kWindowWidth * scale) / 2) / scale);
+	mouseLoc->v = (short) SDL_floorf((y - (windowHeight - kWindowHeight * scale) / 2) / scale);
+}
+
+Boolean PtInRect(Point pt, const Rect* r)
+{
+	return pt.h >= r->left && pt.h < r->right && pt.v >= r->top && pt.v < r->bottom;
+}
+
+// Drains the SDL event queue and reports its first key press as a keyDown/autoKey event, with the
+// key's character (SDL keycodes are ASCII for letters). The mask is ignored: the callers pass everyEvent.
+// shortcut: removes the events (Pomme's FlushEvents is a no-op, the callers flush right after); peek if a caller ever relies on them staying
+Boolean OSEventAvail(SInt16 mask, EventRecord* theEvent)
+{
+	SDL_Event		event;
+	Boolean			found = false;
+
+	while(SDL_PollEvent(&event))
+	if(event.type == SDL_EVENT_KEY_DOWN && !found) {
+		found = true;
+		theEvent->what = event.key.repeat ? autoKey : keyDown;
+		theEvent->message = (event.key.key & charCodeMask) | ((event.key.scancode << 8) & keyCodeMask);
+		theEvent->when = TickCount();
+		Port_GetMouse(&theEvent->where);
+		theEvent->modifiers = 0;
+	}
+
+	return found;
+}
+
 // Uploads the damaged region of Pomme's screen port (ARGB32, A first in memory) to the port texture.
 static void Boot_UploadPort()
 {
@@ -466,6 +537,7 @@ void Boot_RequestScreenshot()
 // Ends the frame: the fade overlay over everything, then presents it (QARenderEnd calls it too).
 // Debug hook: with WATERRACE_SCREENSHOT=path.png, frame WATERRACE_SCREENSHOT_FRAME (default 1), or the
 // frame at WATERRACE_SCREENSHOT_TIME, is written to that PNG and the game exits.
+// Debug hook: with WATERRACE_SNAPSHOT=path.png, each SIGUSR1 writes the next frame there and the game goes on.
 void Boot_PresentFrame()
 {
 	const char*		path = getenv("WATERRACE_SCREENSHOT");
@@ -489,6 +561,10 @@ void Boot_PresentFrame()
 		fprintf(stderr, "Boot: screenshot of frame %ld %s %s\n", gFrameCount, written ? "written to" : "FAILED for", path);
 		SDL_Quit();
 		exit(written ? 0 : 1);
+	}
+	if(gSnapshotRequested) {
+		gSnapshotRequested = 0;
+		fprintf(stderr, "Boot: snapshot of frame %ld %s\n", gFrameCount, Boot_WriteScreenshot(getenv("WATERRACE_SNAPSHOT")) ? "written" : "FAILED");
 	}
 
 	SDL_GL_SwapWindow(gSDLWindow);
@@ -674,6 +750,9 @@ int Boot_Startup()
 
 	if(!Boot_InitGL())
 	return 1;
+
+	if(getenv("WATERRACE_SNAPSHOT") != nil)
+	signal(SIGUSR1, [](int) { gSnapshotRequested = 1; });
 
 	if(getenv("WATERRACE_TEST_PATTERN") == nil)
 	return 0;
