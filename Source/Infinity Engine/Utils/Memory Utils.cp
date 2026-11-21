@@ -28,8 +28,8 @@ void Texture_Dispose(CompressedTexturePtr texturePtr)
 	if(texturePtr == nil)
 	return;
 	
-	if(texturePtr->image != nil)
-	DisposeHandle((Handle) texturePtr->image);
+	if(texturePtr->pngPath != nil)
+	DisposePtr(texturePtr->pngPath);
 	DisposePtr((Ptr) texturePtr);
 }
 

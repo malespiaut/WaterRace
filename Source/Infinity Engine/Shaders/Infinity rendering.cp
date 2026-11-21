@@ -423,7 +423,7 @@ OSErr InfinityRendering_AllocateBuffers()
 	
 	buffersAllocated = true;
 	
-	return Texture_InitBuffers();
+	return noErr;
 }
 
 void InfinityRendering_DisposeBuffers()
@@ -437,8 +437,6 @@ void InfinityRendering_DisposeBuffers()
 	DisposePtr((Ptr) vGouraudBuffer);
 	
 	buffersAllocated = false;
-	
-	Texture_DisposeBuffers();
 }
 
 long InfinityRendering_AvailableVRAM(TQAEngine* theEngine)

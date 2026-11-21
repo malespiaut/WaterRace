@@ -32,6 +32,9 @@
 #define				kTextureFlag_ForceAGP		(1 << 6) //ATI only
 #define				kTextureFlag_LowQuality		(1 << 7) //ATI only
 
+//Size of a CompressedTexture header in a MetaFile (big-endian, PPC alignment)
+#define				kCompressedTexture_HeaderSize	28
+
 //MACROS:
 
 #define	GWBitMapPtr(w) GetPortBitMapForCopyBits((CGrafPtr)(w))	// Pomme has no portBits field
@@ -39,10 +42,9 @@
 //ROUTINES:
 
 //File: Textures.cp
-OSErr Texture_InitBuffers();
-void Texture_DisposeBuffers();
-
-OSErr Texture_Decompress(CompressedTexturePtr texturePtr, PixMapHandle destPixMap, Rect* destRect);
+void Texture_UnpackHeader(CompressedTexturePtr texturePtr, const unsigned char* header);
+void Texture_GetMetaFileFolder(const FSSpec* metaFile, char* folder, long size);
+char* Texture_NewPNGPath(const char* metaFileFolder, OSType name);
 OSErr Texture_NewFromCompressedTexture(TQAEngine* engine, TQATexture** RAVETexture, CompressedTexturePtr texturePtr, long flags);
 OSErr Texture_NewARGB32BitmapFromPictResource(TQAEngine* engine, TQABitmap** RAVEBitmap, short pictID, long flags);
 OSErr Texture_NewARGB32TextureFromPictResource(TQAEngine* engine, TQATexture** RAVETexture, short pictID, long flags);

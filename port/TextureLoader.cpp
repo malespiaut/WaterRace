@@ -15,6 +15,7 @@
 #define				kTextureFlag_MipMap			(1 << 4)
 #define				kTextureFlag_ForceMipMap	(1 << 5)
 #define				kFlag_MipMap				(1 << 0)
+#define				kAlpha_None					0
 #define				kAlpha_1Bit					1
 #define				kMinTextureReduce			32
 #define				kMaxTextureSizeH			1024
@@ -108,6 +109,9 @@ bool Texture_LoadPNG(const std::string& path, uint32_t textureFlags, short alpha
 	}
 	image.pixels.assign(data, data + (size_t) image.width * image.height * 4);
 	stbi_image_free(data);
+	if(alphaDepth == kAlpha_None) //opaque like the original RGB16 texture: a few converted PNGs carry a stray alpha channel
+	for(size_t i = 3; i < image.pixels.size(); i += 4)
+	image.pixels[i] = 255;
 	if((image.width > kMaxTextureSizeH) || (image.height > kMaxTextureSizeV))
 	return false;
 
