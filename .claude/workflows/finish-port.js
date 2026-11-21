@@ -22,7 +22,7 @@ Phase issues are titled "P<n>: ..." (#2..#9). Task issues carry label "port-task
 Build: cmake -S <tree> -B <tree>/build && cmake --build <tree>/build -j; quick syntax check: port/check-compile.sh <outdir>. Submodule Pomme must be initialised (git submodule update --init --recursive).
 Game data: "WaterRace Data/" (tracked). The original CD extraction is at ${REPO}/WaterRace-CD (untracked, read-only reference: never modify or commit it).
 Display: use xvfb-run for anything that opens a window; capture frames with glReadPixels to PNG for screenshots.
-Never commit to master directly. Commit messages end with "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>". PR bodies end with "🤖 Generated with [Claude Code](https://claude.com/claude-code)".
+Never commit to master directly. Commit messages end with "Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>". PR bodies end with "🤖 Generated with [Claude Code](https://claude.com/claude-code)".
 Keep changes minimal and in the style of the surrounding code.`
 
 const STATUS = {
