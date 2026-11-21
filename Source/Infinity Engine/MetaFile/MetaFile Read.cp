@@ -63,6 +63,7 @@
 #define				kModelAnimation_HeaderDiskSize	96
 #define				kKeyFrame_DiskSize			32
 #define				kRaceTrack_HeaderDiskSize	316
+#define				kAmbientSound_HeaderDiskSize	72
 #define				kCheckPoint_DiskSize		68
 #define				kItemReference_DiskSize		28
 #define				kEnclosure_HeaderDiskSize	44
@@ -558,11 +559,16 @@ static OSErr Load_CameraPosition(MetaFile_ReferencePtr reference, CameraPosition
 	OSErr				theError;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
 	
+	//Check size - Linux port: CameraPosition is all floats after its name, same layout on disk and on LP64
+	if(tagEntry->dataSize != sizeof(CameraPosition))
+	return kError_FatalError;
+	
 	//Read camera position data
 	bytes = tagEntry->dataSize;
 	theError = FSRead(destFileID, &bytes, (Ptr) camera);
 	if(theError)
 	return theError;
+	UnpackIntsBE(4, (sizeof(CameraPosition) - sizeof(Str31)) / 4, &camera->roll);
 	
 	return noErr;
 }
@@ -1300,16 +1306,40 @@ static OSErr Load_AmbientSound(MetaFile_ReferencePtr reference, AmbientSoundPtr*
 	long				bytes;
 	OSErr				theError;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
+	unsigned char		data[kAmbientSound_HeaderDiskSize];
+	
+	//Check size
+	if(tagEntry->dataSize < kAmbientSound_HeaderDiskSize)
+	return kError_FatalError;
+	
+	//Read sound header - Linux port: copy the fields of the 32-bit big-endian AmbientSound (PORTING.md 5.2)
+	bytes = kAmbientSound_HeaderDiskSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
+	if(theError)
+	return theError;
+	
+	//Every absd in the game data is the header, soundSize bytes and 2 bytes of padding
+	if(tagEntry->dataSize != kAmbientSound_HeaderDiskSize + UnpackU32BE(data + 68) + 2)
+	return kError_FatalError;
 	
 	//Allocate memory
-	*sound = (AmbientSoundPtr) NewPtr(tagEntry->dataSize);
+	*sound = (AmbientSoundPtr) NewPtrClear(sizeof(AmbientSound) + tagEntry->dataSize - kAmbientSound_HeaderDiskSize);
 	if(*sound == nil)
 	return MemError();
+	BlockMove(data + 0, (*sound)->name, sizeof(Str31));
+	(*sound)->id = UnpackU32BE(data + 32);
+	(*sound)->flags = UnpackU32BE(data + 36);
+	(*sound)->minTime = UnpackU32BE(data + 40);
+	(*sound)->maxTime = UnpackU32BE(data + 44);
+	(*sound)->unused[0] = UnpackI32BE(data + 48);
+	(*sound)->unused[1] = UnpackI32BE(data + 52);
+	UnpackFloatsBE(&(*sound)->volume, data + 56, 3); //volume, panoramic, pitch
+	(*sound)->soundSize = UnpackU32BE(data + 68);
 	
 	//Read sound data
-	//shortcut: AmbientSound and its ExtSoundHeader/PCM stay raw big-endian; unpack them with the audio work (PORTING.md 6.6)
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) *sound);
+	//shortcut: the ExtSoundHeader and PCM samples stay raw big-endian; unpack them with the audio work (PORTING.md 6.6)
+	bytes = tagEntry->dataSize - kAmbientSound_HeaderDiskSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) &(*sound)->soundHeader);
 	if(theError)
 	return theError;
 	
@@ -1819,7 +1849,6 @@ OSErr MetaFile_Read_TerrainNameID_ByIndex(MetaFile_ReferencePtr reference, Str63
 OSErr MetaFile_Read_TextureSetName_ByIndex(MetaFile_ReferencePtr reference, OSType modelID, Str63 name, long index)
 {
 	OSErr				theError;
-	TextureSet			tempSet;
 	long				bytes;
 	MetaFile_EntryPtr	tagEntry;
 	short				destFileID = reference->fileRefNum;
@@ -1834,14 +1863,14 @@ OSErr MetaFile_Read_TextureSetName_ByIndex(MetaFile_ReferencePtr reference, OSTy
 	if(theError)
 	return theError;
 	
-	//Read texture set data
+	//Read texture set data - Linux port: only the name at its start is needed (PORTING.md 5.2)
 	tagEntry = &reference->tagTable.tagList[reference->currentTag];
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) &tempSet);
+	if(tagEntry->dataSize != kTextureSet_DiskSize)
+	return kError_FatalError;
+	bytes = sizeof(Str63);
+	theError = FSRead(destFileID, &bytes, (Ptr) name);
 	if(theError)
 	return theError;
-	
-	BlockMove(tempSet.name, name, sizeof(Str63));
 	
 	return noErr;
 }
@@ -1888,7 +1917,7 @@ OSErr MetaFile_Read_CameraLayout(MetaFile_ReferencePtr reference, CameraStatePtr
 	return theError;
 	tagEntry = &reference->tagTable.tagList[reference->currentTag];
 	
-	//Check size
+	//Check size - Linux port: CameraState is all floats, same layout on disk and on LP64
 	if(tagEntry->dataSize != 5 * sizeof(CameraState))
 	return kError_BadVersion;
 	
@@ -1897,26 +1926,31 @@ OSErr MetaFile_Read_CameraLayout(MetaFile_ReferencePtr reference, CameraStatePtr
 	theError = FSRead(destFileID, &bytes, (Ptr) localCamera);
 	if(theError)
 	return theError;
+	UnpackIntsBE(4, sizeof(CameraState) / 4, localCamera);
 	
 	bytes = sizeof(CameraState);
 	theError = FSRead(destFileID, &bytes, (Ptr) topCamera);
 	if(theError)
 	return theError;
+	UnpackIntsBE(4, sizeof(CameraState) / 4, topCamera);
 	
 	bytes = sizeof(CameraState);
 	theError = FSRead(destFileID, &bytes, (Ptr) frontCamera);
 	if(theError)
 	return theError;
+	UnpackIntsBE(4, sizeof(CameraState) / 4, frontCamera);
 	
 	bytes = sizeof(CameraState);
 	theError = FSRead(destFileID, &bytes, (Ptr) rightCamera);
 	if(theError)
 	return theError;
+	UnpackIntsBE(4, sizeof(CameraState) / 4, rightCamera);
 	
 	bytes = sizeof(CameraState);
 	theError = FSRead(destFileID, &bytes, (Ptr) worldState);
 	if(theError)
 	return theError;
+	UnpackIntsBE(4, sizeof(CameraState) / 4, worldState);
 	
 	return noErr;
 }

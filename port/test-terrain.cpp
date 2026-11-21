@@ -144,6 +144,11 @@ int main(int argc, char** argv)
 		terrain.sourceCount, terrain.itemReferenceCount, terrain.fogMode, terrain.fogStart, terrain.fogEnd, terrain.skyRadius);
 	CHECK(terrain.meshCount == 14 && terrain.seaCount == 9 && terrain.trackCount == 1 && terrain.animCount == 3 && terrain.enclosureCount == 6);
 	CHECK(terrain.soundCount == 6 && terrain.sourceCount == 4 && terrain.cameraCount == 0 && terrain.itemReferenceCount == 8 && terrain.specialItemCount == 1);
+	// AmbientSound header unpacked; its ExtSoundHeader stays raw big-endian (encode byte at 20 is extSH)
+	CHECK(terrain.soundList[0]->id == 'Wate' && terrain.soundList[0]->flags == 4 && terrain.soundList[0]->minTime == 100 && terrain.soundList[0]->maxTime == 1000
+		&& terrain.soundList[0]->volume == 0.4f && terrain.soundList[0]->pitch == 1 && ((unsigned char*) &terrain.soundList[0]->soundHeader)[20] == 0xFF);
+	for(long i = 0; i < terrain.soundCount; ++i)
+	CHECK(terrain.soundList[i]->soundSize > 64 && terrain.soundList[i]->minTime <= terrain.soundList[i]->maxTime);
 	CHECK(terrain.fogMode == kFog_Linear && terrain.fogStart == 50 && terrain.fogEnd == 70 && terrain.clippingDistance == 70 && terrain.skyRadius == 70);
 	CHECK(terrain.fogColor_r >= 0 && terrain.fogColor_r <= 1 && terrain.fogColor_g >= 0 && terrain.fogColor_g <= 1 && terrain.fogColor_b >= 0 && terrain.fogColor_b <= 1);
 	CHECK(std::isfinite(terrain.waveAmplitude) && std::isfinite(terrain.ambientLight) && terrain.ambientLight >= 0 && terrain.ambientLight <= 1);

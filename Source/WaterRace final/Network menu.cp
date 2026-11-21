@@ -74,7 +74,7 @@ static OSErr GetTextureSetName(FSSpec* file, short num, Str31 name, OSType* ID)
 			theError = MetaFile_LowLevelRead_DataPtr(reference, i, (Ptr*) &set);
 			if(theError == noErr) {
 				BlockMove(set->name, name, sizeof(Str31));
-				*ID = set->id;
+				*ID = UnpackU32BE(&set->id); //Linux port: big-endian on disk
 				DisposePtr((Ptr) set);
 			}
 			break;
