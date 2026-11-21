@@ -156,53 +156,15 @@ static long Auto_Config()
 
 OSErr Preference_Read()
 {
-	OSErr		theError;
-	short		fileID,
-				volumeID;
-	long		bytesNumber,
-				prefFolderNum;
-	Str63		prefName;
 	long		computer;
 				
 	//Update running time
 	gameStartTime = TickCount();
 	
-	theError = Find_FrenchTouchPreferencesFolder(&volumeID, &prefFolderNum);
-	if(theError)
-	goto New;
-	
-	GetIndString(prefName, 128, 2);
-	theError = HOpen(volumeID, prefFolderNum, prefName, fsRdPerm, &fileID);
-	if(theError)
-	goto New;
-	SetFPos(fileID, 1, 0);
-	bytesNumber = sizeof(Preferences);
-	theError = FSRead(fileID, &bytesNumber, (Ptr) &thePrefs);
-	FSClose(fileID);
-	
-	if(thePrefs.version != kPref_Version)
-	goto New;
-	
-	return noErr;
-	
-	New:
-#if __LANGUAGE__ == kLanguage_English
-	if(Display_Agreement(kLicenseTextID, kWaitDelay, "\005Agree", "\010Disagree") == false)
-#elif __LANGUAGE__ == kLanguage_French
-	if(Display_Agreement(kLicenseTextID, kWaitDelay, "\010Accepter", "\007Refuser") == false)
-#elif __LANGUAGE__ == kLanguage_German
-	if(Display_Agreement(kLicenseTextID, kWaitDelay, "\013Akzeptieren", "\010Ablehnen") == false)
-#elif __LANGUAGE__ == kLanguage_Italian
-	if(Display_Agreement(kLicenseTextID, kWaitDelay, "\007Accetto", "\013Non Accetto") == false)
-#else
-#error  __LANGUAGE__ undefined!
-#endif
-	return kError_LicenseNotAccepted;
-	
-	computer = Auto_Config();
-	if(computer < 0)
-	return kError_UserCancel;
-	
+	//Linux port: the preferences file and the licence and machine dialogs come back in P6
+	//(PORTING.md 6.2); until then every run starts from the defaults for a G4
+	computer = kMac_G4_AGP;
+
 	thePrefs.version = kPref_Version;
 	thePrefs.raveEngineName[0] = 0;
 	
@@ -347,11 +309,12 @@ OSErr Preference_Read()
 	thePrefs.gameScreen.csMode = 0;
 	thePrefs.musicVolume = 8 * 256 / 10;
 	thePrefs.soundFXVolume = 4 * 256 / 10;
-	BlockMove(kString_Preferences_Name, thePrefs.playerName, sizeof(Str63));
-	BlockMove(kString_Preferences_Location, thePrefs.playerLocation, sizeof(Str63));
-	BlockMove(kString_Preferences_Computer, thePrefs.hostName, sizeof(Str63));
+	//Linux port: copy the literal only, not a whole Str63 past its end (ASan)
+	BlockMove(kString_Preferences_Name, thePrefs.playerName, sizeof(kString_Preferences_Name));
+	BlockMove(kString_Preferences_Location, thePrefs.playerLocation, sizeof(kString_Preferences_Location));
+	BlockMove(kString_Preferences_Computer, thePrefs.hostName, sizeof(kString_Preferences_Computer));
 	thePrefs.hostPassword[0] = 0;
-	BlockMove(kString_Preferences_Welcome, thePrefs.hostMessage, sizeof(Str255));
+	BlockMove(kString_Preferences_Welcome, thePrefs.hostMessage, sizeof(kString_Preferences_Welcome));
 	thePrefs.networkFlags = kPref_NetworkFlagBroadCast;
 	thePrefs.runningTime = 0;
 	thePrefs.lastNetworkServerIP[0] = 0;

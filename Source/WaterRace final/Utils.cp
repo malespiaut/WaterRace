@@ -19,7 +19,10 @@
  *****************************************************************************/
 
 
+#include			<cstdio>
 #include			<cstring>
+
+#include			<SDL3/SDL.h>
 
 #include			"WaterRace.h"
 #include			"Strings.h"
@@ -131,33 +134,24 @@ pascal Boolean DialogEventFilterProc(DialogPtr theDialog, EventRecord *theEvent,
 }
 #endif
 
+//Linux port: errors go to stderr, fatal ones also to a message box (PORTING.md 6.2).
+//shortcut: shows the action and error codes only; decode the 'Eact'/'Ecod' texts (Error system.cp) with byte swaps when wanted.
 void Wrapper_Error_Display(short actionID, OSErr errorID, ModalFilterProcPtr eventFilterProc, Boolean fatal)
 {
-	short					oldResFile;
-	Boolean					cursorSpinning = SpinningCursor_Active();
+	char					message[64];
 	
-	//Restore screen gamma & show cursor
+	//Restore screen gamma
 #if __SCREEN_FADES__
 	if(mainGamma)
 	SetMonitorState(mainGamma);
 #endif
-	SetGWorld(nil, GetMainDevice());
 	
-	oldResFile = CurResFile();
-	UseResFile(mainResFileID);
-	
-	if(cursorSpinning)
-	SpinningCursor_Stop();
-	
-	InitCursor();
-	Error_Display(actionID, errorID, nil, fatal);
-	
-	if(cursorSpinning)
-	SpinningCursor_Start();
-	
-	//Clean up...
-	UseResFile(oldResFile);
-	//HideCursor();
+	snprintf(message, sizeof(message), "Action %d failed with error %d.", actionID, errorID);
+	fprintf(stderr, "WaterRace: %s%s\n", message, fatal ? " Quitting." : "");
+	if(fatal) {
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "WaterRace", message, nil);
+		ExitToShell();
+	}
 }
 
 #if __3DFX_SCREENSHOTS__

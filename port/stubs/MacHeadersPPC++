@@ -11,6 +11,7 @@
 #include "stub_game_b.h"
 #include "stub_common.h"
 #include "Conditionals.h" // the original prefix also set the __X__ feature switches
+#define __PLAY_DEMO__ 1 // as the retail builds (Conditionals - GM.h): logo intro at startup
 
 // Pomme exposes GetIndString as GetIndStringC (same arguments, Str255 out).
 #define GetIndString(s, list, index) GetIndStringC((s), (list), (index))

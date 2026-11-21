@@ -91,6 +91,34 @@ Handle Get1Resource(ResType theType, SInt16 theID)
 	return GetResource(theType, theID);
 }
 
+// fileName is a C string: the callers get it from GetIndString, which is GetIndStringC here.
+short HOpenResFile(short vRefNum, long dirID, ConstStr255Param fileName, SInt8 permission)
+{
+	FSSpec			spec;
+
+	if(FSMakeFSSpec(vRefNum, dirID, (const char*) fileName, &spec) != noErr)
+	return -1;
+
+	return FSpOpenResFile(&spec, permission);
+}
+
+// Host files are never aliases: checks that the spec exists and tells a folder (no data fork) from a file.
+OSErr ResolveAliasFile(FSSpec* theSpec, Boolean resolveChains, Boolean* targetIsFolder, Boolean* wasAliased)
+{
+	FSSpec			spec;
+	short			refNum;
+
+	*wasAliased = false;
+	if(FSMakeFSSpec(theSpec->vRefNum, theSpec->parID, theSpec->cName, &spec) != noErr)
+	return fnfErr;
+
+	*targetIsFolder = FSpOpenDF(&spec, fsRdPerm, &refNum) != noErr;
+	if(!*targetIsFolder)
+	FSClose(refNum);
+
+	return noErr;
+}
+
 // P1 check: the data-folder name comes out of STR# 129 through Pomme, and a resource read
 // through Get1Resource returns data. Returns true when both hold.
 Boolean Boot_CheckResources()
@@ -475,7 +503,8 @@ static void Boot_DrawTestPattern()
 	SetRect(&r, 300, 220, 340, 260);				RGBForeColor(&white);		PaintRect(&r);
 }
 
-// Boot the game on Linux. Returns 0 when the P1 checks pass and the window closes.
+// Boot the game on Linux: Pomme, the app's resources and the GL window. Returns 0 when ready for
+// Boot_Sequence (main.cp). Debug: WATERRACE_TEST_PATTERN=1 runs the compositor test screen instead.
 int Boot_Startup()
 {
 	SDL_Event		event;
@@ -497,8 +526,11 @@ int Boot_Startup()
 	if(!Boot_InitGL())
 	return 1;
 
-	// shortcut: shows the QuickDraw test pattern, fades it to black and back in at frame
-	// kTestFadeFrame, until the window closes; P3 screens replace this loop.
+	if(getenv("WATERRACE_TEST_PATTERN") == nil)
+	return 0;
+
+	// Shows the QuickDraw test pattern, fades it to black and back in at frame kTestFadeFrame,
+	// until the window closes (port/check-compositor.py).
 	Boot_DrawTestPattern();
 	StartFading(&mainGamma);
 	for(;;) {
@@ -506,7 +538,7 @@ int Boot_Startup()
 		if(event.type == SDL_EVENT_QUIT) {
 			StopFading(mainGamma, true);
 			SDL_Quit();
-			return 0;
+			exit(0);
 		}
 
 		Boot_PresentFrame();
@@ -514,5 +546,18 @@ int Boot_Startup()
 			Fade1ToBlack(nil, kGammaSpeed, quadraticFade, nil, 0);
 			Fade1ToGamma(nil, mainGamma, kGammaSpeed, quadraticFade, nil, 0);
 		}
+	}
+}
+
+int Game_Main(); // main.cp
+
+int main()
+{
+	try {
+		return Game_Main();
+	}
+	catch(const Pomme::QuitRequest&) {	// thrown by ExitToShell
+		SDL_Quit();
+		return 0;
 	}
 }

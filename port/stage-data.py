@@ -58,6 +58,9 @@ def stage(outdir: str, app_rsrc: str | None) -> int:
     if os.path.exists(dest_data):
         shutil.rmtree(dest_data)
     shutil.copytree(REPO_DATA, dest_data)
+    # Git keeps no empty folders; Resolve_DataFolders needs these two (STR# 129).
+    for folder in ("Add ons", "Pilots"):
+        os.makedirs(os.path.join(dest_data, folder), exist_ok=True)
 
     wrapped = 0
     for dirpath, _, files in os.walk(dest_data):

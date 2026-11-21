@@ -341,7 +341,7 @@ extracted tree. *Done when:* `GetIndString` and `Get1Resource` work through Pomm
 
 *P1 status (branch `p1-entry-data`):* done. `Source/WaterRace final/Boot.cp` starts Pomme, opens
 `WaterRace 1.0.1 [English]` and checks `STR# 129` (`WaterRace Data`) and `'STR#' 200` through
-`Get1Resource`. `main()` returns after that check; the Mac boot below it is unreachable until P3.
+`Get1Resource`. (P3, #37: `main()` now runs `Boot_Sequence` up to `Demo_Play`; `port/check-boot.py` checks it.)
 `port/stage-data.py OUTDIR --app-rsrc CD_COPY` builds the game root: the repo's `*.rsrc_fork`
 files wrapped as AppleDouble, plus the English app fork from the 1.0.1 CD. Run the binary from
 that root. The root is the folder that holds `WaterRace Data/`, not the Data folder itself,
