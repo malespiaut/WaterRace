@@ -38,6 +38,16 @@
 #define				kVertex_DiskSize			24
 #define				kTriFace_DiskSize			12
 #define				kVector_DiskSize			12
+#define				kTextureSet_DiskSize		1680
+#define				kScript_DiskSize			192
+#define				kAnimation_HeaderDiskSize	24
+#define				kEvent_DiskSize				32
+#define				kCamera_DiskSize			136
+#define				kObject_DiskSize			1036
+#define				kMegaObject_DiskSize		3932
+#define				kMegaObject0300_DiskSize	3004
+#define				kCollisionBox_DiskSize		220
+#define				kOldCollisionBox_DiskSize	52
 
 //ROUTINES:
 
@@ -57,6 +67,21 @@ static void UnpackFloatsBE(float* dest, const unsigned char* data, long count)
 {
 	for(long i = 0; i < count; ++i)
 	dest[i] = UnpackFloatBE(data + 4 * i);
+}
+
+//Linux port: unpacks the 1036-byte big-endian Object at the start of a 'mega' payload; shapeList stays nil
+static void UnpackObjectBE(ObjectPtr object, const unsigned char* data)
+{
+	object->shapeCount = UnpackU32BE(data + 0);
+	object->flags = UnpackU32BE(data + 804);
+	UnpackFloatsBE(&object->pos.x.x, data + 808, 12);
+	UnpackFloatsBE(&object->rotateX, data + 856, 4); //rotateX, rotateY, rotateZ, scale
+	UnpackFloatsBE(&object->boundingBox[0].x, data + 872, kBBSize * 3);
+	BlockMove(data + 968, object->name, sizeof(Str31));
+	BlockMove(data + 1000, object->unused, sizeof(object->unused));
+	object->sphereRadius = UnpackFloatBE(data + 1016);
+	UnpackFloatsBE(&object->sphereCenter.x, data + 1020, 3);
+	object->id = UnpackU32BE(data + 1032);
 }
 
 static OSErr SetPos_IndexTag(MetaFile_ReferencePtr reference, OSType tag, long index, long fromTag, long minDepth)
@@ -272,17 +297,31 @@ static OSErr Load_TextureSet(MetaFile_ReferencePtr reference, TextureSetPtr* set
 	long				i,
 						searchTag = reference->currentTag + 1;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
+	unsigned char		data[kTextureSet_DiskSize];
 	
-	//Allocate memory
-	*set = (TextureSetPtr) NewPtr(sizeof(TextureSet));
+	//Check size
+	if(tagEntry->dataSize != kTextureSet_DiskSize)
+	return kError_FatalError;
+	
+	//Allocate memory - the texture pointers stored on disk stay nil
+	*set = (TextureSetPtr) NewPtrClear(sizeof(TextureSet));
 	if(*set == nil)
 	return MemError();
 	
-	//Read texture set data
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) *set);
+	//Read texture set data - Linux port: copy the fields of the 32-bit big-endian TextureSet (PORTING.md 5.2)
+	bytes = kTextureSet_DiskSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
 	if(theError)
 	return theError;
+	BlockMove(data + 0, (*set)->name, sizeof(Str63));
+	(*set)->id = UnpackU32BE(data + 64);
+	(*set)->flags = UnpackU32BE(data + 68);
+	(*set)->size = UnpackI32BE(data + 72);
+	for(i = 0; i < kMaxShapes; ++i)
+	(*set)->textureTable[i] = UnpackU32BE(data + 76 + 4 * i);
+	(*set)->textureCount = UnpackU32BE(data + 876);
+	if((*set)->textureCount > kMaxShapes)
+	return kError_FatalError;
 	
 	//Load textures
 	for(i = 0; i < (*set)->textureCount; ++i) {
@@ -654,16 +693,37 @@ static OSErr Load_Script(MetaFile_ReferencePtr reference, ScriptPtr* script)
 						searchTag = reference->currentTag;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
 	
-	//Allocate memory
-	*script = (ScriptPtr) NewPtr(sizeof(Script));
+	unsigned char		data[kScript_DiskSize];
+	unsigned char*		animData;
+	AnimationPtr		animation;
+	unsigned long		eventCount,
+						j;
+	
+	//Check size
+	if(tagEntry->dataSize != kScript_DiskSize)
+	return kError_FatalError;
+	
+	//Allocate memory - the animation pointers stored on disk stay nil
+	*script = (ScriptPtr) NewPtrClear(sizeof(Script));
 	if(*script == nil)
 	return MemError();
 	
-	//Read script data
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) *script);
+	//Read script data - Linux port: copy the fields of the 32-bit big-endian Script (PORTING.md 5.2)
+	bytes = kScript_DiskSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
 	if(theError)
 	return theError;
+	BlockMove(data + 0, (*script)->name, sizeof(Str31));
+	(*script)->flags = UnpackU32BE(data + 32);
+	(*script)->id = UnpackU32BE(data + 36);
+	(*script)->type = UnpackU32BE(data + 40);
+	(*script)->skeletonID = UnpackU32BE(data + 44);
+	(*script)->startTime = UnpackI32BE(data + 48);
+	(*script)->length = UnpackI32BE(data + 52);
+	(*script)->loopTime = UnpackI32BE(data + 56);
+	(*script)->animationCount = UnpackU32BE(data + 60);
+	if((*script)->animationCount > kMaxAnimations)
+	return kError_FatalError;
 	
 	//Read animations
 	for(i = 0; i < (*script)->animationCount; ++i) {
@@ -673,17 +733,43 @@ static OSErr Load_Script(MetaFile_ReferencePtr reference, ScriptPtr* script)
 		return kError_ItemNotFound;
 		reference->currentTag += 1;
 		SetFPos(destFileID, fsFromStart, tagEntry->dataPosition);
-	
-		//Allocate memory
-		(*script)->animationList[i] = (AnimationPtr) NewPtr(tagEntry->dataSize);
-		if((*script)->animationList[i] == nil)
-		return MemError();
-	
+		
+		//Check size
+		if(tagEntry->dataSize < kAnimation_HeaderDiskSize)
+		return kError_FatalError;
+		
 		//Read animation
+		animData = (unsigned char*) NewPtr(tagEntry->dataSize);
+		if(animData == nil)
+		return MemError();
 		bytes = tagEntry->dataSize;
-		theError = FSRead(destFileID, &bytes, (Ptr) (*script)->animationList[i]);
+		theError = FSRead(destFileID, &bytes, (Ptr) animData);
 		if(theError)
 		return theError;
+		eventCount = UnpackU32BE(animData + 20);
+		if(tagEntry->dataSize != kAnimation_HeaderDiskSize + eventCount * kEvent_DiskSize)
+		return kError_FatalError;
+		
+		//Allocate memory - Linux port: Event holds a long, 40 bytes on LP64 against 32 on disk
+		(*script)->animationList[i] = animation = (AnimationPtr) NewPtrClear(sizeof(Animation) + eventCount * sizeof(Event));
+		if(animation == nil)
+		return MemError();
+		
+		//Copy the fields of the 32-bit big-endian Animation
+		animation->shapeID = UnpackU32BE(animData + 0);
+		animation->flags = UnpackU32BE(animData + 4);
+		animation->type = UnpackU32BE(animData + 8);
+		animation->endTime = UnpackI32BE(animData + 12);
+		animation->running = animData[16];
+		animation->eventCount = eventCount;
+		for(j = 0; j < eventCount; ++j) {
+			const unsigned char*	event = animData + kAnimation_HeaderDiskSize + j * kEvent_DiskSize;
+			
+			animation->eventList[j].time = UnpackI32BE(event);
+			//Seven 32-bit words after time: rotation and position, or a SoundEvent's soundID (copied bit for bit)
+			UnpackFloatsBE(&animation->eventList[j].rotateX, event + 4, 7);
+		}
+		DisposePtr((Ptr) animData);
 	}
 	
 	return noErr;
@@ -717,16 +803,29 @@ static OSErr Load_Camera(MetaFile_ReferencePtr reference, CameraPtr* camera)
 	OSErr				theError;
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
 	
+	unsigned char		data[kCamera_DiskSize];
+	
+	//Check size
+	if(tagEntry->dataSize != kCamera_DiskSize)
+	return kError_FatalError;
+	
 	//Allocate memory
 	*camera = (CameraPtr) NewPtr(sizeof(Camera));
 	if(*camera == nil)
 	return MemError();
 	
-	//Read camera data
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) *camera);
+	//Read camera data - Linux port: copy the fields of the 32-bit big-endian Camera (PORTING.md 5.2)
+	bytes = kCamera_DiskSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
 	if(theError)
 	return theError;
+	BlockMove(data + 0, (*camera)->name, sizeof(Str31));
+	BlockMove(data + 32, (*camera)->unused, sizeof((*camera)->unused));
+	(*camera)->visibility = UnpackI32BE(data + 60);
+	(*camera)->flags = UnpackU32BE(data + 64);
+	(*camera)->id = UnpackU32BE(data + 68);
+	UnpackFloatsBE(&(*camera)->pos.x.x, data + 72, 12);
+	UnpackFloatsBE(&(*camera)->roll, data + 120, 4); //roll, pitch, yaw, zoom
 	
 	//Check version
 	if(tagEntry->version == 0x0100)
@@ -734,24 +833,6 @@ static OSErr Load_Camera(MetaFile_ReferencePtr reference, CameraPtr* camera)
 	
 	return noErr;
 }
-
-typedef struct {
-	Object			object;
-	
-	long			skeletonCount;
-	long			scriptCount;
-	long			cameraCount;
-} MetaFile_3DModel;
-typedef MetaFile_3DModel* MetaFile_3DModelPtr;
-
-typedef struct {
-	Vector			center;
-	Vector			xVector,
-					yVector,
-					zVector;
-	
-	long			unused;
-} OLD_CollisionBox;
 
 static OSErr Load_MegaObject(MetaFile_ReferencePtr reference, MegaObjectPtr mega, long skipFlags)
 {
@@ -761,55 +842,42 @@ static OSErr Load_MegaObject(MetaFile_ReferencePtr reference, MegaObjectPtr mega
 	MetaFile_EntryPtr	tagEntry = &reference->tagTable.tagList[reference->currentTag];
 	long				bytes;
 	short				destFileID = reference->fileRefNum;
-	MetaFile_3DModel	model;
-	OLD_CollisionBox	boxes[kMega_MaxCollisionBoxes];
+	unsigned char		data[kMegaObject_DiskSize];
+	long				boxSize;
 	
-	//Check version
-	if(tagEntry->version == 0x0100) {
-		//OLD FORLMAT: Read megaobject data directly
-		bytes = tagEntry->dataSize;
-		theError = FSRead(destFileID, &bytes, (Ptr) mega);
-		if(theError)
-		return theError;
-		
-		//Update data
-		mega->boxCount = 0;
-	}
-	else if(tagEntry->version == 0x0200) {
-		//NEW FORMAT: Read model 3D
-		bytes = tagEntry->dataSize;
-		theError = FSRead(destFileID, &bytes, (Ptr) &model);
-		if(theError)
-		return theError;
-		
-		//Setup MegaObject structure
-		mega->object = model.object;
-		mega->skeletonCount = model.skeletonCount;
-		mega->scriptCount = model.scriptCount;
-		mega->cameraCount = model.cameraCount;
-		
-		//Update data
-		mega->boxCount = 0;
-	}
-	else {
-		//NEW FORMAT: Read megaobject data directly
-		bytes = tagEntry->dataSize;
-		theError = FSRead(destFileID, &bytes, (Ptr) mega);
-		if(theError)
-		return theError;
-	}
+	//Check version and size - Linux port: only the 0x0300 and 0x0310 layouts occur in the data (PORTING.md 5.2)
+	//shortcut: the 0x0100 and 0x0200 (MetaFile_3DModel) layouts fail here; unpack them if an older file turns up
+	if((tagEntry->version == 0x0300) && (tagEntry->dataSize == kMegaObject0300_DiskSize))
+	boxSize = kOldCollisionBox_DiskSize;
+	else if((tagEntry->version == 0x0310) && (tagEntry->dataSize == kMegaObject_DiskSize))
+	boxSize = kCollisionBox_DiskSize;
+	else
+	return kError_FatalError;
 	
-	//Convert collision boxes
-	if(tagEntry->version == 0x0300) {
-		if(mega->boxCount > kMega_MaxCollisionBoxes)
-		mega->boxCount = kMega_MaxCollisionBoxes;
-		BlockMove(&mega->boxList, boxes, sizeof(boxes));
-		for(i = 0; i < mega->boxCount; ++i) {
-			mega->boxList[i].center = boxes[i].center;
-			mega->boxList[i].xVector = boxes[i].xVector;
-			mega->boxList[i].yVector = boxes[i].yVector;
-			mega->boxList[i].zVector = boxes[i].zVector;
-		}
+	//Read megaobject data - copy the fields of the 32-bit big-endian MegaObject; the pointers stored on disk are not used
+	bytes = tagEntry->dataSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
+	if(theError)
+	return theError;
+	UnpackObjectBE(&mega->object, data);
+	mega->skeletonCount = UnpackI32BE(data + 1036);
+	mega->scriptCount = UnpackI32BE(data + 1840);
+	mega->cameraCount = UnpackI32BE(data + 2100);
+	mega->boxCount = UnpackU32BE(data + 2168);
+	if((mega->object.shapeCount > kMaxShapes) || (mega->skeletonCount < 0) || (mega->skeletonCount > kMega_MaxSkeletons)
+		|| (mega->scriptCount < 0) || (mega->scriptCount > kMega_MaxScripts) || (mega->cameraCount < 0) || (mega->cameraCount > kMega_MaxCameras))
+	return kError_FatalError;
+	
+	//Convert collision boxes - version 0x0300 stores OLD_CollisionBox (center and axes only)
+	if(mega->boxCount > kMega_MaxCollisionBoxes)
+	mega->boxCount = kMega_MaxCollisionBoxes;
+	for(i = 0; i < mega->boxCount; ++i) {
+		CollisionBoxPtr		box = &mega->boxList[i];
+		
+		if(boxSize == kOldCollisionBox_DiskSize)
+		UnpackFloatsBE(&box->center.x, data + 2172 + i * boxSize, 12);
+		else
+		UnpackFloatsBE(&box->center.x, data + 2172 + i * boxSize, 51); //axes, half sizes, matrix and corners
 	}
 	
 	//Read shapes
@@ -1368,7 +1436,7 @@ OSErr MetaFile_Read_Terrain(MetaFile_ReferencePtr reference, TerrainPtr terrain,
 OSErr MetaFile_Read_MegaObjectNameID_ByIndex(MetaFile_ReferencePtr reference, Str63 name, OSType* id, long index)
 {
 	OSErr				theError;
-	MegaObject			tempObject;
+	unsigned char		data[kObject_DiskSize];
 	long				bytes;
 	MetaFile_EntryPtr	tagEntry;
 	short				destFileID = reference->fileRefNum;
@@ -1378,15 +1446,17 @@ OSErr MetaFile_Read_MegaObjectNameID_ByIndex(MetaFile_ReferencePtr reference, St
 	if(theError)
 	return theError;
 	
-	//Read megaobject data
+	//Read megaobject data - Linux port: only the big-endian Object at its start is needed (PORTING.md 5.2)
 	tagEntry = &reference->tagTable.tagList[reference->currentTag];
-	bytes = tagEntry->dataSize;
-	theError = FSRead(destFileID, &bytes, (Ptr) &tempObject);
+	if(tagEntry->dataSize < kObject_DiskSize)
+	return kError_FatalError;
+	bytes = kObject_DiskSize;
+	theError = FSRead(destFileID, &bytes, (Ptr) data);
 	if(theError)
 	return theError;
 	
-	BlockMove(tempObject.object.name, name, sizeof(Str63));
-	*id = tempObject.object.id;
+	BlockMove(data + 968, name, sizeof(Str31));
+	*id = UnpackU32BE(data + 1032);
 	
 	return noErr;
 }

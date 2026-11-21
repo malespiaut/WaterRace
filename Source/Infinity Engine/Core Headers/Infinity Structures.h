@@ -418,7 +418,7 @@ typedef struct {
 typedef SubTitleEvent* SubTitleEventPtr;
 
 typedef struct {
-	OSType			shapeID;
+	unsigned long	shapeID; //Linux port: OSType on disk, then a ShapePtr once resolved (Script_Resolve) - 64 bits on LP64
 	unsigned long	flags;
 	OSType			type;
 	
@@ -437,7 +437,7 @@ typedef struct {
 	OSType			id;
 	
 	OSType			type;
-	OSType			skeletonID;
+	unsigned long	skeletonID; //Linux port: OSType on disk, then a SkeletonPtr once resolved (Script_Resolve) - 64 bits on LP64
 	
 	long			startTime;
 	long			length;
